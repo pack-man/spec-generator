@@ -1,5 +1,6 @@
 # What is Packman?
 An End-to-End Software Packaging Platform.
+
 The Packman platform intends to relief the development team from the need of having packaging expertise by automating most of the work and providing guided package generation wizards when manual intervention is necessary.
 
 Once package specifications have been defined, the platform will build the packages on all target platforms, run sanity [acceptance] tests and distribute the packages to a repository dedicated for the project.
