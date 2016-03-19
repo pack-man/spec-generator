@@ -1,0 +1,69 @@
+#!/bin/bash - 
+#===============================================================================
+#          FILE: packman-prepare-build-env.sh
+#         USAGE: ./packman-prepare-build-env 
+#   DESCRIPTION: checkout the metadata configuration for the package from the repo
+# 		 and prepare the git ENV 
+#       OPTIONS: ---
+#  REQUIREMENTS: ---
+#          BUGS: ---
+#         NOTES: ---
+#        AUTHOR: Jess Portnoy (), <jess@jam-x.io>
+#  ORGANIZATION: Packman.
+#       CREATED: 03/11/2016 12:47:11 PM GMT
+#      REVISION:  ---
+#===============================================================================
+
+#set -o nounset                              # Treat unset variables as an error
+DIRNAME=`dirname $0`
+NEEDED_FILES="/home/packman/etc/packman.rc $DIRNAME/packman-functions.rc $DIRNAME/colors.rc"
+for NEEDED_FILE in $NEEDED_FILES;do
+        if [ ! -r $NEEDED_FILE ];then
+                echo "Missing $NEEDED_FILE. Something is wrong with your ENV. Exiting."
+                exit 1
+        fi
+        . $NEEDED_FILE
+done
+
+
+. /home/packman/etc/packman.rc
+. /home/packman/etc/package.rc
+ssh-keyscan github.com >> ~/.ssh/known_hosts
+git clone $JAMX_BASE_GIT_REPO/$JAMX_SPACE 
+cd $JAMX_SPACE
+git fetch --all
+set +e
+if ! git branch |grep -q ${BRANCH};then
+	git checkout -b ${BRANCH}
+else
+	git checkout ${BRANCH}
+fi
+set -e
+git config --global user.email $MAINTAINER_EMAIL 
+git config --global user.name $MAINTAINER_NAME
+mkdir -p ~/build/tmp
+cd ~/build/tmp
+wget $SOURCE_URL
+ARCHIVE_NAME=`echo $SOURCE_URL|awk -F "/" '{print $NF}'`
+if file $ARCHIVE_NAME|grep -i zip ;then
+        EXTRACT_COMMAND="unzip"
+else
+        EXTRACT_COMMAND="tar xvf"
+fi
+$EXTRACT_COMMAND $ARCHIVE_NAME
+#- remove {.git,.csv,.svn} files
+#- set proper permissions on files, i.e: remove redundant/add exec bit where needed
+# if the first line of the file is "^#!" - we need to set exec bit on
+
+# determine whether or not we're a noarch/build-indep package by analyzing source code
+# then set @@BUILD_ARCH@@ accordingly in BuildArch or Architecture 
+
+# try to detect the license and prompt if no LICENSE file exists, then download and add a LICENSE file accordingly to user selection
+
+# auto detect config files
+# auto detect init scripts
+
+# normalize dirname so that it is always $PACKAGE_NAME-$PACKAGE_VERSION.tar.gz and has a $PACKAGE_NAME-$PACKAGE_VERSION dir in it.
+# this way, we can always use Source0: %{name}-%{version} in the RPM spec file.
+
+

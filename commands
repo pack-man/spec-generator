@@ -1,0 +1,5 @@
+sudo docker build  docker-specs/
+sudo docker run -i -t c3fd0935331e bash
+http://www.projectatomic.io/docs/docker-building-images/
+
+

@@ -1,0 +1,65 @@
+- JaM-X package:
+ - create jamx user, sudoer for docker command - DONE
+ - create these dirs under ~jamx/rpmbuild: - DONE
+   BUILD BUILDROOT RPMS SRPMS - DONE
+ - JaM-X scripts go to ~jamx/bin - DONE
+ - configuration goes to ~jamx/etc - DONE
+ - tmp stuff goes to ~jamx/tmp - DONE
+ - jamx user .bashrc should have a nice PS1 and also PATH that includes /home/jamx/bin and a few other useful aliases - IN PROGRESS
+ - bash compeltion for git, yum, aptitude
+
+
+ - JaM-X RPM package - DONE
+ - enable EPEL and RPMForge
+ deb package:
+ - depend on build-essential debhelper dh-make vim-nox wget unzip git lsb-release
+ - enable extra repos
+
+- Setup scripts and response files for commonly used packages [MySQL comes to mind]
+
+- Build generic templating mechanism based on dpkg's template mechanism only it would also allow setting a callback function for verifying inputs.
+  - will support TUI and CLI
+
+Things to think of:
+ - if the package provides a daemon, need an init script/systemd template to start from
+
+API:
+
+
+
+- if we're generating a new package:
+	User inputs - DONE
+		- get env matrix - i.e, on what distros this package should be built
+		- get source URL
+		- get version
+		- write info to RC file
+		- start a docker container of relevant distro
+		- analyze source for build and runtime dependencies
+
+
+
+- analyze source for build and runtime dependencies
+- generate spec 
+      - description
+      - source URL
+      - license - try to auto detect looking for files named license/i or copyright/i
+      - arch - try to auto detect whether noarch/indep according to source type. For example, if the source is PHP||Perl||Python||many others only, then it is indep.
+      - changelog
+	- for deb we have debchange and dh-make already takes care of the initial import
+	- need a parallel for RPM - DONE
+      - auto detect config files
+      - dev package
+      - maintainer 
+	- check MAIL and DEBEMAIL ENV vars for email
+	- check DEBFULLNAME and MAINTAINER_NAME for name
+
+- auto detect config files
+- auto detect init scripts
+- source prep:
+- remove {.git,.csv,.svn} files
+- set proper permissions on files, i.e: remove redundant/add exec bit where needed
+- dev package
+- maintainer 
+	- check MAIL and DEBEMAIL ENV vars for email
+	- check DEBFULLNAME and MAINTAINER_NAME for name
+- deb only: repo name to place in changelog file

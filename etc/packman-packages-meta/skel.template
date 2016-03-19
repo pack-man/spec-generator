@@ -1,0 +1,18 @@
+JAMX_SPACE=@@JAMX_SPACE@@
+JAMX_PRIVATE_KEY=@@JAMX_PRIVATE_KEY@@
+PACKAGE_NAME="@@PACKAGE_NAME@@"
+PACKAGE_VERSION="@@PACKAGE_VERSION@@"
+PACKAGE_BRANCH="${PACKAGE_NAME}-${PACKAGE_VERSION}"
+# comma separated in the form of $DIST:$VERSION
+SUPPORTED_ENVS="@@SUPPORTED_ENVS@@"
+# URL to download the package source from
+SOURCE_URL="@@SOURCE_URL@@"
+# Project URL
+PROJECT_URL="@@PROJECT_URL@@"
+PACKAGE_DESCRIPTION="/home/packman/build/$JAMX_SPACE/packman-packages-meta/${PACKAGE_NAME}/DESCRIPTION"
+MAINTAINER_NAME="@@MAINTAINER_NAME@@"
+MAINTAINER_EMAIL="@@MAINTAINER_EMAIL@@"
+# optional for deb. If not supplied, use container's dist name
+#DIST_NAME="@@DIST_NAME@@"
+
+

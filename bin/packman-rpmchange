@@ -1,0 +1,54 @@
+#!/bin/bash -e 
+#===============================================================================
+#          FILE: packman-rpmchange
+#         USAGE: ./packman-rpmchange 
+#   DESCRIPTION: update RPM spec with new version, revision and changelog 
+#       OPTIONS: ---
+#  REQUIREMENTS: ---
+#          BUGS: ---
+#         NOTES: ---
+#        AUTHOR: Jess Portnoy (), <jess@jam-x.io>
+#  ORGANIZATION: Packman.
+#       CREATED: 02/26/2016 03:27:57 PM GMT
+#      REVISION:  ---
+#===============================================================================
+DIRNAME=`dirname $0`
+NEEDED_FILES="/home/packman/etc/packman.rc /home/packman/etc/package.rc $DIRNAME/packman-functions.rc"
+for NEEDED_FILE in $NEEDED_FILES;do
+        if [ ! -r $NEEDED_FILE ];then
+                echo "Missing $NEEDED_FILE. Something is wrong with your ENV. Exiting."
+                exit 1
+        fi
+        . $NEEDED_FILE
+done
+
+if [ $# -lt 2 ];then
+        echo "Usage $0 <path/to/spec> <new ver> [new rev] [msg]"
+        exit 1
+fi
+SPEC_FILE=$1
+NEWVER=$2
+if [ -n "$3" ];then
+        REV=$3
+        shift
+else
+        REV=1
+fi
+if [ -n "$3" ];then
+        MSG=$3
+else
+        if [ -z "$EDITOR" ];then
+                EDITOR=vi
+        fi
+        echo "Hit Enter to input your changelog message"
+        read
+        $EDITOR /home/packman/tmp/MSG
+        MSG=`cat /home/packman/tmp/MSG|sed ':a;N;$!ba;s/\n/\\\\\n/g'`
+
+fi
+
+STAMP=`date "+%-a %b %-d %Y"`
+
+sed -i "s@\(^Version:\)\s*.*\$@\1 $NEWVER@g" $SPEC_FILE
+sed -i "s@\(^Release:\)\s*.*\$@\1 $REV@g" $SPEC_FILE
+sed -i "s^\(%changelog\)^\1\n* $STAMP $MAINTAINER_NAME <$MAINTAINER_EMAIL> - $NEWVER-$REV\n- $MSG\n^" $SPEC_FILE

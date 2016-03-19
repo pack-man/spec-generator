@@ -1,0 +1,58 @@
+#!/bin/bash - 
+#===============================================================================
+#          FILE: packman-gen-spec
+#         USAGE: ./packman-gen-spec 
+#   DESCRIPTION: Will accept a source in the form of a URL or local FS path and generate spec files 
+#       OPTIONS: source path
+#  REQUIREMENTS: ---
+#          BUGS: ---
+#         NOTES: ---
+#        AUTHOR: Jess Portnoy (), <jess@jam-x.io>
+#  ORGANIZATION: Packman.
+#       CREATED: 02/20/2016 10:48:56 PM GMT
+#      REVISION:  ---
+#===============================================================================
+
+#set -o nounset                              # Treat unset variables as an error
+DIRNAME=`dirname $0`
+NEEDED_FILES="/home/packman/etc/packman.rc $DIRNAME/packman-functions.rc"
+for NEEDED_FILE in $NEEDED_FILES;do
+        if [ ! -r $NEEDED_FILE ];then
+                echo "Missing $NEEDED_FILE. Something is wrong with your ENV. Exiting."
+                exit 1
+        fi
+        . $NEEDED_FILE
+done
+if [ ! -r "$1" ];then
+        echo "Usage: $0 </path/to/package.rc>"
+        exit 1
+fi
+PACKAGE_RC=$1
+#
+. $PACKAGE_RC
+# if this is an RPM
+env_packaging_format
+if [ $? -eq 2 ];then
+	cp /home/packman/etc/spec-skelatons/rpm/skel.spec ~/$PACKAGE_NAME.spec
+	replace_rpm_spec_tokens $PACKAGE_RC ~/$PACKAGE_NAME.spec
+	# if rpmbuild -ba failed, we want to see if we have missing files and add them to the spec
+	# rpmbuild -bl ~/$PACKAGE_NAME.spec 2>&1|grep -A1000 "^\s*Installed (but unpackaged) file(s) found:"|sed -e '1,1d' -e "s/\s*//g" >/home/packman/tmp/${PACKAGE_NAME}.missing
+	# MISSING=`cat /tmp/missing|sed ':a;N;$!ba;s/\n/\\\\\n/g'`
+	# sed -i "s^\(%files\)^\1\n$MISSING^g" ~/$PACKAGE_NAME.spec
+
+	# if we got arch dep error:
+	# rpmbuild -ba /home/packman/jam-x.spec 2>&1|grep "Arch dependent binaries in noarch package"
+	# remove BuildArch: noarch from spec, we were wrong in our detection
+fi
+	
+
+
+#is_arch_indep()
+#{
+#
+#}
+
+#detect_deps()
+#{
+#
+#}

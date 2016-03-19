@@ -1,0 +1,34 @@
+#!/bin/bash - 
+#===============================================================================
+#          FILE: packman-start-dockers
+#         USAGE: ./packman-start-dockers 
+#   DESCRIPTION: 
+#       OPTIONS: ---
+#  REQUIREMENTS: ---
+#          BUGS: ---
+#         NOTES: ---
+#        AUTHOR: Jess Portnoy (), <jess@jam-x.io>
+#  ORGANIZATION: Packman.
+#       CREATED: 03/09/2016 04:30:21 PM GMT
+#      REVISION:  ---
+#===============================================================================
+
+#set -o nounset                              # Treat unset variables as an error
+
+DIRNAME=`dirname $0`
+NEEDED_FILES="/home/packman/etc/packman.rc $DIRNAME/packman-functions.rc $DIRNAME/colors.rc"
+for NEEDED_FILE in $NEEDED_FILES;do
+	if [ ! -r $NEEDED_FILE ];then
+		echo "Missing $NEEDED_FILE. Something is wrong with your ENV. Exiting."
+		exit 1
+	fi
+	. $NEEDED_FILE
+done
+if [ ! -r "$1" ];then
+	echo "Did not get an RC file as first arg. Exiting."
+	exit 1
+fi
+PACKAGE_RC=$1
+. $PACKAGE_RC
+launch_containers_for_target_envs $SUPPORTED_ENVS $PACKAGE_RC
+

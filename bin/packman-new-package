@@ -1,0 +1,186 @@
+#!/bin/bash -e 
+#===============================================================================
+#          FILE: packman-new-package
+#         USAGE: ./packman-new-package 
+#   DESCRIPTION: 
+#       OPTIONS: ---
+#  REQUIREMENTS: ---
+#          BUGS: ---
+#         NOTES: ---
+#        AUTHOR: Jess Portnoy (), <jess@jam-x.io>
+#  ORGANIZATION: Packman.
+#       CREATED: 02/26/2016 03:27:57 PM GMT
+#      REVISION:  ---
+#===============================================================================
+
+DIRNAME=`dirname $0`
+NEEDED_FILES="/home/packman/etc/packman.rc $DIRNAME/packman-functions.rc $DIRNAME/colors.rc"
+for NEEDED_FILE in $NEEDED_FILES;do
+	if [ ! -r $NEEDED_FILE ];then
+		echo "Missing $NEEDED_FILE. Something is wrong with your ENV. Exiting."
+		exit 1
+	fi
+	. $NEEDED_FILE
+done
+
+echo -en "${CYAN}Welcome to $PRODUCT_NAME new package generator!
+
+This wizard will guide you through creating a new package.
+
+${YELLOW}STEP: Package Name 
+
+${CYAN}If your project has more than one word in its name, separate them with a '-'.
+
+Package Name:${NORMAL}
+"
+read PACKAGE_NAME
+
+
+if [ -z "$JAMX_SPACE" ];then
+	echo -en "
+${YELLOW}STEP: Creating $PRODUCT_NAME $PACKAGE_NAME configuration structure
+
+${CYAN}Your Packman username:
+${NORMAL}
+" 
+	read -e JAMX_SPACE
+fi
+if [ -z "$JAMX_PRIVATE_KEY" ];then
+	echo -en "
+${CYAN}Your Packman repo private SSH key:
+${NORMAL}
+" 
+	read -e JAMX_PRIVATE_KEY
+fi
+PACKAGE_RC_DIR="$DIRNAME/$JAMX_SPACE/packman-packages-meta/${PACKAGE_NAME}"
+PACKAGE_RC_FILE="$PACKAGE_RC_DIR/${PACKAGE_NAME}.rc"
+if [ -s "$PACKAGE_RC_FILE" ];then
+	echo -en "${BRIGHT_RED}$PACKAGE_RC_FILE already exists.
+If you wish to regerate it, first remove this copy.
+${NORMAL}"
+	exit 2
+fi
+PACKAGE_DESC_FILE="$PACKAGE_RC_DIR/DESCRIPTION"
+mkdir -p $DIRNAME/$JAMX_SPACE/packman-packages-meta/${PACKAGE_NAME}
+cp $DIRNAME/packman-packages-meta/skel.template $PACKAGE_RC_FILE
+sed -i "s^@@JAMX_SPACE@@^$JAMX_SPACE^g" $PACKAGE_RC_FILE
+sed -i "s^@@JAMX_PRIVATE_KEY@@^$JAMX_PRIVATE_KEY^g" $PACKAGE_RC_FILE
+sed -i "s^@@PACKAGE_NAME@@^$PACKAGE_NAME^g" $PACKAGE_RC_FILE
+echo -en "
+${YELLOW}STEP: Package Version
+
+${CYAN}$PACKAGE_NAME version:${NORMAL}
+"
+read -e PACKAGE_VERSION
+sed -i "s^@@PACKAGE_VERSION@@^$PACKAGE_VERSION^g" $PACKAGE_RC_FILE
+
+if [ ! -d $JAMX_SPACE ];then
+	git clone $JAMX_BASE_GIT_REPO/$JAMX_SPACE
+fi
+PACKAGE_BRANCH="${PACKAGE_NAME}-${PACKAGE_VERSION}"
+cd $JAMX_SPACE
+git fetch --all
+set +e
+if ! git branch |grep -q $PACKAGE_BRANCH;then
+	git checkout -b $PACKAGE_BRANCH
+else
+	git checkout $PACKAGE_BRANCH
+fi
+set -e
+cd -
+
+echo -en "
+${YELLOW}STEP: Package Source URL
+
+${CYAN}URL to download $PACKAGE_NAME source from:${NORMAL}
+"
+read SOURCE_URL
+sed -i "s^@@SOURCE_URL@@^$SOURCE_URL^g" $PACKAGE_RC_FILE
+
+while ! validate_url $SOURCE_URL;do
+	echo -en "${BRIGHT_RED}Could not access $SOURCE_URL. 
+
+${CYAN}URL to download $PACKAGE_NAME source from:${NORMAL}"
+	read -e SOURCE_URL
+done
+
+echo -en "
+${YELLOW}STEP: Project URL
+
+${CYAN}
+This is your project's main URL. For example, the home URL of your repo or company's website.
+
+$PACKAGE_NAME project URL:${NORMAL}
+"
+read PROJECT_URL
+sed -i "s^@@PROJECT_URL@@^$PROJECT_URL^g" $PACKAGE_RC_FILE
+
+while ! validate_url $SOURCE_URL;do
+	echo -en "${BRIGHT_RED}Could not access $SOURCE_URL. 
+
+${CYAN}URL to download $PACKAGE_NAME source from:${NORMAL}"
+	read -e SOURCE_URL
+done
+
+
+echo -en "
+${YELLOW}STEP: Package Maintainer
+
+${CYAN}$PACKAGE_NAME Maintainer Name:${NORMAL}
+"
+read -e MAINTAINER_NAME
+sed -i "s^@@MAINTAINER_NAME@@^$MAINTAINER_NAME^g" $PACKAGE_RC_FILE
+
+echo -en "
+${CYAN}$PACKAGE_NAME Maintainer's Email:${NORMAL}
+"
+read -e MAINTAINER_EMAIL
+sed -i "s^@@MAINTAINER_EMAIL@@^$MAINTAINER_EMAIL^g" $PACKAGE_RC_FILE
+
+echo -en "
+${YELLOW}STEP: Build ENVs for $PACKAGE_NAME${NORMAL}
+
+${CYAN}Supported ENVs are: ${GREEN}$AVAILABLE_ENVS${CYAN}
+
+Provide a comma separated list of the ENVs you want to package $PACKAGE_NAME for:
+${NORMAL}
+" 
+
+read -e SUPPORTED_ENVS
+while ! validate_target_envs $SUPPORTED_ENVS;do
+	echo -en "${BRIGHT_RED}The following ENVs are not supported: $UNSUPPORTED_ENVS
+${CYAN}Supported ENVs are: ${GREEN}$AVAILABLE_ENVS${CYAN}
+
+Provide a comma separated list of the ENVs you want to package $PACKAGE_NAME for:
+${NORMAL}
+" 
+	unset UNSUPPORTED_ENVS
+	read -e SUPPORTED_ENVS
+done
+sed -i "s^@@SUPPORTED_ENVS@@^$SUPPORTED_ENVS^g" $PACKAGE_RC_FILE
+
+echo -en "
+${YELLOW}STEP: Describe $PACKAGE_NAME
+
+${CYAN}This will be part of your package metadata and will appear when users search for it.
+The first line should consist of a short summary, after that, you may provide a longer description. 
+Hit enter to input $PACKAGE_NAME description
+${NORMAL}
+" 
+if [ -z "$EDITOR" ];then
+	EDITOR=vi
+fi
+read
+$EDITOR $PACKAGE_DESC_FILE
+
+cd $JAMX_SPACE
+git add packman-packages-meta/${PACKAGE_NAME} && git commit -m "$PACKAGE_NAME $PACKAGE_VERSION - auto committed by $0" packman-packages-meta/${PACKAGE_NAME} && git push origin $PACKAGE_BRANCH
+cd - 
+
+$DIRNAME/packman-start-dockers $PACKAGE_RC_FILE
+
+
+# optional for deb. If not supplied, use container's dist name
+# DIST_NAME
+
+
