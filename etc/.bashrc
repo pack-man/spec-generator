@@ -6,5 +6,6 @@ alias ls='ls --color=auto'
 alias vi=vim
 PS1="[\u@\h \W]$ "
 PATH="$PATH:/home/packman/bin"
-export PS1 PATH
+EDITOR=vim
+export PS1 PATH EDITOR
 

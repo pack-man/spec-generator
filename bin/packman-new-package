@@ -75,6 +75,7 @@ read -e PACKAGE_VERSION
 sed -i "s^@@PACKAGE_VERSION@@^$PACKAGE_VERSION^g" $PACKAGE_RC_FILE
 
 if [ ! -d $PACKMAN_SPACE ];then
+	add_github_com_to_known_hosts
 	git clone $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE
 fi
 PACKAGE_BRANCH="${PACKAGE_NAME}-${PACKAGE_VERSION}"
