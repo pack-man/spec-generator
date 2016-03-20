@@ -7,8 +7,8 @@
 #  REQUIREMENTS: ---
 #          BUGS: ---
 #         NOTES: ---
-#        AUTHOR: Jess Portnoy (), <jess@jam-x.io>
-#  ORGANIZATION: JaM-X.
+#        AUTHOR: Jess Portnoy (), <jess@packman.io>
+#  ORGANIZATION: @Packman.
 #       CREATED: 02/21/2016 10:39:12 PM GMT
 #      REVISION:  ---
 #===============================================================================
