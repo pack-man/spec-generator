@@ -2,7 +2,7 @@
 Name: packman
 Version: 1.0.0
 Release: 1
-Summary: An End-to-End Software Packaging Platform.
+Summary: An End-to-End Software Packaging Platform
 BuildArch: noarch
 
 #Group: @@PACKAGE_GROUP@@
@@ -28,11 +28,10 @@ This allows development teams to focus on what they do best: write software; and
 %prep
 %setup -q
 
-#%build
+%build
 
 
 rm -rf %{buildroot}
-PACKMAN_HOME=/home/packman
 mkdir -p $RPM_BUILD_ROOT%{packman_home}/rpmbuild
 for DIR in BUILD BUILDROOT RPMS SRPMS SOURCES;do
         mkdir ${RPM_BUILD_ROOT}%{packman_home}/rpmbuild/$DIR

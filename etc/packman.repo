@@ -1,0 +1,13 @@
+[Packman]
+name = Packman
+baseurl = http://repo.packman.io:8080/rpm/$basearch/
+gpgkey = http://repo.packman.io:8080/rpm/RPM-GPG-KEY-Packman
+gpgcheck = 1
+enabled = 1
+
+[Packman-noarch]
+name = Packman arch independent
+baseurl = http://repo.packman.io:8080/rpm/noarch
+gpgkey = http://repo.packman.io:8080/rpm/RPM-GPG-KEY-Packman
+gpgcheck = 1
+enabled = 1
