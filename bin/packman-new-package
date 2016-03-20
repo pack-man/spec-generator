@@ -43,14 +43,14 @@ ${YELLOW}STEP: Creating $PRODUCT_NAME $PACKAGE_NAME configuration structure
 ${CYAN}Your Packman username:
 ${NORMAL}
 " 
-	read -e @PACKMAN_SPACE
+	read -e PACKMAN_SPACE
 fi
 if [ -z "$PACKMAN_PRIVATE_KEY" ];then
 	echo -en "
 ${CYAN}Your Packman repo private SSH key:
 ${NORMAL}
 " 
-	read -e @PACKMAN_PRIVATE_KEY
+	read -e PACKMAN_PRIVATE_KEY
 fi
 PACKAGE_RC_DIR="$DIRNAME/$PACKMAN_SPACE/packman-packages-meta/${PACKAGE_NAME}"
 PACKAGE_RC_FILE="$PACKAGE_RC_DIR/${PACKAGE_NAME}.rc"
