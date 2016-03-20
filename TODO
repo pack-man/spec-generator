@@ -35,7 +35,12 @@ Things to think of:
  - if the package provides a daemon, need an init script/systemd template to start from
 
 API:
-
+- Read this:
+	http://www.gajotres.net/best-available-php-restful-micro-frameworks/
+- Needed APIs: 
+	- create build job
+	- update build job	
+	- query build job queue
 
 
 - if we're generating a new package:
