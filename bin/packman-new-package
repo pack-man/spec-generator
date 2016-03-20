@@ -36,23 +36,23 @@ Package Name:${NORMAL}
 read PACKAGE_NAME
 
 
-if [ -z "$JAMX_SPACE" ];then
+if [ -z "$@PACKMAN_SPACE" ];then
 	echo -en "
 ${YELLOW}STEP: Creating $PRODUCT_NAME $PACKAGE_NAME configuration structure
 
 ${CYAN}Your Packman username:
 ${NORMAL}
 " 
-	read -e JAMX_SPACE
+	read -e @PACKMAN_SPACE
 fi
-if [ -z "$JAMX_PRIVATE_KEY" ];then
+if [ -z "$@PACKMAN_PRIVATE_KEY" ];then
 	echo -en "
 ${CYAN}Your Packman repo private SSH key:
 ${NORMAL}
 " 
-	read -e JAMX_PRIVATE_KEY
+	read -e @PACKMAN_PRIVATE_KEY
 fi
-PACKAGE_RC_DIR="$DIRNAME/$JAMX_SPACE/packman-packages-meta/${PACKAGE_NAME}"
+PACKAGE_RC_DIR="$DIRNAME/$@PACKMAN_SPACE/packman-packages-meta/${PACKAGE_NAME}"
 PACKAGE_RC_FILE="$PACKAGE_RC_DIR/${PACKAGE_NAME}.rc"
 if [ -s "$PACKAGE_RC_FILE" ];then
 	echo -en "${BRIGHT_RED}$PACKAGE_RC_FILE already exists.
@@ -61,10 +61,10 @@ ${NORMAL}"
 	exit 2
 fi
 PACKAGE_DESC_FILE="$PACKAGE_RC_DIR/DESCRIPTION"
-mkdir -p $DIRNAME/$JAMX_SPACE/packman-packages-meta/${PACKAGE_NAME}
+mkdir -p $DIRNAME/$@PACKMAN_SPACE/packman-packages-meta/${PACKAGE_NAME}
 cp $DIRNAME/packman-packages-meta/skel.template $PACKAGE_RC_FILE
-sed -i "s^@@JAMX_SPACE@@^$JAMX_SPACE^g" $PACKAGE_RC_FILE
-sed -i "s^@@JAMX_PRIVATE_KEY@@^$JAMX_PRIVATE_KEY^g" $PACKAGE_RC_FILE
+sed -i "s^@@@PACKMAN_SPACE@@^$@PACKMAN_SPACE^g" $PACKAGE_RC_FILE
+sed -i "s^@@@PACKMAN_PRIVATE_KEY@@^$@PACKMAN_PRIVATE_KEY^g" $PACKAGE_RC_FILE
 sed -i "s^@@PACKAGE_NAME@@^$PACKAGE_NAME^g" $PACKAGE_RC_FILE
 echo -en "
 ${YELLOW}STEP: Package Version
@@ -74,11 +74,11 @@ ${CYAN}$PACKAGE_NAME version:${NORMAL}
 read -e PACKAGE_VERSION
 sed -i "s^@@PACKAGE_VERSION@@^$PACKAGE_VERSION^g" $PACKAGE_RC_FILE
 
-if [ ! -d $JAMX_SPACE ];then
-	git clone $JAMX_BASE_GIT_REPO/$JAMX_SPACE
+if [ ! -d $@PACKMAN_SPACE ];then
+	git clone $@PACKMAN_BASE_GIT_REPO/$@PACKMAN_SPACE
 fi
 PACKAGE_BRANCH="${PACKAGE_NAME}-${PACKAGE_VERSION}"
-cd $JAMX_SPACE
+cd $@PACKMAN_SPACE
 git fetch --all
 set +e
 if ! git branch |grep -q $PACKAGE_BRANCH;then
@@ -173,7 +173,7 @@ fi
 read
 $EDITOR $PACKAGE_DESC_FILE
 
-cd $JAMX_SPACE
+cd $@PACKMAN_SPACE
 git add packman-packages-meta/${PACKAGE_NAME} && git commit -m "$PACKAGE_NAME $PACKAGE_VERSION - auto committed by $0" packman-packages-meta/${PACKAGE_NAME} && git push origin $PACKAGE_BRANCH
 cd - 
 

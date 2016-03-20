@@ -29,8 +29,8 @@ done
 . /home/packman/etc/packman.rc
 . /home/packman/etc/package.rc
 ssh-keyscan github.com >> ~/.ssh/known_hosts
-git clone $JAMX_BASE_GIT_REPO/$JAMX_SPACE 
-cd $JAMX_SPACE
+git clone $@PACKMAN_BASE_GIT_REPO/$@PACKMAN_SPACE 
+cd $@PACKMAN_SPACE
 git fetch --all
 set +e
 if ! git branch |grep -q ${BRANCH};then

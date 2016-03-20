@@ -32,10 +32,10 @@ This allows development teams to focus on what they do best: write software; and
 
 
 rm -rf %{buildroot}
-JAMX_HOME=/home/packman
-mkdir -p $RPM_BUILD_ROOT$JAMX_HOME/rpmbuild
+@PACKMAN_HOME=/home/packman
+mkdir -p $RPM_BUILD_ROOT$@PACKMAN_HOME/rpmbuild
 for DIR in BUILD BUILDROOT RPMS SRPMS SOURCES;do
-        mkdir ${RPM_BUILD_ROOT}${JAMX_HOME}/rpmbuild/$DIR
+        mkdir ${RPM_BUILD_ROOT}${@PACKMAN_HOME}/rpmbuild/$DIR
 done
 mkdir -p ${RPM_BUILD_ROOT}%{packman_home}/tmp
 cp -rp etc ${RPM_BUILD_ROOT}%{packman_home}/
