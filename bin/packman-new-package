@@ -62,7 +62,7 @@ ${NORMAL}"
 fi
 PACKAGE_DESC_FILE="$PACKAGE_RC_DIR/DESCRIPTION"
 mkdir -p $DIRNAME/$PACKMAN_SPACE/packman-packages-meta/${PACKAGE_NAME}
-cp $DIRNAME/packman-packages-meta/skel.template $PACKAGE_RC_FILE
+cp /home/packman/etc/packman-packages-meta/skel.template $PACKAGE_RC_FILE
 sed -i "s^@@PACKMAN_SPACE@@^$PACKMAN_SPACE^g" $PACKAGE_RC_FILE
 sed -i "s^@@PACKMAN_PRIVATE_KEY@@^$PACKMAN_PRIVATE_KEY^g" $PACKAGE_RC_FILE
 sed -i "s^@@PACKAGE_NAME@@^$PACKAGE_NAME^g" $PACKAGE_RC_FILE
