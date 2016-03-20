@@ -1,3 +1,3 @@
 getent group %{da_group} >/dev/null || groupadd -r %{da_group}  2>/dev/null
-getent passwd %{da_user} >/dev/null || useradd -M -r -s /bin/bash -c "%{da_user_name}" -g %{da_group} %{da_user} 2>/dev/null
+getent passwd %{da_user} >/dev/null || useradd -M -r -s /bin/bash -c "%{da_user_name}" -d %{da_user_home} -g %{da_group} %{da_user} 2>/dev/null
 
