@@ -31,7 +31,7 @@ launch_containers_for_target_envs()
 	OIFS=$IFS
 	IFS=','
 	for DA_ENV in $TARGET_ENVS;do
-		start_docker_container "docker-specs/$DA_ENV" $PACKAGE_RC
+		start_docker_container "$PACKMAN_HOME/etc/docker-specs/$DA_ENV" $PACKAGE_RC
 	done
 
 	IFS=$OIFS
@@ -45,15 +45,15 @@ set -x
 	. $PACKAGE_RC
 	IMAGE_NAME=`basename $DOCKER_DIR`
 	sudo docker build -t $IMAGE_NAME-$PACKAGE_NAME "$DOCKER_DIR" 
-	sudo docker run -t $IMAGE_NAME-$PACKAGE_NAME mkdir -p /home/packman/etc 
+	sudo docker run -t $IMAGE_NAME-$PACKAGE_NAME mkdir -p $PACKMAN_HOME/etc 
 	CONTAINER_ID=`get_container_id $IMAGE_NAME-$PACKAGE_NAME`
 	sudo docker commit $CONTAINER_ID $IMAGE_NAME-$PACKAGE_NAME
-	sudo docker run -t $IMAGE_NAME-$PACKAGE_NAME  mkdir -p /home/packman/.ssh
+	sudo docker run -t $IMAGE_NAME-$PACKAGE_NAME  mkdir -p /.ssh
 	CONTAINER_ID=`get_container_id $IMAGE_NAME-$PACKAGE_NAME`
 	sudo docker commit $CONTAINER_ID $IMAGE_NAME-$PACKAGE_NAME
-	sudo docker cp $PACKMAN_PRIVATE_KEY  $CONTAINER_ID:/home/packman/.ssh/id_rsa
+	sudo docker cp $PACKMAN_PRIVATE_KEY  $CONTAINER_ID:/.ssh/id_rsa
 	sudo docker commit $CONTAINER_ID $IMAGE_NAME-$PACKAGE_NAME
-	sudo docker cp $PACKAGE_RC $CONTAINER_ID:/home/packman/etc/package.rc
+	sudo docker cp $PACKAGE_RC $CONTAINER_ID:$PACKMAN_HOME/etc/package.rc
 	sudo docker commit $CONTAINER_ID $IMAGE_NAME-$PACKAGE_NAME
 set +x
 	# - call packman-gen-package

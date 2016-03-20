@@ -35,6 +35,12 @@ Package Name:${NORMAL}
 "
 read PACKAGE_NAME
 
+echo -en "
+${YELLOW}STEP: Package Version
+
+${CYAN}$PACKAGE_NAME version:${NORMAL}
+"
+read -e PACKAGE_VERSION
 
 if [ -z "$PACKMAN_SPACE" ];then
 	echo -en "
@@ -52,34 +58,22 @@ ${NORMAL}
 " 
 	read -e PACKMAN_PRIVATE_KEY
 fi
-PACKAGE_RC_DIR="$DIRNAME/$PACKMAN_SPACE/packman-packages-meta/${PACKAGE_NAME}"
+PACKAGE_RC_DIR="$PACKMAN_HOME/etc/packman-packages-meta/$PACKMAN_SPACE/${PACKAGE_NAME}"
 PACKAGE_RC_FILE="$PACKAGE_RC_DIR/${PACKAGE_NAME}.rc"
-if [ -s "$PACKAGE_RC_FILE" ];then
+if [ -s $PACKAGE_RC_FILE ];then
 	echo -en "${BRIGHT_RED}$PACKAGE_RC_FILE already exists.
 If you wish to regerate it, first remove this copy.
 ${NORMAL}"
 	exit 2
 fi
-PACKAGE_DESC_FILE="$PACKAGE_RC_DIR/DESCRIPTION"
-mkdir -p $DIRNAME/$PACKMAN_SPACE/packman-packages-meta/${PACKAGE_NAME}
-cp /home/packman/etc/packman-packages-meta/skel.template $PACKAGE_RC_FILE
-sed -i "s^@@PACKMAN_SPACE@@^$PACKMAN_SPACE^g" $PACKAGE_RC_FILE
-sed -i "s^@@PACKMAN_PRIVATE_KEY@@^$PACKMAN_PRIVATE_KEY^g" $PACKAGE_RC_FILE
-sed -i "s^@@PACKAGE_NAME@@^$PACKAGE_NAME^g" $PACKAGE_RC_FILE
-echo -en "
-${YELLOW}STEP: Package Version
 
-${CYAN}$PACKAGE_NAME version:${NORMAL}
-"
-read -e PACKAGE_VERSION
-sed -i "s^@@PACKAGE_VERSION@@^$PACKAGE_VERSION^g" $PACKAGE_RC_FILE
-
-if [ ! -d $PACKMAN_SPACE ];then
+if [ ! -d $PACKMAN_HOME/etc/packman-packages-meta/$PACKMAN_SPACE/.git ];then
 	add_github_com_to_known_hosts
+	cd $PACKMAN_HOME/etc/packman-packages-meta
 	git clone $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE
 fi
 PACKAGE_BRANCH="${PACKAGE_NAME}-${PACKAGE_VERSION}"
-cd $PACKMAN_SPACE
+cd $PACKMAN_HOME/etc/packman-packages-meta/$PACKMAN_SPACE
 git fetch --all
 set +e
 if ! git branch |grep -q $PACKAGE_BRANCH;then
@@ -89,6 +83,16 @@ else
 fi
 set -e
 cd -
+
+PACKAGE_DESC_FILE="$PACKAGE_RC_DIR/DESCRIPTION"
+#mkdir -p $DIRNAME/$PACKMAN_SPACE/packman-packages-meta/${PACKAGE_NAME}
+mkdir -p $PACKAGE_RC_DIR
+cp $PACKMAN_HOME/etc/packman-packages-meta/skel.template $PACKAGE_RC_FILE
+sed -i "s^@@PACKMAN_SPACE@@^$PACKMAN_SPACE^g" $PACKAGE_RC_FILE
+sed -i "s^@@PACKMAN_PRIVATE_KEY@@^$PACKMAN_PRIVATE_KEY^g" $PACKAGE_RC_FILE
+sed -i "s^@@PACKAGE_NAME@@^$PACKAGE_NAME^g" $PACKAGE_RC_FILE
+sed -i "s^@@PACKAGE_VERSION@@^$PACKAGE_VERSION^g" $PACKAGE_RC_FILE
+
 
 echo -en "
 ${YELLOW}STEP: Package Source URL
@@ -127,13 +131,13 @@ done
 echo -en "
 ${YELLOW}STEP: Package Maintainer
 
-${CYAN}$PACKAGE_NAME Maintainer Name:${NORMAL}
+${CYAN}$PACKAGE_NAME Package Maintainer Name:${NORMAL}
 "
 read -e MAINTAINER_NAME
 sed -i "s^@@MAINTAINER_NAME@@^$MAINTAINER_NAME^g" $PACKAGE_RC_FILE
 
 echo -en "
-${CYAN}$PACKAGE_NAME Maintainer's Email:${NORMAL}
+${CYAN}$PACKAGE_NAME Package Maintainer's Email:${NORMAL}
 "
 read -e MAINTAINER_EMAIL
 sed -i "s^@@MAINTAINER_EMAIL@@^$MAINTAINER_EMAIL^g" $PACKAGE_RC_FILE
@@ -165,7 +169,8 @@ ${YELLOW}STEP: Describe $PACKAGE_NAME
 
 ${CYAN}This will be part of your package metadata and will appear when users search for it.
 The first line should consist of a short summary, after that, you may provide a longer description. 
-Hit enter to input $PACKAGE_NAME description
+
+Hit ENTER to input $PACKAGE_NAME description
 ${NORMAL}
 " 
 if [ -z "$EDITOR" ];then
@@ -174,8 +179,8 @@ fi
 read
 $EDITOR $PACKAGE_DESC_FILE
 
-cd $PACKMAN_SPACE
-git add packman-packages-meta/${PACKAGE_NAME} && git commit -m "$PACKAGE_NAME $PACKAGE_VERSION - auto committed by $0" packman-packages-meta/${PACKAGE_NAME} && git push origin $PACKAGE_BRANCH
+cd $PACKMAN_HOME/etc/packman-packages-meta/$PACKMAN_SPACE
+git add ${PACKAGE_NAME} && git commit -m "$PACKAGE_NAME $PACKAGE_VERSION - auto committed by $0" -a && git push origin $PACKAGE_BRANCH
 cd - 
 
 $DIRNAME/packman-start-dockers $PACKAGE_RC_FILE

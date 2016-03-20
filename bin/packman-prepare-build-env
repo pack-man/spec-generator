@@ -27,7 +27,7 @@ done
 
 
 . /home/packman/etc/packman.rc
-. /home/packman/etc/package.rc
+. $PACKMAN_HOME/etc/package.rc
 add_github_com_to_known_hosts
 git clone $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE 
 cd $PACKMAN_SPACE
