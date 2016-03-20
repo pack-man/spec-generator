@@ -1,15 +1,15 @@
-- JaM-X package:
- - create jamx user, sudoer for docker command - DONE
- - create these dirs under ~jamx/rpmbuild: - DONE
+- Packman package:
+ - create packman user, sudoer for docker command - DONE
+ - create these dirs under ~packman/rpmbuild: - DONE
    BUILD BUILDROOT RPMS SRPMS - DONE
- - JaM-X scripts go to ~jamx/bin - DONE
- - configuration goes to ~jamx/etc - DONE
- - tmp stuff goes to ~jamx/tmp - DONE
- - jamx user .bashrc should have a nice PS1 and also PATH that includes /home/jamx/bin and a few other useful aliases - IN PROGRESS
+ - Packman scripts go to ~packman/bin - DONE
+ - configuration goes to ~packman/etc - DONE
+ - tmp stuff goes to ~packman/tmp - DONE
+ - packman user .bashrc should have a nice PS1 and also PATH that includes /home/packman/bin and a few other useful aliases - IN PROGRESS
  - bash compeltion for git, yum, aptitude
 
 
- - JaM-X RPM package - DONE
+ - Packman RPM package - DONE
  - enable EPEL and RPMForge
  deb package:
  - depend on build-essential debhelper dh-make vim-nox wget unzip git lsb-release
