@@ -39,6 +39,7 @@ for DIR in BUILD BUILDROOT RPMS SRPMS SOURCES;do
 done
 mkdir -p ${RPM_BUILD_ROOT}%{packman_home}/tmp
 cp -rp etc ${RPM_BUILD_ROOT}%{packman_home}/
+cp -rp etc/.bash* ${RPM_BUILD_ROOT}%{packman_home}/
 cp -rp bin ${RPM_BUILD_ROOT}%{packman_home}/
 mkdir -p ${RPM_BUILD_ROOT}%_defaultdocdir/%{name} ${RPM_BUILD_ROOT}%_defaultlicensedir/%{name}
 cp -r README.md ${RPM_BUILD_ROOT}%_defaultdocdir/%{name}/
@@ -50,6 +51,8 @@ rm -rf %{buildroot}
 %pre
 getent group packman >/dev/null || groupadd -r packman  2>/dev/null
 getent passwd packman >/dev/null || useradd -M -r -s /bin/bash -c "Packman user" -g packman packman 2>/dev/null
+mkdir %{packman_home}
+chown packman.packman %{packman_home}
 
 
 %post
@@ -74,6 +77,7 @@ fi
 %defattr(-,packman,packman,-)
 %doc %_defaultlicensedir/%{name}/* 
 %doc %_defaultdocdir/%{name}/*
+%dir %{packman_home}
 %dir %{packman_home}/bin
 %dir %{packman_home}/etc
 %dir %{packman_home}/tmp
@@ -81,6 +85,8 @@ fi
 %config %{packman_home}/etc/packman.rc
 %config %{packman_home}/etc/packman-packages-meta/*
 %config %{packman_home}/etc/docker-specs/*
+%config(noreplace) %{packman_home}/.bashrc
+%config(noreplace) %{packman_home}/.bash_profile
 
 %changelog
 * Sat Mar 12 2016 Jess Portnoy <jess@packman.com> - 1.0.0-1
