@@ -9,11 +9,14 @@
  - bash compeltion for git, yum, aptitude
 
 
- - Packman RPM package - DONE
- - enable EPEL and RPMForge
+ - Packman RPM package - IN PROGRESS
+	- depend on lxc-docker
+ - enable docker, EPEL and RPMForge repos
  deb package:
- - depend on build-essential debhelper dh-make vim-nox wget unzip git lsb-release
+ - depend on build-essential debhelper dh-make vim-nox wget unzip git lsb-release apt-transport-https ca-certificates lxc-docker
  - enable extra repos
+   deb https://get.docker.com/ubuntu docker main
+
 
 - Setup scripts and response files for commonly used packages [MySQL comes to mind]
 
