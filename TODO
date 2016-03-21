@@ -11,7 +11,8 @@
 
  - Packman RPM package - IN PROGRESS
 	- depend on lxc-docker
- - enable docker, EPEL and RPMForge repos
+ - enable EPEL and RPMForge repos - DONE
+
  deb package:
  - depend on build-essential debhelper dh-make vim-nox wget unzip git lsb-release apt-transport-https ca-certificates lxc-docker
  - enable extra repos
@@ -38,8 +39,9 @@ API:
 - Read this:
 	http://www.gajotres.net/best-available-php-restful-micro-frameworks/
 - Needed APIs: 
-	- create build job
-	- update build job	
+	- create new package
+	- create new build job
+	- update build job status
 	- query build job queue
 
 
@@ -51,6 +53,7 @@ API:
 		- write info to RC file
 		- start a docker container of relevant distro
 		- analyze source for build and runtime dependencies
+		- if deps are from unofficial repos, need to appear in the report
 
 
 
