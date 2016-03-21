@@ -46,18 +46,17 @@ API:
 
 
 - if we're generating a new package:
-	User inputs - DONE
+	- User inputs - DONE
 		- get env matrix - i.e, on what distros this package should be built
 		- get source URL
 		- get version
 		- write info to RC file
 		- start a docker container of relevant distro
-		- analyze source for build and runtime dependencies
-		- if deps are from unofficial repos, need to appear in the report
 
 
 
 - analyze source for build and runtime dependencies
+- if deps are from unofficial repos, need to appear in the report
 - generate spec 
       - description
       - source URL
@@ -67,18 +66,20 @@ API:
 	- for deb we have debchange and dh-make already takes care of the initial import
 	- need a parallel for RPM - DONE
       - auto detect config files
+      - auto detect init scripts
       - dev package
       - maintainer 
 	- check MAIL and DEBEMAIL ENV vars for email
 	- check DEBFULLNAME and MAINTAINER_NAME for name
+      - different profiles, different spec templates:
+	- C/C++ one
+	- PHP web apps
+		- need an Apache config, potentially other common webservers
+	- is this package a daemon?
+		- need an init template
+		- create user for daemon
 
-- auto detect config files
-- auto detect init scripts
 - source prep:
 - remove {.git,.csv,.svn} files
 - set proper permissions on files, i.e: remove redundant/add exec bit where needed
-- dev package
-- maintainer 
-	- check MAIL and DEBEMAIL ENV vars for email
-	- check DEBFULLNAME and MAINTAINER_NAME for name
 - deb only: repo name to place in changelog file
