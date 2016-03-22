@@ -30,6 +30,7 @@ done
 . $PACKMAN_HOME/etc/package.rc
 add_github_com_to_known_hosts
 git clone $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE 
+BRANCH=$PACKAGE_NAME-$PACKAGE_VERSION
 cd $PACKMAN_SPACE
 git fetch --all
 set +e
