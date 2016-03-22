@@ -98,6 +98,7 @@ env_packaging_format()
 
 add_github_com_to_known_hosts()
 {
+	touch ~/.ssh/known_hosts
 	ssh-keyscan github.com >> ~/.ssh/known_hosts
 }
 
