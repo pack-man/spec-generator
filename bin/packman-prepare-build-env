@@ -3,7 +3,7 @@
 #          FILE: packman-prepare-build-env.sh
 #         USAGE: ./packman-prepare-build-env 
 #   DESCRIPTION: checkout the metadata configuration for the package from the repo
-# 		 and prepare the git ENV 
+#                and prepare the git ENV 
 #       OPTIONS: ---
 #  REQUIREMENTS: ---
 #          BUGS: ---
@@ -34,15 +34,17 @@ cd $PACKMAN_SPACE
 git fetch --all
 set +e
 if ! git branch |grep -q ${BRANCH};then
-	git checkout -b ${BRANCH}
+        git checkout -b ${BRANCH}
 else
-	git checkout ${BRANCH}
+        git checkout ${BRANCH}
 fi
 set -e
 git config --global user.email $MAINTAINER_EMAIL 
 git config --global user.name $MAINTAINER_NAME
-mkdir -p ~/build/tmp
-cd ~/build/tmp
+TMP_BUILDDIR=~/build/tmp/$PACKAGE_NAME
+rm -rf $TMP_BUILDDIR
+mkdir $TMP_BUILDDIR
+cd $TMP_BUILDDIR
 wget $SOURCE_URL
 ARCHIVE_NAME=`echo $SOURCE_URL|awk -F "/" '{print $NF}'`
 if file $ARCHIVE_NAME|grep -i zip ;then
@@ -51,10 +53,27 @@ else
         EXTRACT_COMMAND="tar xvf"
 fi
 $EXTRACT_COMMAND $ARCHIVE_NAME
-#- remove {.git,.csv,.svn} files
-#- set proper permissions on files, i.e: remove redundant/add exec bit where needed
+rm $ARCHIVE_NAME
+ORIG_DIR=`ls -d *`
+if [ "$ORIG_DIR" != "$PACKAGE_NAME-$PACKAGE_VERSION" ];then
+        mv $ORIG_DIR $PACKAGE_NAME-$PACKAGE_VERSION
+fi
+cd $PACKAGE_NAME-$PACKAGE_VERSION
+rm `find . -name ".git" -o -name ".svn" -o -name ".csv" -o -name ".gitignore"`
+FILES=`find . -type f`
 # if the first line of the file is "^#!" - we need to set exec bit on
-
+# if the file is an ELF executable binary, we also want the exec bit on, otherwise, set to off
+for FILE in $FILES;do
+        if head -1 $FILE | grep -q "^#!" ;then
+                chmod +x $FILE
+        elif file $FILE | grep -q "\s*ELF.*executable" ;then
+                chmod +x $FILE
+        else 
+                chmod -x $FILE
+        fi
+done
+cd -
+tar zcf $PACKMAN_HOME/rpmbuild/SOURCES/$PACKAGE_NAME-$PACKAGE_VERSION.tar.gz $PACKAGE_NAME-$PACKAGE_VERSION 
 # determine whether or not we're a noarch/build-indep package by analyzing source code
 # then set @@BUILD_ARCH@@ accordingly in BuildArch or Architecture 
 
@@ -62,8 +81,3 @@ $EXTRACT_COMMAND $ARCHIVE_NAME
 
 # auto detect config files
 # auto detect init scripts
-
-# normalize dirname so that it is always $PACKAGE_NAME-$PACKAGE_VERSION.tar.gz and has a $PACKAGE_NAME-$PACKAGE_VERSION dir in it.
-# this way, we can always use Source0: %{name}-%{version} in the RPM spec file.
-
-
