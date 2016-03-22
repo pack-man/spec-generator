@@ -31,12 +31,14 @@ for NEEDED_FILE in $NEEDED_FILES;do
 done
 
 
+. $PACKMAN_HOME/etc/packman.rc
 . $PACKMAN_HOME/etc/package.rc
+cd $PACKMAN_HOME/build/
+BRANCH=$PACKAGE_NAME-$PACKAGE_VERSION
 add_github_com_to_known_hosts
 git clone $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE 
-BRANCH=$PACKAGE_NAME-$PACKAGE_VERSION
 cd $PACKMAN_SPACE
-git fetch --all
+#git fetch --all
 set +e
 if ! git branch |grep -q ${BRANCH};then
         git checkout -b ${BRANCH}
@@ -44,6 +46,7 @@ else
         git checkout ${BRANCH}
 fi
 set -e
+git pull origin ${BRANCH}
 git config --global user.email $MAINTAINER_EMAIL 
 git config --global user.name $MAINTAINER_NAME
 TMP_BUILDDIR=~/build/tmp/$PACKAGE_NAME
