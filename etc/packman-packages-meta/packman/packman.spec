@@ -88,6 +88,9 @@ ln -sf %{packman_home}/src  %{packman_home}/rpmbuild/SOURCES
 %config(noreplace) %{packman_home}/.bash_profile
 
 %changelog
+* Tue Mar 22 2016 Jess Portnoy <jess@packman.io> - 1.0.0-3
+- Don't create ~/rpmbuild/SOURCES, instead symlink from ~/src, better not rely on RPM specific structure since we intend to support [at least] deb as well.
+
 * Sat Mar 12 2016 Jess Portnoy <jess@packman.com> - 1.0.0-1
 - First Packman RPM spec.
 
