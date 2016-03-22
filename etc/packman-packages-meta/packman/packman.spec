@@ -1,7 +1,7 @@
 %define packman_home /home/packman
 Name: packman
 Version: 1.0.0
-Release: 2
+Release: 3
 Summary: An End-to-End Software Packaging Platform
 BuildArch: noarch
 
@@ -33,10 +33,10 @@ This allows development teams to focus on what they do best: write software; and
 
 rm -rf %{buildroot}
 mkdir -p $RPM_BUILD_ROOT%{packman_home}/rpmbuild
-for DIR in BUILD BUILDROOT RPMS SRPMS SOURCES;do
+for DIR in BUILD BUILDROOT RPMS SRPMS ;do
         mkdir ${RPM_BUILD_ROOT}%{packman_home}/rpmbuild/$DIR
 done
-mkdir -p ${RPM_BUILD_ROOT}%{packman_home}/tmp
+mkdir -p ${RPM_BUILD_ROOT}%{packman_home}/tmp/build ${RPM_BUILD_ROOT}%{packman_home}/src
 cp -rp etc ${RPM_BUILD_ROOT}%{packman_home}/
 cp -rp etc/.bash* ${RPM_BUILD_ROOT}%{packman_home}/
 cp -rp bin ${RPM_BUILD_ROOT}%{packman_home}/
@@ -66,7 +66,7 @@ if [ "$1" = 1 ];then
         fi
         rm /tmp/sudoers.new
 fi
-
+ln -sf %{packman_home}/src  %{packman_home}/rpmbuild/SOURCES
 %preun
 
 %postun
