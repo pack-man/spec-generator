@@ -55,8 +55,8 @@ set -x
 	sudo docker commit $CONTAINER_ID $IMAGE_NAME-$PACKAGE_NAME
 	sudo docker cp $PACKAGE_RC $CONTAINER_ID:$PACKMAN_HOME/etc/package.rc
 	sudo docker commit $CONTAINER_ID $IMAGE_NAME-$PACKAGE_NAME
+	sudo docker run -t $IMAGE_NAME-$PACKAGE_NAME su - packman -c "packman-prepare-build-env && packman-gen-spec $PACKMAN_HOME/etc/package.rc"
 set +x
-	# - call packman-gen-package
 }
 
 destroy_docker_container()
