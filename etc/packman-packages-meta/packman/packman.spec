@@ -53,7 +53,6 @@ getent passwd packman >/dev/null || useradd -M -r -s /bin/bash -c "Packman user"
 mkdir %{packman_home}
 chown packman.packman %{packman_home}
 
-
 %post
 if [ "$1" = 1 ];then
         cp /etc/sudoers /tmp/sudoers.new
