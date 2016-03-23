@@ -1,9 +1,8 @@
 Name: @@PACKAGE_NAME@@
 Version: @@PACKAGE_VERSION@@
 Release: 1
-Summary: @@PACKAGE_SUMMARY@
+Summary: @@PACKAGE_SUMMARY@@
 
-Group: @@PACKAGE_GROUP@@
 License: @@PACKAGE_LICENSE@@
 URL: @@PROJECT_URL@@
 Packager: @@MAINTAINER_NAME@@ <@@MAINTAINER_EMAIL@@>

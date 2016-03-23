@@ -33,7 +33,7 @@ This allows development teams to focus on what they do best: write software; and
 
 rm -rf %{buildroot}
 mkdir -p $RPM_BUILD_ROOT%{packman_home}/rpmbuild
-for DIR in BUILD BUILDROOT RPMS SRPMS ;do
+for DIR in BUILD BUILDROOT RPMS SRPMS SPECS ;do
         mkdir ${RPM_BUILD_ROOT}%{packman_home}/rpmbuild/$DIR
 done
 mkdir -p ${RPM_BUILD_ROOT}%{packman_home}/tmp/build ${RPM_BUILD_ROOT}%{packman_home}/src
