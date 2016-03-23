@@ -1,7 +1,7 @@
 %define packman_home /home/packman
 Name: packman
 Version: 1.0.0
-Release: 3
+Release: 5
 Summary: An End-to-End Software Packaging Platform
 BuildArch: noarch
 
@@ -50,7 +50,6 @@ rm -rf %{buildroot}
 %pre
 getent group packman >/dev/null || groupadd -r packman  2>/dev/null
 getent passwd packman >/dev/null || useradd -M -r -s /bin/bash -c "Packman user" -g packman packman 2>/dev/null
-mkdir %{packman_home}
 chown packman.packman %{packman_home}
 
 %post

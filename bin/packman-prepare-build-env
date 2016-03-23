@@ -1,4 +1,4 @@
-#!/bin/bash - 
+#!/bin/bash -e 
 #===============================================================================
 #          FILE: packman-prepare-build-env.sh
 #         USAGE: ./packman-prepare-build-env 
@@ -33,7 +33,7 @@ done
 
 . $PACKMAN_HOME/etc/packman.rc
 . $PACKMAN_HOME/etc/package.rc
-cd $PACKMAN_HOME/build/
+cd $PACKMAN_HOME/tmp/build/
 BRANCH=$PACKAGE_NAME-$PACKAGE_VERSION
 add_github_com_to_known_hosts
 git clone $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE 
@@ -49,7 +49,7 @@ set -e
 git pull origin ${BRANCH}
 git config --global user.email $MAINTAINER_EMAIL 
 git config --global user.name $MAINTAINER_NAME
-TMP_BUILDDIR=~/build/tmp/$PACKAGE_NAME
+TMP_BUILDDIR=~/tmp/build/$PACKAGE_NAME
 rm -rf $TMP_BUILDDIR
 mkdir $TMP_BUILDDIR
 cd $TMP_BUILDDIR
@@ -81,7 +81,7 @@ for FILE in $FILES;do
         fi
 done
 cd -
-tar zcf $PACKMAN_HOME/rpmbuild/SOURCES/$PACKAGE_NAME-$PACKAGE_VERSION.tar.gz $PACKAGE_NAME-$PACKAGE_VERSION 
+tar zcf $PACKMAN_HOME/src/$PACKAGE_NAME-$PACKAGE_VERSION.tar.gz $PACKAGE_NAME-$PACKAGE_VERSION 
 # determine whether or not we're a noarch/build-indep package by analyzing source code
 # then set @@BUILD_ARCH@@ accordingly in BuildArch or Architecture 
 
