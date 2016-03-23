@@ -68,7 +68,11 @@ if [ "$ORIG_DIR" != "$PACKAGE_NAME-$PACKAGE_VERSION" ];then
         mv $ORIG_DIR $PACKAGE_NAME-$PACKAGE_VERSION
 fi
 cd $PACKAGE_NAME-$PACKAGE_VERSION
-rm `find . -name ".git" -o -name ".svn" -o -name ".csv" -o -name ".gitignore"`
+TO_REMOVE=`find . -name ".git" -o -name ".svn" -o -name ".csv" -o -name ".gitignore"`
+if [ -n "$TO_REMOVE" ];then
+        rm $TO_REMOVE
+fi
+
 FILES=`find . -type f`
 # if the first line of the file is "^#!" - we need to set exec bit on
 # if the file is an ELF executable binary, we also want the exec bit on, otherwise, set to off
@@ -82,7 +86,7 @@ for FILE in $FILES;do
         fi
 done
 
-if [ -r configure.ac -a ! -r configure ];then
+if [ -r configure.ac -a ! -x configure ];then
         libtoolize --force
         aclocal
         #autoheader 
