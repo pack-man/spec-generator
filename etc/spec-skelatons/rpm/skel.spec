@@ -9,7 +9,6 @@ Packager: @@MAINTAINER_NAME@@ <@@MAINTAINER_EMAIL@@>
 
 
 Source0: %{name}-%{version}.tar.gz
-BuildArch: @@BUILD_ARCH@@
 BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 BuildRequires: @@BUILD_REQUIRES@@
