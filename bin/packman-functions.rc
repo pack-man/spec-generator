@@ -2,10 +2,11 @@
 validate_target_envs()
 {
 	SUPPORTED_ENVS="$1"
+	unset UNSUPPORTED_ENVS
 	OIFS=$IFS
 	IFS=','
 	for DA_ENV in $SUPPORTED_ENVS;do
-		if ! echo "$AVAILABLE_ENVS"| grep -q $DA_ENV;then
+		if [ ! -d $PACKMAN_HOME/etc/docker-specs/$DA_ENV ];then
 			UNSUPPORTED_ENVS="$UNSUPPORTED_ENVS $DA_ENV"
 	   	fi
 	done
@@ -48,13 +49,18 @@ set -x
 	sudo docker run -t $IMAGE_NAME-$PACKAGE_NAME mkdir -p $PACKMAN_HOME/etc 
 	CONTAINER_ID=`get_container_id $IMAGE_NAME-$PACKAGE_NAME`
 	sudo docker commit $CONTAINER_ID $IMAGE_NAME-$PACKAGE_NAME
-	sudo docker run -t $IMAGE_NAME-$PACKAGE_NAME  mkdir -p /.ssh
+	sudo docker run -t $IMAGE_NAME-$PACKAGE_NAME  mkdir -p $PACKMAN_HOME/.ssh
 	CONTAINER_ID=`get_container_id $IMAGE_NAME-$PACKAGE_NAME`
 	sudo docker commit $CONTAINER_ID $IMAGE_NAME-$PACKAGE_NAME
-	sudo docker cp $PACKMAN_PRIVATE_KEY  $CONTAINER_ID:/.ssh/id_rsa
+	sudo docker cp $PACKMAN_PRIVATE_KEY  $CONTAINER_ID:$PACKMAN_HOME/.ssh/id_rsa
 	sudo docker commit $CONTAINER_ID $IMAGE_NAME-$PACKAGE_NAME
 	sudo docker cp $PACKAGE_RC $CONTAINER_ID:$PACKMAN_HOME/etc/package.rc
 	sudo docker commit $CONTAINER_ID $IMAGE_NAME-$PACKAGE_NAME
+
+	sudo docker run -t $IMAGE_NAME-$PACKAGE_NAME chown -R packman.packman $PACKMAN_HOME
+	CONTAINER_ID=`get_container_id $IMAGE_NAME-$PACKAGE_NAME`
+	sudo docker commit $CONTAINER_ID $IMAGE_NAME-$PACKAGE_NAME
+
 	sudo docker run -t $IMAGE_NAME-$PACKAGE_NAME su - packman -c "packman-prepare-build-env && packman-gen-spec $PACKMAN_HOME/etc/package.rc"
 set +x
 }
