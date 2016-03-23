@@ -30,8 +30,15 @@ rm -rf %{buildroot}
 make install DESTDIR=%{buildroot}
 mkdir -p ${RPM_BUILD_ROOT}%_defaultdocdir/%{name} ${RPM_BUILD_ROOT}%_defaultlicensedir/%{name}
 # place license and README files in the right place.
-cp -r README* ${RPM_BUILD_ROOT}%_defaultdocdir/%{name}/
-cp -r LICENSE ${RPM_BUILD_ROOT}%_defaultlicensedir/%{name}/
+for R in README*;do
+        cp README* ${RPM_BUILD_ROOT}%_defaultdocdir/%{name}/
+done
+for F in AUTHORS ChangeLog COPYING NEWS ;do
+        if [ -r $F ];then
+                cp $F ${RPM_BUILD_ROOT}%_defaultdocdir/%{name}/
+        fi
+done
+
 
 
 
