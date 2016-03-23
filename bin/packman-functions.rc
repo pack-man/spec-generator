@@ -76,14 +76,14 @@ replace_rpm_spec_tokens()
         PACKAGE_RC=$1
         SPEC_FILE=$2
         . $PACKAGE_RC
-        for VAR in `grep -v "^#" $PACKAGE_RC |awk -F "="  '{print $1}' |xargs`;do
-                sed "s#@@$VAR@@#${!VAR}#g" -i $SPEC_FILE
-        done
-	
 	PACKAGE_SUMMARY=`head -1 $PACKAGE_DESCRIPTION`
         sed "s#@@PACKAGE_SUMMARY@@#$PACKAGE_SUMMARY#g" -i $SPEC_FILE
         DESCRIPTION=`cat $PACKAGE_DESCRIPTION|sed ':a;N;$!ba;s/\n/\\\\\n/g'`
         sed "s#@@PACKAGE_DESCRIPTION@@#${DESCRIPTION}#g" -i $SPEC_FILE
+        for VAR in `grep -v "^#" $PACKAGE_RC |awk -F "="  '{print $1}' |xargs`;do
+                sed "s#@@$VAR@@#${!VAR}#g" -i $SPEC_FILE
+        done
+	
 }
 
 env_packaging_format()
