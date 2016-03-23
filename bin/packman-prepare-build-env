@@ -36,6 +36,7 @@ done
 cd $PACKMAN_HOME/tmp/build/
 BRANCH=$PACKAGE_NAME-$PACKAGE_VERSION
 add_github_com_to_known_hosts
+rm -rf $PACKMAN_SPACE
 git clone $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE 
 cd $PACKMAN_SPACE
 #git fetch --all
@@ -80,6 +81,15 @@ for FILE in $FILES;do
                 chmod -x $FILE
         fi
 done
+
+if [ -r configure.ac -a ! -r configure ];then
+        libtoolize --force
+        aclocal
+        #autoheader 
+        automake --force-missing --add-missing
+        autoconf
+fi
+
 cd -
 tar zcf $PACKMAN_HOME/src/$PACKAGE_NAME-$PACKAGE_VERSION.tar.gz $PACKAGE_NAME-$PACKAGE_VERSION 
 # determine whether or not we're a noarch/build-indep package by analyzing source code
