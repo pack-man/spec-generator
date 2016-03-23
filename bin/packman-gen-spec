@@ -39,8 +39,8 @@ PACKAGE_RC=$1
 # if this is an RPM
 env_packaging_format
 if [ $? -eq 2 ];then
-	cp $PACKMAN_HOME/etc/spec-skelatons/rpm/skel.spec ~/$PACKAGE_NAME.spec
-	replace_rpm_spec_tokens $PACKAGE_RC ~/$PACKAGE_NAME.spec
+	cp $PACKMAN_HOME/etc/spec-skelatons/rpm/skel.spec ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
+	replace_rpm_spec_tokens $PACKAGE_RC ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
 	# if rpmbuild -ba failed, we want to see if we have missing files and add them to the spec
 	# rpmbuild -bl ~/$PACKAGE_NAME.spec 2>&1|grep -A1000 "^\s*Installed (but unpackaged) file(s) found:"|sed -e '1,1d' -e "s/\s*//g" >/tmp/${PACKAGE_NAME}.missing
 	# MISSING=`cat /tmp/missing|sed ':a;N;$!ba;s/\n/\\\\\n/g'`
