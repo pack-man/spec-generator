@@ -75,11 +75,12 @@ API:
 	- C/C++ one
 	- PHP web apps
 		- need an Apache config, potentially other common webservers
+	- PHP extensions
 	- is this package a daemon?
 		- need an init template
 		- create user for daemon
 
 - source prep:
-- remove {.git,.csv,.svn} files
-- set proper permissions on files, i.e: remove redundant/add exec bit where needed
+- remove {.git,.csv,.svn} files - DONE
+- set proper permissions on files, i.e: remove redundant/add exec bit where needed - DONE
 - deb only: repo name to place in changelog file
