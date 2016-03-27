@@ -50,7 +50,7 @@ if [ $? -eq 2 ];then
         if [ $? -ne 0 ];then
                 rpmbuild -bl ~/rpmbuild/SPECS/$PACKAGE_NAME.spec 2>&1|grep -A1000 "^\s*Installed (but unpackaged) file(s) found:"|sed -e '1,1d' -e "s/\s*//g" >/tmp/${PACKAGE_NAME}.missing
                 MISSING=`cat /tmp/${PACKAGE_NAME}.missing|sed ':a;N;$!ba;s/\n/\\\\\n/g'`
-                sed -i "s^\(%files\)^\1\n$MISSING^g" ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
+                sed -i "s^\(%defattr(-,root,root,-)\)^\1\n$MISSING^g" ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
                 rpmbuild -ba ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
         fi
 	# if we got arch dep error:

@@ -59,7 +59,7 @@ ARCHIVE_NAME=`echo $SOURCE_URL|awk -F "/" '{print $NF}'`
 if file $ARCHIVE_NAME|grep -w -i zip ;then
         EXTRACT_COMMAND="unzip"
 else
-        EXTRACT_COMMAND="tar xvf"
+        EXTRACT_COMMAND="tar xv"
 fi
 $EXTRACT_COMMAND $ARCHIVE_NAME
 rm $ARCHIVE_NAME
