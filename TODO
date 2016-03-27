@@ -12,6 +12,7 @@
  - Packman RPM package - IN PROGRESS
 	- depend on lxc-docker
  - enable EPEL and RPMForge repos - DONE
+	- set priority so they are the lowest one and the official repo is highest
 
  deb package:
  - depend on build-essential debhelper dh-make vim-nox wget unzip git lsb-release apt-transport-https ca-certificates lxc-docker

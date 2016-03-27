@@ -1,7 +1,7 @@
 %define packman_home /home/packman
 Name: packman
 Version: 1.0.0
-Release: 11 
+Release: 13
 Summary: An End-to-End Software Packaging Platform
 BuildArch: noarch
 
@@ -58,6 +58,8 @@ if [ "$1" = 1 ];then
         cp /etc/sudoers /tmp/sudoers.new
         echo "## Done by Packman postinst" >> /tmp/sudoers.new
         echo "packman ALL=(ALL) NOPASSWD: /usr/bin/docker" >> /tmp/sudoers.new
+        echo "packman ALL=(ALL) NOPASSWD: /usr/bin/yum" >> /tmp/sudoers.new
+        echo "packman ALL=(ALL) NOPASSWD: /bin/rpm" >> /tmp/sudoers.new
 
         visudo -c -f /tmp/sudoers.new
         if [ $? -eq 0 ]; then
