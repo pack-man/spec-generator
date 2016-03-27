@@ -85,3 +85,10 @@ API:
 - remove {.git,.csv,.svn} files - DONE
 - set proper permissions on files, i.e: remove redundant/add exec bit where needed - DONE
 - deb only: repo name to place in changelog file
+
+- SaaS demo:
+	- Form with the same inputs as packman-new-package
+	- Upon submit:
+		- generate the RC file
+		- commit and push to repo
+		- call 

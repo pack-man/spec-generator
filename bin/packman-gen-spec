@@ -42,6 +42,9 @@ if [ $? -eq 2 ];then
 	cp $PACKMAN_HOME/etc/spec-skelatons/rpm/skel.spec ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
 	replace_rpm_spec_tokens $PACKAGE_RC ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
 	# if rpmbuild -ba failed, we want to see if we have missing files and add them to the spec
+	# find deps by checking included files
+
+
 
         rpmbuild -ba ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
         if [ $? -ne 0 ];then

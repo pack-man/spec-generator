@@ -96,6 +96,18 @@ fi
 
 cd -
 tar zcf $PACKMAN_HOME/src/$PACKAGE_NAME-$PACKAGE_VERSION.tar.gz $PACKAGE_NAME-$PACKAGE_VERSION 
+
+find . -type f -name "*.h" -exec grep "#include\s*<.*\.h" {} \;|sed 's@.*<\(.*\)>.*@\1@g'|sort -u> /tmp/$PACKAGE_NAME.includes
+find . -type f -name "*.c" -exec grep "#include\s*<.*\.h" {} \;|sed 's@.*<\(.*\)>.*@\1@g'|sort -u>> /tmp/$PACKAGE_NAME.includes
+for i in `cat /tmp/$PACKAGE_NAME.includes`;do
+        FILE=`echo $i|awk -F "/" '{print $NF}'`
+        if [ ! -r "`find . -name $FILE`" ];then
+                yum whatprovides "/usr/include/*$i"|grep -m1 -- "^.*-.*`uname -m`"|awk -F": " '{print $1}' | sed 's#^[0-9]*:##g' ;
+        fi
+done > /tmp/$PACKAGE_NAME.dep_packages
+sort -u /tmp/$PACKAGE_NAME.dep_packages > /tmp/$PACKAGE_NAME.buildreq_packages
+yum install `perl -pe 's@([a-zA-Z0-9-_+]+).*@\1@g' /tmp/$PACKAGE_NAME.buildreq_packages |perl -pe 's@-[0-9]*$@@g'` -y
+
 # determine whether or not we're a noarch/build-indep package by analyzing source code
 # then set @@BUILD_ARCH@@ accordingly in BuildArch or Architecture 
 
