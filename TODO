@@ -38,6 +38,7 @@ Things to think of:
 API:
 - Read this:
 	http://www.gajotres.net/best-available-php-restful-micro-frameworks/
+	https://docs.phalconphp.com
 - Needed APIs: 
 	- create new package
 	- create new build job
