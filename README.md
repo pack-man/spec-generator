@@ -21,3 +21,15 @@ It consists of the following main stages:
 - Code to launch docker containers for each supported build ENV
 - Code to analyse the project source code and generate a package spec [in the first phase RPM and deb formats will be supported but others will follow]
 
+## scripts
+- bin/packman-gen-spec
+- bin/packman-new-package
+- bin/packman-prepare-build-env
+- bin/packman-rpmchange
+- bin/packman-start-dockers
+
+## config files
+
+## Setup instructions
+
+## Flow
