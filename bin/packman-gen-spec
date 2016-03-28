@@ -54,6 +54,20 @@ if [ $? -eq 2 ];then
                 sed -i "s^\(%defattr(-,root,root,-)\)^\1\n$MISSING^g" ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
                 rpmbuild -ba ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
         fi
+
+	sudo rpm -Uhv $PACKMAN_HOME/rpmbuild/RPMS/`uname -m`/ffmpeg-$PACKAGE_VERSION-*.`uname -m`.rpm
+	rm -f /tmp/$PACKAGE_NAME.depends
+	FILES=`rpm -ql $PACKAGE_NAME|grep "/bin\|/lib.*\.a\|/lib.*\.so*"|xargs`
+	for FILE in $FILES;do
+		for i in `ldd $FILE 2>/dev/null|awk -F " " '{print $3}'`;do
+			rpm -qf $i --queryformat %{name}"\n" 2>/dev/null >> /tmp/$PACKAGE_NAME.depends
+		done
+	done
+	sort -u /tmp/$PACKAGE_NAME.depends > /tmp/$PACKAGE_NAME.depends.1
+	PACKAGE_REQUIRES=`cat /tmp/$PACKAGE_NAME.depends.1|sed ':a;N;$!ba;s/\n/, /g'`
+	sed -i "s/#Requires: @@PACKAGE_REQUIRES@@/Requires: $PACKAGE_REQUIRES/g" ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
+
+
 	# if we got arch dep error:
 	# rpmbuild -ba /jam-x.spec 2>&1|grep "Arch dependent binaries in noarch package"
 	# remove BuildArch: noarch from spec, we were wrong in our detection
