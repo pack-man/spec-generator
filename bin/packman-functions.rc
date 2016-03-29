@@ -62,6 +62,8 @@ set -x
 	sudo docker commit $CONTAINER_ID $IMAGE_NAME-$PACKAGE_NAME
 
 	sudo docker run -t $IMAGE_NAME-$PACKAGE_NAME su - packman -c "packman-prepare-build-env && packman-gen-spec $PACKMAN_HOME/etc/package.rc"
+	CONTAINER_ID=`get_container_id $IMAGE_NAME-$PACKAGE_NAME`
+	sudo docker commit $CONTAINER_ID $IMAGE_NAME-$PACKAGE_NAME-postrun
 set +x
 }
 
