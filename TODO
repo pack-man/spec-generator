@@ -15,7 +15,7 @@
 	- set priority so they are the lowest one and the official repo is highest
 
  deb package:
- - depend on build-essential debhelper dh-make vim-nox wget unzip git lsb-release apt-transport-https ca-certificates lxc-docker
+ - depend on build-essential debhelper apt-file dh-make vim-nox wget unzip git lsb-release apt-transport-https ca-certificates lxc-docker yasm
  - enable extra repos
    deb https://get.docker.com/ubuntu docker main
 
@@ -92,4 +92,12 @@ API:
 	- Upon submit:
 		- generate the RC file
 		- commit and push to repo
-		- call 
+		- call bin/packman-start-dockers
+		- tail log via web I/F
+		- summary
+			- display on page
+			- send by mail
+			- location of generated spec
+			- location of RPM and src.rpm along with repo instructions
+			- rpmlint output
+			- run log [also needs to be attached to mail]

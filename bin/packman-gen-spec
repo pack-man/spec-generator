@@ -51,6 +51,7 @@ if [ $? -eq 2 ];then
                 rpmbuild -bl ~/rpmbuild/SPECS/$PACKAGE_NAME.spec 2>&1|grep -A1000 "^\s*Installed (but unpackaged) file(s) found:"|sed -e '1,1d' -e "s/\s*//g" >/tmp/${PACKAGE_NAME}.missing
                 MISSING=`cat /tmp/${PACKAGE_NAME}.missing|sed ':a;N;$!ba;s/\n/\\\\\n/g'`
                 # here is where we should mark config files checking for .*conf, *.ini, *.yml, etc
+		# header and archive files should go to dev package %files section
                 sed -i "s^\(%defattr(-,root,root,-)\)^\1\n$MISSING^g" ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
                 rpmbuild -ba ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
         fi
@@ -67,6 +68,7 @@ if [ $? -eq 2 ];then
         PACKAGE_REQUIRES=`cat /tmp/$PACKAGE_NAME.depends.1|sed ':a;N;$!ba;s/\n/, /g'`
         sed -i "s/#Requires: @@PACKAGE_REQUIRES@@/Requires: $PACKAGE_REQUIRES/g" ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
 
+	# dev package
 
         # if we got arch dep error:
         # rpmbuild -ba /jam-x.spec 2>&1|grep "Arch dependent binaries in noarch package"
@@ -74,6 +76,7 @@ if [ $? -eq 2 ];then
 fi
 
 # need to commit the spec once done
+# need to copy the RPM to the repo, sign it and createrepo -u
 
 #is_arch_indep()
 #{
