@@ -55,7 +55,7 @@ if [ $? -eq 2 ];then
                 rpmbuild -ba ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
         fi
 
-	sudo rpm -Uhv $PACKMAN_HOME/rpmbuild/RPMS/`uname -m`/ffmpeg-$PACKAGE_VERSION-*.`uname -m`.rpm
+	sudo rpm -Uhv $PACKMAN_HOME/rpmbuild/RPMS/`uname -m`/$PACKAGE_NAME-$PACKAGE_VERSION-*.`uname -m`.rpm
 	rm -f /tmp/$PACKAGE_NAME.depends
 	FILES=`rpm -ql $PACKAGE_NAME|grep "/bin\|/lib.*\.a\|/lib.*\.so*"|xargs`
 	for FILE in $FILES;do
