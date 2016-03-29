@@ -104,10 +104,10 @@ set +e
 env_packaging_format
 if [ $? -eq 2 ];then
 
+	echo "${CYAN}Locating packages $PACKAGE_NAME's build depends on... this may take a while..${NORMAL}" 
 	for i in `cat /tmp/$PACKAGE_NAME.includes`;do
 		FILE=`echo $i|awk -F "/" '{print $NF}'`
 		if [ ! -r "`find . -name $FILE`" ];then
-			echo "${CYAN}Finding out what package provides $i...${NORMAL}" 
 			sudo yum whatprovides "/usr/include/*$i" 2> /dev/null|grep -m1 -- "^.*-.*`uname -m`"|awk -F": " '{print $1}' | sed 's#^[0-9]*:##g' ;
 		fi
 	done > /tmp/$PACKAGE_NAME.dep_packages
