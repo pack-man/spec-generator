@@ -77,9 +77,9 @@ if [ $? -eq 2 ];then
 	cd $PACKMAN_HOME/tmp/build/$PACKMAN_SPACE
 	git pull origin ${BRANCH}
 	git checkout ${BRANCH}
-	mkdir -p rpm/SPECS
-	cp ~/rpmbuild/SPECS/$PACKAGE_NAME.spec rpm/SPECS
-	git add rpm/*
+	mkdir -p $PACKAGE_NAME/rpm/SPECS
+	cp ~/rpmbuild/SPECS/$PACKAGE_NAME.spec $PACKAGE_NAME/rpm/SPECS
+	git add $PACKAGE_NAME/rpm/*
 	git commit -a -m "Commited by `basename $0`"
 	git push origin $BRANCH
 
