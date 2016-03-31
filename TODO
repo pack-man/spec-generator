@@ -90,6 +90,13 @@ API:
 - SaaS demo:
 	- Form with the same inputs as packman-new-package
 	- Upon submit:
+		- auto create repo based on PACKMAN_SPACE
+			- curl -X POST --data '{"name":"test","has_issues":"true","has_downloads":"true"}' https://api.github.com/orgs/pack-man/repos
+
+		- ssh-keygen -t rsa -N "" -f ~/.ssh/$PACKMAN_SPACE
+		- add key to github
+			https://developer.github.com/v3/repos/keys/
+			- curl -X POST --data '{"title":"test-key","key":""}' https://api.github.com/repos/pack-man/play-ground/keys
 		- generate the RC file
 		- commit and push to repo
 		- call bin/packman-start-dockers
