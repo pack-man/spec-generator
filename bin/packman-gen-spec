@@ -73,6 +73,15 @@ if [ $? -eq 2 ];then
         # if we got arch dep error:
         # rpmbuild -ba /jam-x.spec 2>&1|grep "Arch dependent binaries in noarch package"
         # remove BuildArch: noarch from spec, we were wrong in our detection
+	BRANCH=$PACKAGE_NAME-$PACKAGE_VERSION 
+	cd $PACKMAN_HOME/tmp/build/$PACKMAN_SPACE
+	git pull origin ${BRANCH}
+	git checkout ${BRANCH}
+	cp ~/rpmbuild/SPECS/$PACKAGE_NAME.spec .
+	git add ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
+	git commit -a -m "Commited by `basename $0`"
+	git push origin $BRANCH
+
 fi
 
 # need to commit the spec once done
