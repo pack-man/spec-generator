@@ -115,6 +115,7 @@ API:
 			- curl -X POST --data '{"title":"test-key","key":""}' https://api.github.com/repos/pack-man/play-ground/keys
 		- generate the RC file
 		- commit and push to repo
+		- need to implement a job queue that makes sure no more than say 4 jobs run in parallel since our demo box does not have many resources
 		- call bin/packman-start-dockers
 		- tail log via web I/F
 		- summary
