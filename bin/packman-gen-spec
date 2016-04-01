@@ -46,9 +46,10 @@ if [ $? -eq 2 ];then
         rpmbuild -ba ~/rpmbuild/SPECS/$PACKAGE_NAME.spec > /tmp/$PACKAGE_NAME.rpmbuild.log 2>&1
         if grep -q "error: Bad exit status from .* (%build)" /tmp/$PACKAGE_NAME.rpmbuild.log;then
                 # using the standard %configure macro does not work, lets replace with a simple ./configure --prefix=/usr
-                sed -i "s@^%configure@./configure --prefix=/usr@" ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
+                sed -i "s@^%configure@./configure --prefix=/usr/$PACKAGE_NAME@" ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
                 # and try again:
                 rpmbuild -ba ~/rpmbuild/SPECS/$PACKAGE_NAME.spec  > /tmp/$PACKAGE_NAME.rpmbuild.log 2>&1
+		echo "$PACKAGE_NAME's configure script does not support the default %configure macro, going with ./configure --prefix=/usr/$PACKAGE_NAME" >> /tmp/$PACKAGE_NAME_build.log
         fi
 
         # if rpmbuild -ba failed, we want to see if we have missing files and add them to the spec
@@ -62,7 +63,7 @@ if [ $? -eq 2 ];then
                 sed -i "s^\(%defattr(-,root,root,-)\)^\1\n$MISSING^g" ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
                 rpmbuild -ba ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
         fi
-
+	sudo yum remove $PACKAGE_NAME -y
         sudo rpm -Uhv $PACKMAN_HOME/rpmbuild/RPMS/`uname -m`/$PACKAGE_NAME-$PACKAGE_VERSION-*.`uname -m`.rpm
         rm -f /tmp/$PACKAGE_NAME.depends
         FILES=`rpm -ql $PACKAGE_NAME|grep "/bin\|/sbin\|/lib.*\.a\|/lib.*\.so*"|xargs`
