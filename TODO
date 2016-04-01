@@ -81,6 +81,18 @@ API:
 	- is this package a daemon?
 		- need an init template
 		- create user for daemon
+		- depend on chkconfig
+			%post
+			if [ $1 -eq 1 ]; then
+			    /sbin/chkconfig --add %{name}
+			fi
+			%preun
+			if [ $1 -eq 0 ]; then
+			    /sbin/service %{name} stop >/dev/null 2>&1
+			    /sbin/chkconfig --del %{name}
+			fi
+
+
 
 - source prep:
 - remove {.git,.csv,.svn} files - DONE
@@ -91,8 +103,12 @@ API:
 	- Form with the same inputs as packman-new-package
 	- Upon submit:
 		- auto create repo based on PACKMAN_SPACE
-			- curl -X POST --data '{"name":"test","has_issues":"true","has_downloads":"true"}' https://api.github.com/orgs/pack-man/repos
-
+			set +e
+			curl -s -I -f https://github.com/pack-man/$PACKMAN_SPACE
+			if [ $? -ne 0 ];then
+				curl -X POST --data '{"name":"$PACKMAN_SPACE","has_issues":"true","has_downloads":"true"}' https://api.github.com/orgs/pack-man/repos
+			fi
+			set -e
 		- ssh-keygen -t rsa -N "" -f ~/.ssh/$PACKMAN_SPACE
 		- add key to github
 			https://developer.github.com/v3/repos/keys/
