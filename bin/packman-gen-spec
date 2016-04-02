@@ -53,8 +53,7 @@ if [ $? -eq 2 ];then
 #> /tmp/$PACKAGE_NAME.rpmbuild.log 2>&1
         fi
 
-        # if rpmbuild -ba failed, we want to see if we have missing files and add them to the spec
-        # find deps by checking included files
+        # we want to see if we have missing files and add them to the spec
 	rpmbuild -bl ~/rpmbuild/SPECS/$PACKAGE_NAME.spec 2>&1|grep -A1000 "^\s*Installed (but unpackaged) file(s) found:"|sed -e '1,1d' -e "s/\s*//g" >/tmp/${PACKAGE_NAME}.missing
 	if [ -s /tmp/${PACKAGE_NAME}.missing ];then
 		# here is where we should mark config files checking for .*conf, *.ini, *.yml, etc
@@ -64,7 +63,6 @@ if [ $? -eq 2 ];then
 		sed -i "s^\(%defattr(-,root,root,-)\)^\1\n$MISSING^g" ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
 		rpmbuild -ba ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
 	fi
-        #fi
         sudo yum remove $PACKAGE_NAME -y
         sudo rpm -Uhv $PACKMAN_HOME/rpmbuild/RPMS/`uname -m`/$PACKAGE_NAME-$PACKAGE_VERSION-*.`uname -m`.rpm
         rm -f /tmp/$PACKAGE_NAME.depends
@@ -75,8 +73,14 @@ if [ $? -eq 2 ];then
                 done
         done
         sort -u /tmp/$PACKAGE_NAME.depends > /tmp/$PACKAGE_NAME.depends.1
-        PACKAGE_REQUIRES=`cat /tmp/$PACKAGE_NAME.depends.1|sed ':a;N;$!ba;s/\n/, /g'`
+        PACKAGE_REQUIRES=`cat /tmp/$PACKAGE_NAME.depends.1|sed '/^glibc$/d'|sed ':a;N;$!ba;s/\n/, /g'`
         sed -i "s/#Requires: @@PACKAGE_REQUIRES@@/Requires: $PACKAGE_REQUIRES/g" ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
+
+        # lets see what build deps we can get from this:
+        PACKAGE_BUILD_MAY_REQUIRE=`cat /tmp/$PACKAGE_NAME.depends.1|sed '/^glibc$/d'|sed 's@$@-devel@g'| sed ':a;N;$!ba;s/\n/ /g'`
+        PACKAGE_BUILD_REQUIRES=`for DEV_PACKAGE in $PACKAGE_BUILD_MAY_REQUIRE  ;do if rpm -q $DEV_PACKAGE > /dev/null 2>&1;then echo -n "$DEV_PACKAGE ";fi;done`
+        sed -i "s/#BuildRequires: @@BUILD_REQUIRES@@/BuildRequires: $PACKAGE_BUILD_REQUIRES/g" ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
+
 
         # dev package
 
