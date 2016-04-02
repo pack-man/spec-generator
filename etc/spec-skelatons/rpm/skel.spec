@@ -17,15 +17,6 @@ BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 %description
 @@PACKAGE_DESCRIPTION@@
 
-### dev package section
-%package devel
-Group: Development/Libraries
-Summary: Development files for @@PACKAGE_NAME@@
-#Requires: @@DEV_PACKAGE_REQUIRES@@ 
-
-%description devel
-Headers and additional dev files needed for building and developing on top of @@PACKAGE_NAME@@
-### end dev package section
 
 %prep
 %setup -q
@@ -54,9 +45,6 @@ for F in AUTHORS ChangeLog COPYING NEWS INSTALL README*;do
 done
 
 
-
-
-
 %clean
 rm -rf %{buildroot}
 
@@ -75,8 +63,6 @@ rm -rf %{buildroot}
 %_defaultlicensedir/%{name}
 %doc %_defaultdocdir/%{name}/*
 
-%files devel
-%defattr(-,root,root)
 
 
 %changelog
