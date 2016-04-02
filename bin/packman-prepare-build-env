@@ -17,8 +17,8 @@
 #set -o nounset                              # Treat unset variables as an error
 DIRNAME=`dirname $0`
 if [ ! -r /home/packman/etc/packman.rc ];then
-	echo "Missing /home/packman/etc/packman.rc. Something is wrong with your ENV. Exiting."
-	exit 1
+        echo "Missing /home/packman/etc/packman.rc. Something is wrong with your ENV. Exiting."
+        exit 1
 fi
 . /home/packman/etc/packman.rc
 NEEDED_FILES="$PACKMAN_HOME/etc/package.rc $DIRNAME/packman-functions.rc"
@@ -104,15 +104,15 @@ set +e
 env_packaging_format
 if [ $? -eq 2 ];then
 
-	echo -e "${CYAN}Locating packages $PACKAGE_NAME's build depends on... this may take a while..${NORMAL}" 
-	for i in `cat /tmp/$PACKAGE_NAME.includes`;do
-		FILE=`echo $i|awk -F "/" '{print $NF}'`
-		if [ ! -r "`find . -name $FILE`" ];then
-			sudo yum whatprovides "*/include*/$i" 2> /dev/null|grep -m1 -- "^.*-.*`uname -m`"|awk -F": " '{print $1}' | sed 's#^[0-9]*:##g' ;
-		fi
-	done > /tmp/$PACKAGE_NAME.dep_packages
-	sort -u /tmp/$PACKAGE_NAME.dep_packages > /tmp/$PACKAGE_NAME.buildreq_packages
-	sudo yum install `perl -pe 's@([a-zA-Z0-9-_+]+).*@\1@g' /tmp/$PACKAGE_NAME.buildreq_packages |perl -pe 's@-[0-9]*$@@g'` -y
+        echo -e "${CYAN}Locating packages $PACKAGE_NAME's build depends on... this may take a while..${NORMAL}" 
+        for i in `cat /tmp/$PACKAGE_NAME.includes`;do
+                FILE=`echo $i|awk -F "/" '{print $NF}'`
+                if [ ! -r "`find . -name $FILE`" ];then
+                        sudo yum whatprovides "*/include*/$i" 2> /dev/null|grep -m1 -- "^.*-.*`uname -m`"|awk -F": " '{print $1}' | sed 's#^[0-9]*:##g' ;
+                fi
+        done > /tmp/$PACKAGE_NAME.dep_packages
+        sort -u /tmp/$PACKAGE_NAME.dep_packages > /tmp/$PACKAGE_NAME.buildreq_packages
+        sudo yum install `perl -pe 's@([a-zA-Z0-9-_+]+).*@\1@g' /tmp/$PACKAGE_NAME.buildreq_packages |perl -pe 's@-[0-9]*$@@g'` -y
 fi
 set -e
 # determine whether or not we're a noarch/build-indep package by analyzing source code
@@ -122,3 +122,4 @@ set -e
 
 # auto detect config files
 # auto detect init scripts
+

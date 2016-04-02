@@ -46,14 +46,13 @@ mkdir -p ${RPM_BUILD_ROOT}%_defaultlicensedir/%{name}
 if [ -r LICENSE ];then
 	cp LICENSE ${RPM_BUILD_ROOT}%_defaultlicensedir/%{name}/
 fi
-for R in README*;do
-        cp README* ${RPM_BUILD_ROOT}%_defaultdocdir/%{name}/
-done
-for F in AUTHORS ChangeLog COPYING NEWS ;do
+
+for F in AUTHORS ChangeLog COPYING NEWS INSTALL README*;do
         if [ -r $F ];then
                 cp $F ${RPM_BUILD_ROOT}%_defaultdocdir/%{name}/
         fi
 done
+
 
 
 
