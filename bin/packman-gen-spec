@@ -50,7 +50,6 @@ if [ $? -eq 2 ];then
                 sed -i "s@^%configure@./configure --prefix=/usr/$PACKAGE_NAME@" ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
                 # and try again:
                 rpmbuild -ba ~/rpmbuild/SPECS/$PACKAGE_NAME.spec 2>&1 | tee /tmp/$PACKAGE_NAME.rpmbuild.log  
-#> /tmp/$PACKAGE_NAME.rpmbuild.log 2>&1
         fi
 
         # we want to see if we have missing files and add them to the spec

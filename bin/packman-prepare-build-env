@@ -115,11 +115,6 @@ if [ $? -eq 2 ];then
         sudo yum install `perl -pe 's@([a-zA-Z0-9-_+]+).*@\1@g' /tmp/$PACKAGE_NAME.buildreq_packages |perl -pe 's@-[0-9]*$@@g'` -y
 fi
 set -e
-# determine whether or not we're a noarch/build-indep package by analyzing source code
-# then set @@BUILD_ARCH@@ accordingly in BuildArch or Architecture 
-
 # try to detect the license and prompt if no LICENSE file exists, then download and add a LICENSE file accordingly to user selection
 
-# auto detect config files
-# auto detect init scripts
 
