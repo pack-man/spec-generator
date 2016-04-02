@@ -108,7 +108,7 @@ if [ $? -eq 2 ];then
 	for i in `cat /tmp/$PACKAGE_NAME.includes`;do
 		FILE=`echo $i|awk -F "/" '{print $NF}'`
 		if [ ! -r "`find . -name $FILE`" ];then
-			sudo yum whatprovides "/usr/include/*$i" 2> /dev/null|grep -m1 -- "^.*-.*`uname -m`"|awk -F": " '{print $1}' | sed 's#^[0-9]*:##g' ;
+			sudo yum whatprovides "*/include*/$i" 2> /dev/null|grep -m1 -- "^.*-.*`uname -m`"|awk -F": " '{print $1}' | sed 's#^[0-9]*:##g' ;
 		fi
 	done > /tmp/$PACKAGE_NAME.dep_packages
 	sort -u /tmp/$PACKAGE_NAME.dep_packages > /tmp/$PACKAGE_NAME.buildreq_packages
