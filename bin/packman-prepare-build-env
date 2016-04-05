@@ -84,6 +84,7 @@ for FILE in $FILES;do
         else 
                 chmod -x $FILE
         fi
+	dos2unix $FILE
 done
 
 if [ -r configure.ac -a ! -x configure ];then

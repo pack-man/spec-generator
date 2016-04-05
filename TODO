@@ -36,15 +36,6 @@
 Things to think of:
  - if the package provides a daemon, need an init script/systemd template to start from
 
-API:
-- Read this:
-	http://www.gajotres.net/best-available-php-restful-micro-frameworks/
-	https://docs.phalconphp.com
-- Needed APIs: 
-	- create new package
-	- create new build job
-	- update build job status
-	- query build job queue
 
 
 - if we're generating a new package:
@@ -58,6 +49,8 @@ API:
 
 
 - analyze source for build and runtime dependencies
+	- RPM - DONE
+	- deb
 - if deps are from unofficial repos, need to appear in the report
 - generate spec 
       - description
@@ -75,11 +68,12 @@ API:
 	- check DEBFULLNAME and MAINTAINER_NAME for name
       - different profiles, different spec templates:
 	- C/C++ one
+		- check for qt or cmake related build files
 	- PHP web apps
 		- need an Apache config, potentially other common webservers
 	- PHP extensions
 	- is this package a daemon?
-		- need an init template
+		- need an init template or systemd config
 		- create user for daemon
 		- depend on chkconfig
 			%post
@@ -99,6 +93,19 @@ API:
 - set proper permissions on files, i.e: remove redundant/add exec bit where needed - DONE
 - deb only: repo name to place in changelog file
 
+API:
+- Read this:
+	http://www.gajotres.net/best-available-php-restful-micro-frameworks/
+	https://docs.phalconphp.com
+- Needed APIs: 
+	- create new package
+	- create new build job
+	- update build job status
+	- query build job queue
+	- push notification related to the job, for example:
+		- that additional repos were needed for deps
+		- that the %configure macro did not work
+		
 - SaaS demo:
 	- Form with the same inputs as packman-new-package
 	- Upon submit:
@@ -123,5 +130,5 @@ API:
 			- send by mail
 			- location of generated spec
 			- location of RPM and src.rpm along with repo instructions
-			- rpmlint output
+			- rpmlint/lintian output
 			- run log [also needs to be attached to mail]
