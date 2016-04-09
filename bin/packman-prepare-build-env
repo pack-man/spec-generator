@@ -101,19 +101,36 @@ tar zcf $PACKMAN_HOME/src/$PACKAGE_NAME-$PACKAGE_VERSION.tar.gz $PACKAGE_NAME-$P
 find . -type f -name "*.h" -exec grep "#include\s*<.*\.h" {} \;|sed 's@.*<\(.*\)>.*@\1@g'|sort -u> /tmp/$PACKAGE_NAME.includes
 find . -type f -name "*.c" -exec grep "#include\s*<.*\.h" {} \;|sed 's@.*<\(.*\)>.*@\1@g'|sort -u>> /tmp/$PACKAGE_NAME.includes
 set +e
-# if this is an RPM
+
+### TODO - this if can be refactored to save some duplicate code
+
 env_packaging_format
+# if this is an RPM distro
 if [ $? -eq 2 ];then
 
         echo -e "${CYAN}Locating packages $PACKAGE_NAME's build depends on... this may take a while..${NORMAL}" 
         for i in `cat /tmp/$PACKAGE_NAME.includes`;do
                 FILE=`echo $i|awk -F "/" '{print $NF}'`
+		# do not look for packages including headers that are part of the source to package
                 if [ ! -r "`find . -name $FILE`" ];then
                         sudo yum whatprovides "*/include*/$i" 2> /dev/null|grep -m1 -- "^.*-.*`uname -m`"|awk -F": " '{print $1}' | sed 's#^[0-9]*:##g' ;
                 fi
         done > /tmp/$PACKAGE_NAME.dep_packages
         sort -u /tmp/$PACKAGE_NAME.dep_packages > /tmp/$PACKAGE_NAME.buildreq_packages
         sudo yum install `perl -pe 's@([a-zA-Z0-9-_+]+).*@\1@g' /tmp/$PACKAGE_NAME.buildreq_packages |perl -pe 's@-[0-9]*$@@g'` -y
+
+# if this is a deb distro
+elif [ $? -eq 1 ];then
+        echo -e "${CYAN}Locating packages $PACKAGE_NAME's build depends on... this may take a while..${NORMAL}" 
+        for i in `cat /tmp/$PACKAGE_NAME.includes`;do
+                FILE=`echo $i|awk -F "/" '{print $NF}'`
+		# do not look for packages including headers that are part of the source to package
+                if [ ! -r "`find . -name $FILE`" ];then
+			sudo apt-file search $FILE
+                fi
+        done > /tmp/$PACKAGE_NAME.dep_packages
+	
+#<insert the upstream URL, if relevant>
 fi
 set -e
 # try to detect the license and prompt if no LICENSE file exists, then download and add a LICENSE file accordingly to user selection
