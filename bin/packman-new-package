@@ -13,6 +13,11 @@
 #      REVISION:  ---
 #===============================================================================
 
+# TODO:
+# Ask about license: apache|artistic|bsd|gpl|gpl2|gpl3|lgpl|lgpl2|lgpl3|mit
+# Ask whether it is a daemon or not
+# if it has a configure script, suggest default configure macro and ask if a diff one is needed.
+# this also changes the potential bin deps of course
 DIRNAME=`dirname $0`
 NEEDED_FILES="$DIRNAME/packman-functions.rc"
 for NEEDED_FILE in $NEEDED_FILES;do
