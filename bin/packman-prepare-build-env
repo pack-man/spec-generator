@@ -81,6 +81,8 @@ for FILE in $FILES;do
 	dos2unix $FILE
 done
 
+# TODO: detect files in various interpreter langs [perl, php, ruby, python, etc], install the interpreter packages as deps and run lint on the files to make sure they're parse-able, omit warnings if not.
+
 if [ -r configure.ac -a ! -x configure ];then
         libtoolize --force
         aclocal
