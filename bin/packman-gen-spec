@@ -4,7 +4,7 @@
 #         USAGE: ./packman-gen-spec 
 #   DESCRIPTION: generate spec files based on user input as saved to $PACKAGE_RC,
 #		 then build the package and commit the spec
-#       OPTIONS: source path
+#       OPTIONS: /path/to/package.rc as arg 1
 #  REQUIREMENTS: ---
 #          BUGS: ---
 #         NOTES: ---
@@ -92,7 +92,7 @@ elif [ $PACKAGE_FORMAT -eq $DEB ];then
 	echo "deb"
 	# for no arch, we want TYPE to be -i, for single binary, -s
 	# TODO: we may want to create a custom dh_make to support additional license types, AGPLv3 for instance
-	# dh_make -c $PACKAGE_LICENSE -e "$MAINTAINER_NAME <$MAINTAINER_EMAIL>"  -f $PACKMAN_HOME/src/$PACKAGE_NAME-$PACKAGE_VERSION.tar.gz $TYPE -y
+	# DEBFULLNAME="$MAINTAINER_NAME" dh_make -c $PACKAGE_LICENSE -e "$MAINTAINER_EMAIL"  -f $PACKMAN_HOME/src/$PACKAGE_NAME-$PACKAGE_VERSION.tar.gz $TYPE -y
 fi
 
 BRANCH=$PACKAGE_NAME-$PACKAGE_VERSION 
