@@ -10,7 +10,9 @@ This allows development teams to focus on what they do best: write software; and
 ## What Packaging formats does Packman support?
 Packman is work in progress in very early stages.
 It already produces RPM specs and calculates deps for C/C++ projects.
+
 The plan for phase I is to fully support generation of RPM and deb packages for a variety of programming languages.
+
 Later on, Packman will support additional packaging formats including Slackware tgz, FreeBSD pkgs and even Mac DMG packages.
 
 ## General Flow
