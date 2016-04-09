@@ -80,7 +80,7 @@ for FILE in $FILES;do
         else 
                 chmod -x $FILE
         fi
-	dos2unix $FILE
+	dos2unix -q $FILE
 done
 
 # TODO: detect files in various interpreter langs [perl, php, ruby, python, etc], install the interpreter packages as deps and run lint on the files to make sure they're parse-able, omit warnings if not.
