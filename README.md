@@ -22,14 +22,26 @@ It consists of the following main stages:
 - Code to analyse the project source code and generate a package spec [in the first phase RPM and deb formats will be supported but others will follow]
 
 ## scripts
-- bin/packman-gen-spec
-- bin/packman-new-package
-- bin/packman-prepare-build-env
-- bin/packman-rpmchange
-- bin/packman-start-dockers
+
+- bin/packman-new-package: a wizard that generates an RC file describing the package metadata.
+- bin/packman-prepare-build-env: downloads the source, fixes file permissions, runs dos2unix, generates a configure script if needed and re-packages the source for building
+- bin/packman-gen-spec: uses the metadata collected from the user to generate a spec file, then builds the package and automatically calculates the package build and run time deps. 
+- bin/packman-start-dockers: creates Docker containers per ENV, sets up SSH keys to push to the git repo and installs all needed packages for building, including Packman itself
+- bin/packman-rpmchange: utility script for adding to the %changelog section
 
 ## config files
+- etc/docker-specs: Docker files per supported disto
+- etc/packman-packages-meta: Packman RC file skeleton and Packman package specs
+- etc/spec-skelatons: Package spec skeletons for generating packages
+- etc/packman.rc: Packman ENV settings
+- etc/.bash\* - Packman BASH profile and RC 
 
 ## Setup instructions
+### Installing the Packman RPM:
+```
+# rpm -ihv http://repo.packman.io:8080/rpm/noarch/packman-release.rpm
+# yum install packman
+```
+### Installing the Packman deb:
 
 ## Flow
