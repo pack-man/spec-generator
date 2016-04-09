@@ -7,6 +7,25 @@ Once package specifications have been defined, the platform will build the packa
 
 This allows development teams to focus on what they do best: write software; and frees them from manual labour on packaging and distribution.
 
+## What Packaging formats does Packman support?
+Packman is work in progress in very early stages.
+It already produces RPM specs and calculates deps for C/C++ projects.
+The plan for phase I is to fully support generation of RPM and deb packages for a variety of programming languages.
+Later on, Packman will support additional packaging formats including Slackware tgz, FreeBSD pkgs and even Mac DMG packages.
+
+## General Flow
+- Get metadata input about the package to build
+- Create a git repo for the package or use an existing one
+- Launch Docker containers
+- Analyse the project's source code and:
+	- correct file permissions
+	- lint all files to ensure valid syntax
+	- determine needed build and runtime deps
+	- generate pre and post install scripts
+- Generate a package spec based on the target ENV [RPM for RHEL/CentOS/Suse, etc, deb for Debian/Ubuntu, etc]
+- Build the package and test installation 
+- Commit end result to repo
+
 ## spec-generator
 This module is the part of Packman that handles the initial package spec generation.
 It consists of the following main stages:
@@ -44,5 +63,5 @@ It consists of the following main stages:
 # yum install packman
 ```
 ### Installing the Packman deb:
+IN PROGRESS - Stay tuned!
 
-## Flow
