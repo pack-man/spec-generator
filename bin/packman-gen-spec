@@ -2,7 +2,8 @@
 #===============================================================================
 #          FILE: packman-gen-spec
 #         USAGE: ./packman-gen-spec 
-#   DESCRIPTION: Will accept a source in the form of a URL or local FS path and generate spec files 
+#   DESCRIPTION: generate spec files based on user input as saved to $PACKAGE_RC,
+#		 then build the package and commit the spec
 #       OPTIONS: source path
 #  REQUIREMENTS: ---
 #          BUGS: ---
@@ -29,10 +30,14 @@ if [ ! -r "$1" ];then
         exit 1
 fi
 PACKAGE_RC=$1
-#
 . $PACKAGE_RC
+
+
 env_packaging_format
 PACKAGE_FORMAT=$?
+
+# TODO: we can certainly put some of this into functions in packman-functions.rc
+
 if [ $PACKAGE_FORMAT -eq $RPM ];then
         cp $PACKMAN_HOME/etc/spec-skelatons/rpm/skel.spec ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
         replace_rpm_spec_tokens $PACKAGE_RC ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
@@ -85,7 +90,9 @@ if [ $PACKAGE_FORMAT -eq $RPM ];then
 elif [ $PACKAGE_FORMAT -eq $DEB ];then
 	# just to make BASH parse this whilest in progress and commented
 	echo "deb"
-
+	# for no arch, we want TYPE to be -i, for single binary, -s
+	# TODO: we may want to create a custom dh_make to support additional license types, AGPLv3 for instance
+	# dh_make -c $PACKAGE_LICENSE -e "$MAINTAINER_NAME <$MAINTAINER_EMAIL>"  -f $PACKMAN_HOME/src/$PACKAGE_NAME-$PACKAGE_VERSION.tar.gz $TYPE -y
 fi
 
 BRANCH=$PACKAGE_NAME-$PACKAGE_VERSION 
@@ -99,5 +106,5 @@ if [ $PACKAGE_FORMAT = $RPM ];then
 fi
 git commit -a -m "Commited by `basename $0`"
 git push origin $BRANCH
-# need to copy the RPM to the repo, sign it and createrepo -u
+# need to copy the package to the repo, sign it and update metadata
 
