@@ -1,7 +1,7 @@
 # What is Packman?
 An End-to-End Software Packaging Platform.
 
-The Packman platform intends to relief the development team from the need of having packaging expertise by automating most of the work and providing guided package generation wizards when manual intervention is necessary.
+The Packman platform intends to relieve the development team from the need of having packaging expertise by automating most of the work and providing guided package generation wizards when manual intervention is necessary.
 
 Once package specifications have been defined, the platform will build the packages on all target platforms, run sanity [acceptance] tests and distribute the packages to a repository dedicated for the project.
 
@@ -28,6 +28,7 @@ It consists of the following main stages:
 - bin/packman-gen-spec: uses the metadata collected from the user to generate a spec file, then builds the package and automatically calculates the package build and run time deps. 
 - bin/packman-start-dockers: creates Docker containers per ENV, sets up SSH keys to push to the git repo and installs all needed packages for building, including Packman itself
 - bin/packman-rpmchange: utility script for adding to the %changelog section
+- bin/packman-functions.rc: functions used by the various Packman scripts
 
 ## config files
 - etc/docker-specs: Docker files per supported disto
