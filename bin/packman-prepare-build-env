@@ -15,7 +15,9 @@
 #===============================================================================
 
 #set -o nounset                              # Treat unset variables as an error
-NEEDED_FILES="$PACKMAN_HOME/etc/package.rc $DIRNAME/packman-functions.rc"
+
+DIRNAME=`dirname $0`
+NEEDED_FILES="$DIRNAME/packman-functions.rc"
 for NEEDED_FILE in $NEEDED_FILES;do
         if [ ! -r $NEEDED_FILE ];then
                 echo "Missing $NEEDED_FILE. Something is wrong with your ENV. Exiting."
@@ -25,8 +27,8 @@ for NEEDED_FILE in $NEEDED_FILES;do
 done
 
 
-. $PACKMAN_HOME/etc/packman.rc
 . $PACKMAN_HOME/etc/package.rc
+
 cd $PACKMAN_HOME/tmp/build/
 BRANCH=$PACKAGE_NAME-$PACKAGE_VERSION
 add_github_com_to_known_hosts

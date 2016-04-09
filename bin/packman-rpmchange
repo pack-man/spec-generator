@@ -13,14 +13,16 @@
 #      REVISION:  ---
 #===============================================================================
 DIRNAME=`dirname $0`
-NEEDED_FILES="$PACKMAN_HOME/etc/package.rc $DIRNAME/packman-functions.rc"
-for NEEDED_FILE in $NEEDED_FILES;do
-        if [ ! -r $NEEDED_FILE ];then
-                echo "Missing $NEEDED_FILE. Something is wrong with your ENV. Exiting."
-                exit 2
-        fi
-        . $NEEDED_FILE
-done
+if [ ! -r "$DIRNAME/packman-functions.rc" ];then
+	echo "Missing $DIRNAME/packman-functions.rc. Something is wrong with your ENV. Exiting."
+	exit 1
+fi
+. $DIRNAME/packman-functions.rc
+if [ ! -r "$PACKMAN_HOME/etc/package.rc" ];then
+	echo "Missing $PACKMAN_HOME/etc/package.rc. Something is wrong with your ENV. Exiting."
+	exit 2
+fi
+. $PACKMAN_HOME/etc/package.rc
 
 if [ $# -lt 2 ];then
         echo "Usage $0 <path/to/spec> <new ver> [new rev] [msg]"

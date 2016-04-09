@@ -16,7 +16,7 @@
 
 #set -o nounset                              # Treat unset variables as an error
 DIRNAME=`dirname $0`
-NEEDED_FILES="$PACKMAN_HOME/etc/package.rc $DIRNAME/packman-functions.rc"
+NEEDED_FILES="$DIRNAME/packman-functions.rc"
 for NEEDED_FILE in $NEEDED_FILES;do
         if [ ! -r $NEEDED_FILE ];then
                 echo "Missing $NEEDED_FILE. Something is wrong with your ENV. Exiting."
