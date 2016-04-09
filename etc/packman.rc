@@ -2,5 +2,7 @@ PRODUCT_NAME="Packman"
 AVAILABLE_ENVS="debian:8,centos:7,centos:6"
 PACKMAN_BASE_GIT_REPO="git@github.com:pack-man"
 PACKMAN_HOME=/home/packman
+DEB=1
+RPM=2
 . ~/bin/colors.rc
 

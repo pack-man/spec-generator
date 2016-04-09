@@ -1,3 +1,8 @@
+if [ ! -r /home/packman/etc/packman.rc ];then
+        echo "Missing /home/packman/etc/packman.rc. Something is wrong with your ENV. Exiting."
+        exit 1
+fi
+. /home/packman/etc/packman.rc
 # required functions
 validate_target_envs()
 {
@@ -98,9 +103,9 @@ env_packaging_format()
 {
 	DISTRO=`lsb_release -i -s`
 	if [ "$DISTRO" = "Ubuntu" -o "$DISTRO" = "Debian" ];then
-		return 1 
+		return $DEB 
 	elif [ "$DISTRO" = "CentOS" ];then
-		return 2
+		return $RPM
 	fi
 }
 

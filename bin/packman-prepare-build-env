@@ -15,12 +15,6 @@
 #===============================================================================
 
 #set -o nounset                              # Treat unset variables as an error
-DIRNAME=`dirname $0`
-if [ ! -r /home/packman/etc/packman.rc ];then
-        echo "Missing /home/packman/etc/packman.rc. Something is wrong with your ENV. Exiting."
-        exit 1
-fi
-. /home/packman/etc/packman.rc
 NEEDED_FILES="$PACKMAN_HOME/etc/package.rc $DIRNAME/packman-functions.rc"
 for NEEDED_FILE in $NEEDED_FILES;do
         if [ ! -r $NEEDED_FILE ];then
@@ -110,7 +104,7 @@ if [ $? -eq 2 ];then
 
         echo -e "${CYAN}Locating packages $PACKAGE_NAME's build depends on... this may take a while..${NORMAL}" 
         for i in `cat /tmp/$PACKAGE_NAME.includes`;do
-                FILE=`echo $i|awk -F "/" '{print $NF}'`
+		FILE=`echo $i|awk -F "/" '{print $NF}'`
 		# do not look for packages including headers that are part of the source to package
                 if [ ! -r "`find . -name $FILE`" ];then
                         sudo yum whatprovides "*/include*/$i" 2> /dev/null|grep -m1 -- "^.*-.*`uname -m`"|awk -F": " '{print $1}' | sed 's#^[0-9]*:##g' ;
@@ -122,15 +116,14 @@ if [ $? -eq 2 ];then
 # if this is a deb distro
 elif [ $? -eq 1 ];then
         echo -e "${CYAN}Locating packages $PACKAGE_NAME's build depends on... this may take a while..${NORMAL}" 
-        for i in `cat /tmp/$PACKAGE_NAME.includes`;do
-                FILE=`echo $i|awk -F "/" '{print $NF}'`
+        for $i in `cat /tmp/$PACKAGE_NAME.includes`;do
 		# do not look for packages including headers that are part of the source to package
+		FILE=`echo $i|awk -F "/" '{print $NF}'`
                 if [ ! -r "`find . -name $FILE`" ];then
-			sudo apt-file search $FILE
+			apt-file search -x "$i$"|awk -F: '{print $1}'
                 fi
         done > /tmp/$PACKAGE_NAME.dep_packages
-	
-#<insert the upstream URL, if relevant>
+	sudo aptitude install `cat /tmp/$PACKAGE_NAME.dep_packages`	
 fi
 set -e
 # try to detect the license and prompt if no LICENSE file exists, then download and add a LICENSE file accordingly to user selection
