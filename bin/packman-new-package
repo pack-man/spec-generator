@@ -14,11 +14,6 @@
 #===============================================================================
 
 DIRNAME=`dirname $0`
-if [ ! -r /home/packman/etc/packman.rc ];then
-	echo "Missing /home/packman/etc/packman.rc. Something is wrong with your ENV. Exiting."
-	exit 1
-fi
-. /home/packman/etc/packman.rc
 NEEDED_FILES="$DIRNAME/packman-functions.rc"
 for NEEDED_FILE in $NEEDED_FILES;do
         if [ ! -r $NEEDED_FILE ];then

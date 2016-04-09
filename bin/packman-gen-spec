@@ -33,7 +33,6 @@ PACKAGE_RC=$1
 . $PACKAGE_RC
 env_packaging_format
 PACKAGE_FORMAT=$?
-# if this is an RPM
 if [ $PACKAGE_FORMAT -eq $RPM ];then
         cp $PACKMAN_HOME/etc/spec-skelatons/rpm/skel.spec ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
         replace_rpm_spec_tokens $PACKAGE_RC ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
@@ -83,7 +82,6 @@ if [ $PACKAGE_FORMAT -eq $RPM ];then
         # rpmbuild -ba /jam-x.spec 2>&1|grep "Arch dependent binaries in noarch package"
         # remove BuildArch: noarch from spec, we were wrong in our detection
 
-# if this is an deb
 elif [ $PACKAGE_FORMAT -eq $DEB ];then
 	# just to make BASH parse this whilest in progress and commented
 	echo "deb"

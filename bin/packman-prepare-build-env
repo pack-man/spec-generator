@@ -99,8 +99,8 @@ set +e
 ### TODO - this if can be refactored to save some duplicate code
 
 env_packaging_format
-# if this is an RPM distro
-if [ $? -eq 2 ];then
+PACKAGE_FORMAT=$?
+if [ $PACKAGE_FORMAT -eq $RPM ];then
 
         echo -e "${CYAN}Locating packages $PACKAGE_NAME's build depends on... this may take a while..${NORMAL}" 
         for i in `cat /tmp/$PACKAGE_NAME.includes`;do
@@ -113,8 +113,7 @@ if [ $? -eq 2 ];then
         sort -u /tmp/$PACKAGE_NAME.dep_packages > /tmp/$PACKAGE_NAME.buildreq_packages
         sudo yum install `perl -pe 's@([a-zA-Z0-9-_+]+).*@\1@g' /tmp/$PACKAGE_NAME.buildreq_packages |perl -pe 's@-[0-9]*$@@g'` -y
 
-# if this is a deb distro
-elif [ $? -eq 1 ];then
+elif [ $PACKAGE_FORMAT -eq $DEB ];then
         echo -e "${CYAN}Locating packages $PACKAGE_NAME's build depends on... this may take a while..${NORMAL}" 
         for $i in `cat /tmp/$PACKAGE_NAME.includes`;do
 		# do not look for packages including headers that are part of the source to package
