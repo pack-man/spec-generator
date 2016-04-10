@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 chown -R packman:packman /home/packman
 
 if [ "$1" = "configure" ];then
