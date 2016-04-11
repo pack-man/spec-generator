@@ -7,7 +7,7 @@ Section: admin
 Architecture: all
 Depends: ${shlibs:Depends}, adduser, build-essential, debhelper, apt-file, dh-make, vim-nox, wget, unzip, git, lsb-release, apt-transport-https, ca-certificates, yasm
 Description: End-to-End Software Packaging Platform
- Packman intends to relief the development team from the requirement of having 
+ Packman intends to relieve the development team from the requirement of having 
  .
  packaging expertise by automating most of the work and providing guided package
  .
