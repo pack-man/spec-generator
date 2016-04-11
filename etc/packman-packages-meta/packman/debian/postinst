@@ -1,0 +1,16 @@
+#!/bin/bash -e
+chown -R packman:packman /home/packman
+
+if [ "$1" = "configure" ];then
+        cp /etc/sudoers /tmp/sudoers.new
+        echo "## Done by Packman postinst" >> /tmp/sudoers.new
+        echo "packman ALL=(ALL) NOPASSWD: /usr/bin/docker" >> /tmp/sudoers.new
+        echo "packman ALL=(ALL) NOPASSWD: /usr/bin/yum" >> /tmp/sudoers.new
+        echo "packman ALL=(ALL) NOPASSWD: /bin/rpm" >> /tmp/sudoers.new
+
+        visudo -c -f /tmp/sudoers.new
+        if [ $? -eq 0 ]; then
+            cp /tmp/sudoers.new /etc/sudoers
+        fi
+        rm /tmp/sudoers.new
+fi

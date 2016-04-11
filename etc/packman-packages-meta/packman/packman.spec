@@ -15,11 +15,11 @@ Source0: %{name}-%{version}.tar.gz
 BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 #BuildRequires: @@BUILD_REQUIRES@@
-Requires: rpm-build, vim-enhanced, man, wget, unzip, git, sudo, redhat-lsb-core, libtool, yasm, gcc, gcc-c++, dos2unix
+Requires: rpm-build, vim-enhanced, man, wget, unzip, git, sudo, redhat-lsb-core, libtool, yasm, gcc, gcc-c++, dos2unix, man
 
 %description
 An End-to-End Software Packaging Platform.
-The Packman platform intends to relief the development team from the requirement of having packaging expertise by automating most of the work and providing guided package generation wizards when manual intervention is necessary.
+The Packman platform intends to relieve the development team from the requirement of having packaging expertise by automating most of the work and providing guided package generation wizards when manual intervention is necessary.
 
 Once package specifications have been defined, the platform will build the packages on all target platforms, run sanity [acceptance] tests and distribute the packages to a repository dedicated for the project.
 

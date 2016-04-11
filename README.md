@@ -65,5 +65,10 @@ It consists of the following main stages:
 # yum install packman
 ```
 ### Installing the Packman deb:
-IN PROGRESS - Stay tuned!
-
+```
+# echo "deb http://repo.packman.io:8080/apt/debian packman main" >> /etc/apt/sources.list.d/packman.list
+# wget -O - http://repo.packman.io:8080/apt/packman.gpg.key|apt-key add -
+# apt-get update && apt-get install packman
+or, more recommended:
+# aptitude update && aptitude install packman
+```

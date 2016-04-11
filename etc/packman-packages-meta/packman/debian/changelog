@@ -1,0 +1,11 @@
+packman (1.0.0-21) packman; urgency=medium
+
+  * sudo and devscripts as deps 
+
+ -- Jess Portnoy <jess@packman.io>  Sun, 10 Apr 2016 22:49:39 +0000
+
+packman (1.0.0-20) packman; urgency=low
+
+  * Don't create ~/rpmbuild/SOURCES, instead symlink from ~/src, better not rely on RPM specific structure since we intend to support [at least] deb as well.
+
+ -- Jess Portnoy <jess@packman.io>  Sun, 10 Apr 2016 21:50:07 +0000

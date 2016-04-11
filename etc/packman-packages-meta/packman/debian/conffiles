@@ -1,0 +1,9 @@
+/home/packman/.bash_profile
+/home/packman/.bashrc
+/home/packman/etc/docker-specs/centos:6/Dockerfile
+/home/packman/etc/docker-specs/centos:7/Dockerfile
+/home/packman/etc/docker-specs/debian:8/Dockerfile
+/home/packman/etc/packman-packages-meta/packman/packman-release.spec
+/home/packman/etc/packman-packages-meta/packman/packman.spec
+/home/packman/etc/packman-packages-meta/skel.template
+/home/packman/etc/packman.rc
