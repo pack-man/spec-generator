@@ -5,5 +5,5 @@ PACKMAN_BASE_GIT_REPO="git@github.com:pack-man"
 PACKMAN_HOME=/home/packman
 DEB=1
 RPM=2
-. ~/bin/colors.rc
+. /usr/bin/colors.rc
 
