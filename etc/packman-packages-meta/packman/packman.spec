@@ -36,7 +36,7 @@ mkdir -p $RPM_BUILD_ROOT%{packman_home}/rpmbuild
 for DIR in BUILD BUILDROOT RPMS SRPMS SPECS ;do
         mkdir ${RPM_BUILD_ROOT}%{packman_home}/rpmbuild/$DIR
 done
-mkdir -p ${RPM_BUILD_ROOT}%{packman_home}/tmp/build ${RPM_BUILD_ROOT}%{packman_home}/src ${RPM_BUILD_ROOT}%{_sysconfdir}/%{name}
+mkdir -p ${RPM_BUILD_ROOT}%{packman_home}/tmp/build ${RPM_BUILD_ROOT}%{packman_home}/src ${RPM_BUILD_ROOT}%{_sysconfdir}/%{name} ${RPM_BUILD_ROOT}%_bindir
 cp -rp etc/* ${RPM_BUILD_ROOT}%{_sysconfdir}/%{name}
 cp -rp etc/.bash* ${RPM_BUILD_ROOT}%{packman_home}/
 cp -rp bin ${RPM_BUILD_ROOT}%_bindir
