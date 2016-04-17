@@ -81,7 +81,8 @@ ln -sf %{packman_home}/src  %{packman_home}/rpmbuild/SOURCES
 %dir %{packman_home}/tmp
 %{packman_home}/*
 %_bindir/*
-%dir %{_sysconfdir}/%{name}/*
+%dir %{_sysconfdir}/%{name}
+%{_sysconfdir}/%{name}/*
 %config %{_sysconfdir}/%{name}/packman.rc
 %config %{_sysconfdir}/%{name}/packman-packages-meta/*
 %config %{_sysconfdir}/%{name}/docker-specs/*
