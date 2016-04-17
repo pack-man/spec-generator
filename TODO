@@ -137,12 +137,12 @@ API:
 # Tomorrow:
 - finish deb spec gen
 - add license prompting to new-package
-- add question about daemon or not, if daemon use daemon-skel.spec 
+- add question about daemon or not, if daemon use daemon-skel.spec - IN PROGRESS 
 - test some web applications
 	- Drupal
 	- Wordpress
 - add logging
-- create DB schema
+- create DB schema - IN PROGRESS
 	- tables
 		- jobs
 			- id

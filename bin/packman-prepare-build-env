@@ -27,7 +27,7 @@ for NEEDED_FILE in $NEEDED_FILES;do
 done
 
 
-. $PACKMAN_HOME/etc/package.rc
+. /etc/packman/package.rc
 
 cd $PACKMAN_HOME/tmp/build/
 BRANCH=$PACKAGE_NAME-$PACKAGE_VERSION

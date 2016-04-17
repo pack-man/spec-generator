@@ -1,13 +1,13 @@
 %define packman_home /home/packman
 Name: packman
 Version: 1.0.0
-Release: 19
+Release: 20
 Summary: An End-to-End Software Packaging Platform
 BuildArch: noarch
 
 #Group: @@PACKAGE_GROUP@@
 License: AGPLv3+
-URL: https://github.com/Packman/spec-generator
+URL: https://github.com/pack-man/spec-generator
 Packager: Jess Portnoy <jess@packman.com>
 
 
@@ -36,10 +36,10 @@ mkdir -p $RPM_BUILD_ROOT%{packman_home}/rpmbuild
 for DIR in BUILD BUILDROOT RPMS SRPMS SPECS ;do
         mkdir ${RPM_BUILD_ROOT}%{packman_home}/rpmbuild/$DIR
 done
-mkdir -p ${RPM_BUILD_ROOT}%{packman_home}/tmp/build ${RPM_BUILD_ROOT}%{packman_home}/src
-cp -rp etc ${RPM_BUILD_ROOT}%%{packman_home}/
+mkdir -p ${RPM_BUILD_ROOT}%{packman_home}/tmp/build ${RPM_BUILD_ROOT}%{packman_home}/src ${RPM_BUILD_ROOT}%{_sysconfdir}/%{name} ${RPM_BUILD_ROOT}%_bindir
+cp -rp etc/* ${RPM_BUILD_ROOT}%{_sysconfdir}/%{name}
 cp -rp etc/.bash* ${RPM_BUILD_ROOT}%{packman_home}/
-cp -rp bin ${RPM_BUILD_ROOT}%{packman_home}/
+cp -rp bin/* ${RPM_BUILD_ROOT}%_bindir
 mkdir -p ${RPM_BUILD_ROOT}%_defaultdocdir/%{name} ${RPM_BUILD_ROOT}%_defaultlicensedir/%{name}
 cp -r README.md ${RPM_BUILD_ROOT}%_defaultdocdir/%{name}/
 cp -r LICENSE ${RPM_BUILD_ROOT}%_defaultlicensedir/%{name}/
@@ -68,27 +68,29 @@ if [ "$1" = 1 ];then
         rm /tmp/sudoers.new
 fi
 ln -sf %{packman_home}/src  %{packman_home}/rpmbuild/SOURCES
-%preun
-
-%postun
-
 
 %files
 %defattr(-,packman,packman,-)
 %doc %_defaultlicensedir/%{name}/* 
 %doc %_defaultdocdir/%{name}/*
 %dir %{packman_home}
-%dir %{packman_home}/bin
-%dir %{packman_home}/etc
 %dir %{packman_home}/tmp
 %{packman_home}/*
-%config %{packman_home}/etc/packman.rc
-%config %{packman_home}/etc/packman-packages-meta/*
-%config %{packman_home}/etc/docker-specs/*
+%_bindir/*
+%dir %{_sysconfdir}/%{name}
+%{_sysconfdir}/%{name}/*
+%config %{_sysconfdir}/%{name}/packman.rc
+%config %{_sysconfdir}/%{name}/packman-packages-meta/*
+%config %{_sysconfdir}/%{name}/docker-specs/*
 %config(noreplace) %{packman_home}/.bashrc
 %config(noreplace) %{packman_home}/.bash_profile
 
 %changelog
+* Sun Apr 17 2016 Jess Portnoy <jess@packman.io> - 1.0.0-20
+- New FS layout
+- Remove empty hooks
+- Fix Project URL
+
 * Tue Mar 22 2016 Jess Portnoy <jess@packman.io> - 1.0.0-3
 - Don't create ~/rpmbuild/SOURCES, instead symlink from ~/src, better not rely on RPM specific structure since we intend to support [at least] deb as well.
 

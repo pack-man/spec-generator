@@ -77,7 +77,7 @@ ${NORMAL}
 " 
 	read -e PACKMAN_PRIVATE_KEY
 fi
-PACKAGE_RC_DIR="$PACKMAN_HOME/etc/packman-packages-meta/$PACKMAN_SPACE/${PACKAGE_NAME}"
+PACKAGE_RC_DIR="/etc/packman/packman-packages-meta/$PACKMAN_SPACE/${PACKAGE_NAME}"
 PACKAGE_RC_FILE="$PACKAGE_RC_DIR/${PACKAGE_NAME}.rc"
 if [ -s $PACKAGE_RC_FILE ];then
 	echo -en "${BRIGHT_RED}$PACKAGE_RC_FILE already exists.
@@ -86,13 +86,13 @@ ${NORMAL}"
 	exit 2
 fi
 
-if [ ! -d $PACKMAN_HOME/etc/packman-packages-meta/$PACKMAN_SPACE/.git ];then
+if [ ! -d /etc/packman/packman-packages-meta/$PACKMAN_SPACE/.git ];then
 	add_github_com_to_known_hosts
-	cd $PACKMAN_HOME/etc/packman-packages-meta
+	cd /etc/packman/packman-packages-meta
 	git clone $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE
 fi
 PACKAGE_BRANCH="${PACKAGE_NAME}-${PACKAGE_VERSION}"
-cd $PACKMAN_HOME/etc/packman-packages-meta/$PACKMAN_SPACE
+cd /etc/packman/packman-packages-meta/$PACKMAN_SPACE
 git fetch --all
 set +e
 if ! git branch |grep -q $PACKAGE_BRANCH;then
@@ -106,7 +106,7 @@ cd -
 PACKAGE_DESC_FILE="$PACKAGE_RC_DIR/DESCRIPTION"
 #mkdir -p $DIRNAME/$PACKMAN_SPACE/packman-packages-meta/${PACKAGE_NAME}
 mkdir -p $PACKAGE_RC_DIR
-cp $PACKMAN_HOME/etc/packman-packages-meta/skel.template $PACKAGE_RC_FILE
+cp /etc/packman/packman-packages-meta/skel.template $PACKAGE_RC_FILE
 sed -i "s^@@PACKMAN_SPACE@@^$PACKMAN_SPACE^g" $PACKAGE_RC_FILE
 sed -i "s^@@PACKMAN_PRIVATE_KEY@@^$PACKMAN_PRIVATE_KEY^g" $PACKAGE_RC_FILE
 sed -i "s^@@PACKAGE_NAME@@^$PACKAGE_NAME^g" $PACKAGE_RC_FILE
@@ -198,7 +198,7 @@ fi
 read
 $EDITOR $PACKAGE_DESC_FILE
 
-cd $PACKMAN_HOME/etc/packman-packages-meta/$PACKMAN_SPACE
+cd /etc/packman/packman-packages-meta/$PACKMAN_SPACE
 git add ${PACKAGE_NAME} && git commit -m "$PACKAGE_NAME $PACKAGE_VERSION - auto committed by $0" -a && git push origin $PACKAGE_BRANCH
 cd - 
 
