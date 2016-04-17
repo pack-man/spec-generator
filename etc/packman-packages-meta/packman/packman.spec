@@ -39,7 +39,7 @@ done
 mkdir -p ${RPM_BUILD_ROOT}%{packman_home}/tmp/build ${RPM_BUILD_ROOT}%{packman_home}/src ${RPM_BUILD_ROOT}%{_sysconfdir}/%{name} ${RPM_BUILD_ROOT}%_bindir
 cp -rp etc/* ${RPM_BUILD_ROOT}%{_sysconfdir}/%{name}
 cp -rp etc/.bash* ${RPM_BUILD_ROOT}%{packman_home}/
-cp -rp bin ${RPM_BUILD_ROOT}%_bindir
+cp -rp bin/* ${RPM_BUILD_ROOT}%_bindir
 mkdir -p ${RPM_BUILD_ROOT}%_defaultdocdir/%{name} ${RPM_BUILD_ROOT}%_defaultlicensedir/%{name}
 cp -r README.md ${RPM_BUILD_ROOT}%_defaultdocdir/%{name}/
 cp -r LICENSE ${RPM_BUILD_ROOT}%_defaultlicensedir/%{name}/
@@ -80,6 +80,8 @@ ln -sf %{packman_home}/src  %{packman_home}/rpmbuild/SOURCES
 %dir %{packman_home}
 %dir %{packman_home}/tmp
 %{packman_home}/*
+%_bindir/*
+%dir %{_sysconfdir}/%{name}
 %config %{_sysconfdir}/%{name}/packman.rc
 %config %{_sysconfdir}/%{name}/packman-packages-meta/*
 %config %{_sysconfdir}/%{name}/docker-specs/*
