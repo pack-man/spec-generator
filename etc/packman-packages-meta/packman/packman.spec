@@ -37,9 +37,9 @@ for DIR in BUILD BUILDROOT RPMS SRPMS SPECS ;do
         mkdir ${RPM_BUILD_ROOT}%{packman_home}/rpmbuild/$DIR
 done
 mkdir -p ${RPM_BUILD_ROOT}%{packman_home}/tmp/build ${RPM_BUILD_ROOT}%{packman_home}/src
-cp -rp etc ${RPM_BUILD_ROOT}%%{packman_home}/
+cp -rp etc/* ${RPM_BUILD_ROOT}%{_sysconfdir}/%{name}
 cp -rp etc/.bash* ${RPM_BUILD_ROOT}%{packman_home}/
-cp -rp bin ${RPM_BUILD_ROOT}%{packman_home}/
+cp -rp bin ${RPM_BUILD_ROOT}{%_bindir}
 mkdir -p ${RPM_BUILD_ROOT}%_defaultdocdir/%{name} ${RPM_BUILD_ROOT}%_defaultlicensedir/%{name}
 cp -r README.md ${RPM_BUILD_ROOT}%_defaultdocdir/%{name}/
 cp -r LICENSE ${RPM_BUILD_ROOT}%_defaultlicensedir/%{name}/
@@ -78,13 +78,11 @@ ln -sf %{packman_home}/src  %{packman_home}/rpmbuild/SOURCES
 %doc %_defaultlicensedir/%{name}/* 
 %doc %_defaultdocdir/%{name}/*
 %dir %{packman_home}
-%dir %{packman_home}/bin
-%dir %{packman_home}/etc
 %dir %{packman_home}/tmp
 %{packman_home}/*
-%config %{packman_home}/etc/packman.rc
-%config %{packman_home}/etc/packman-packages-meta/*
-%config %{packman_home}/etc/docker-specs/*
+%config %{_sysconfdir}/%{name}/packman.rc
+%config %{_sysconfdir}/%{name}/packman-packages-meta/*
+%config %{_sysconfdir}/%{name}/docker-specs/*
 %config(noreplace) %{packman_home}/.bashrc
 %config(noreplace) %{packman_home}/.bash_profile
 
