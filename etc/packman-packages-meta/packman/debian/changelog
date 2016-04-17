@@ -1,4 +1,16 @@
 packman (1.0.0-21) packman; urgency=medium
+packman (1.0.0-23) packman; urgency=medium
+
+  * adjust path color.rc
+
+ -- Jess Portnoy <jess@packman.io>  Sun, 17 Apr 2016 22:35:29 +0000
+
+packman (1.0.0-22) packman; urgency=medium
+
+  * New FS layout
+
+ -- Jess Portnoy <jess@packman.io>  Sun, 17 Apr 2016 22:17:29 +0000
+
 
   * sudo and devscripts as deps 
 
