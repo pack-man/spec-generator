@@ -47,6 +47,20 @@ ${CYAN}$PACKAGE_NAME version:${NORMAL}
 "
 read -e PACKAGE_VERSION
 
+echo -en "
+${CYAN}Does $PACKAGE_NAME include a daemon [Y/N]?${NORMAL}
+"
+read -e IS_DAEMON
+echo "IS_DAEMON=$IS_DAEMON" >> $PACKAGE_RC_FILE
+
+if [ "$IS_DAEMON" = 'Y' -o "$IS_DAEMON" = 'y' ];then
+	echo -en "
+${CYAN}Which user should run the $PACKAGE_NAME daemon?${NORMAL}
+"
+	read -e DAEMON_USER
+	echo "DAEMON_USER=$DAEMON_USER" >> $PACKAGE_RC_FILE
+fi
+
 if [ -z "$PACKMAN_SPACE" ];then
 	echo -en "
 ${YELLOW}STEP: Creating $PRODUCT_NAME $PACKAGE_NAME configuration structure

@@ -132,3 +132,22 @@ API:
 			- location of RPM and src.rpm along with repo instructions
 			- rpmlint/lintian output
 			- run log [also needs to be attached to mail]
+
+
+# Tomorrow:
+- finish deb spec gen
+- add license prompting to new-package
+- add question about daemon or not, if daemon use daemon-skel.spec 
+- test some web applications
+	- Drupal
+	- Wordpress
+- add logging
+- create DB schema
+	- tables
+		- jobs
+			- id
+			- package name
+			- package version
+			- packman space
+			- status
+			- log path

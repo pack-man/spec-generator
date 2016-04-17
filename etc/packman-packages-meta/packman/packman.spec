@@ -15,7 +15,7 @@ Source0: %{name}-%{version}.tar.gz
 BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 #BuildRequires: @@BUILD_REQUIRES@@
-Requires: rpm-build, vim-enhanced, man, wget, unzip, git, sudo, redhat-lsb-core, libtool, yasm, gcc, gcc-c++, dos2unix, man
+Requires: rpm-build, rpmlint, vim-enhanced, man, wget, unzip, git, sudo, redhat-lsb-core, libtool, yasm, gcc, gcc-c++, dos2unix, man
 
 %description
 An End-to-End Software Packaging Platform.
@@ -37,7 +37,7 @@ for DIR in BUILD BUILDROOT RPMS SRPMS SPECS ;do
         mkdir ${RPM_BUILD_ROOT}%{packman_home}/rpmbuild/$DIR
 done
 mkdir -p ${RPM_BUILD_ROOT}%{packman_home}/tmp/build ${RPM_BUILD_ROOT}%{packman_home}/src
-cp -rp etc ${RPM_BUILD_ROOT}%{packman_home}/
+cp -rp etc ${RPM_BUILD_ROOT}%%{packman_home}/
 cp -rp etc/.bash* ${RPM_BUILD_ROOT}%{packman_home}/
 cp -rp bin ${RPM_BUILD_ROOT}%{packman_home}/
 mkdir -p ${RPM_BUILD_ROOT}%_defaultdocdir/%{name} ${RPM_BUILD_ROOT}%_defaultlicensedir/%{name}
