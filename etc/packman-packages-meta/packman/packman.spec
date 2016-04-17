@@ -39,7 +39,7 @@ done
 mkdir -p ${RPM_BUILD_ROOT}%{packman_home}/tmp/build ${RPM_BUILD_ROOT}%{packman_home}/src ${RPM_BUILD_ROOT}%{_sysconfdir}/%{name}
 cp -rp etc/* ${RPM_BUILD_ROOT}%{_sysconfdir}/%{name}
 cp -rp etc/.bash* ${RPM_BUILD_ROOT}%{packman_home}/
-cp -rp bin ${RPM_BUILD_ROOT}{%_bindir}
+cp -rp bin ${RPM_BUILD_ROOT}%_bindir
 mkdir -p ${RPM_BUILD_ROOT}%_defaultdocdir/%{name} ${RPM_BUILD_ROOT}%_defaultlicensedir/%{name}
 cp -r README.md ${RPM_BUILD_ROOT}%_defaultdocdir/%{name}/
 cp -r LICENSE ${RPM_BUILD_ROOT}%_defaultlicensedir/%{name}/
