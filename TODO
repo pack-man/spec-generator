@@ -15,7 +15,7 @@
 	- set priority so they are the lowest one and the official repo is highest
 
  deb package:
- - depend on build-essential debhelper apt-file dh-make vim-nox wget unzip git lsb-release apt-transport-https ca-certificates lxc-docker yasm
+ - depend on build-essential debhelper apt-file dh-make vim-nox wget unzip git lsb-release apt-transport-https ca-certificates lxc-docker yasm devscripts
  - enable extra repos
    deb https://get.docker.com/ubuntu docker main
 
@@ -56,6 +56,7 @@ Things to think of:
       - description
       - source URL
       - license - try to auto detect looking for files named license/i or copyright/i
+	https://fedoraproject.org/wiki/Licensing:Main?rd=Licensing
       - arch - try to auto detect whether noarch/indep according to source type. For example, if the source is PHP||Perl||Python||many others only, then it is indep.
       - changelog
 	- for deb we have debchange and dh-make already takes care of the initial import
