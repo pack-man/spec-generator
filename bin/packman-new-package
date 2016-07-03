@@ -72,7 +72,7 @@ if [ -s $PACKAGE_RC_FILE ];then
 	printf "${BRIGHT_RED}$PACKAGE_RC_FILE already exists.
 If you wish to regenerate it, first remove this copy.
 ${NORMAL}"
-	exit 2
+	exit 3
 fi
 printf "
 ${CYAN}Does $PACKAGE_NAME include a daemon [Y/N]?${NORMAL}
@@ -106,8 +106,8 @@ PACKAGE_DESC_FILE="$PACKAGE_RC_DIR/DESCRIPTION"
 #mkdir -p $DIRNAME/$PACKMAN_SPACE/packman-packages-meta/${PACKAGE_NAME}
 mkdir -p $PACKAGE_RC_DIR
 cp /etc/packman/packman-packages-meta/skel.template $PACKAGE_RC_FILE
-printf "IS_DAEMON=$IS_DAEMON" >> $PACKAGE_RC_FILE
-printf "DAEMON_USER=$DAEMON_USER" >> $PACKAGE_RC_FILE
+printf "IS_DAEMON=$IS_DAEMON\n" >> $PACKAGE_RC_FILE
+printf "DAEMON_USER=$DAEMON_USER\n" >> $PACKAGE_RC_FILE
 sed -i "s^@@PACKMAN_SPACE@@^$PACKMAN_SPACE^g" $PACKAGE_RC_FILE
 sed -i "s^@@PACKMAN_PRIVATE_KEY@@^$PACKMAN_PRIVATE_KEY^g" $PACKAGE_RC_FILE
 sed -i "s^@@PACKAGE_NAME@@^$PACKAGE_NAME^g" $PACKAGE_RC_FILE
