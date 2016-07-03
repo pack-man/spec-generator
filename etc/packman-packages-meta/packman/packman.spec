@@ -1,7 +1,7 @@
 %define packman_home /home/packman
 Name: packman
 Version: 1.0.0
-Release: 20
+Release: 21
 Summary: An End-to-End Software Packaging Platform
 BuildArch: noarch
 
