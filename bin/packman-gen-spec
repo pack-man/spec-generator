@@ -64,20 +64,20 @@ if [ $PACKAGE_FORMAT -eq $RPM ];then
 	fi
         sudo yum remove $PACKAGE_NAME -y
         sudo rpm -Uhv $PACKMAN_HOME/rpmbuild/RPMS/`uname -m`/$PACKAGE_NAME-$PACKAGE_VERSION-*.`uname -m`.rpm
-        rm -f /tmp/$PACKAGE_NAME.depends
+        rm -f /tmp/$PACKAGE_NAME.dep_packages
         FILES=`rpm -ql $PACKAGE_NAME|grep "/bin\|/sbin\|/lib.*\.a\|/lib.*\.so*"|xargs`
         for FILE in $FILES;do
                 for i in `ldd $FILE 2>/dev/null|awk -F " " '{print $3}'`;do
                         rpm -qf $i --queryformat %{name}"\n" 2>/dev/null >> /tmp/$PACKAGE_NAME.depends
                 done
         done
-        sort -u /tmp/$PACKAGE_NAME.depends > /tmp/$PACKAGE_NAME.depends.1
-        PACKAGE_REQUIRES=`cat /tmp/$PACKAGE_NAME.depends.1|sed '/^glibc$/d'|sed ':a;N;$!ba;s/\n/, /g'`
+        sort -u /tmp/$PACKAGE_NAME.dep_packages > /tmp/$PACKAGE_NAME.dep_packages.1
+        PACKAGE_REQUIRES=`cat /tmp/$PACKAGE_NAME.dep_packages.1|sed '/^glibc$/d'|sed ':a;N;$!ba;s/\n/, /g'`
         sed -i "s/#Requires: @@PACKAGE_REQUIRES@@/Requires: $PACKAGE_REQUIRES/g" ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
 
         # lets see what build deps we can get from this:
-        PACKAGE_BUILD_MAY_REQUIRE=`cat /tmp/$PACKAGE_NAME.depends.1|sed '/^glibc$/d'|sed 's@$@-devel@g'| sed ':a;N;$!ba;s/\n/ /g'`
-        PACKAGE_BUILD_REQUIRES=`for DEV_PACKAGE in $PACKAGE_BUILD_MAY_REQUIRE  ;do if rpm -q $DEV_PACKAGE > /dev/null 2>&1;then printf -n "$DEV_PACKAGE ";fi;done`
+        PACKAGE_BUILD_MAY_REQUIRE=`cat /tmp/$PACKAGE_NAME.dep_packages.1|sed '/^glibc$/d'|sed 's@$@-devel@g'| sed ':a;N;$!ba;s/\n/ /g'`
+        PACKAGE_BUILD_REQUIRES=`for DEV_PACKAGE in $PACKAGE_BUILD_MAY_REQUIRE  ;do if rpm -q $DEV_PACKAGE > /dev/null 2>&1;then echo -n "$DEV_PACKAGE ";fi;done`
         sed -i "s/#BuildRequires: @@BUILD_REQUIRES@@/BuildRequires: $PACKAGE_BUILD_REQUIRES/g" ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
 
 

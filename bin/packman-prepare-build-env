@@ -29,7 +29,8 @@ done
 
 . /etc/packman/package.rc
 
-cd $PACKMAN_HOME/tmp/build/
+#cd $PACKMAN_HOME/tmp/build/
+cd /etc/packman/packman-packages-meta
 BRANCH=$PACKAGE_NAME-$PACKAGE_VERSION
 add_github_com_to_known_hosts
 rm -rf $PACKMAN_SPACE
