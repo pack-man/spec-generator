@@ -34,17 +34,17 @@ cd /etc/packman/packman-packages-meta
 BRANCH=$PACKAGE_NAME-$PACKAGE_VERSION
 add_github_com_to_known_hosts
 rm -rf $PACKMAN_SPACE
-git clone $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE 
-cd $PACKMAN_SPACE
+git clone $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE $PACKMAN_SPACE-$BRANCH
+cd $PACKMAN_SPACE-$BRANCH
 #git fetch --all
 set +e
 if ! git branch |grep -q ${BRANCH};then
         git checkout -b ${BRANCH}
 else
         git checkout ${BRANCH}
+	git pull origin ${BRANCH}
 fi
 set -e
-git pull origin ${BRANCH}
 git config --global user.email $MAINTAINER_EMAIL 
 git config --global user.name $MAINTAINER_NAME
 TMP_BUILDDIR=~/tmp/build/$PACKAGE_NAME

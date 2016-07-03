@@ -64,11 +64,13 @@ ${NORMAL}
 " 
 	read -e PACKMAN_PRIVATE_KEY
 fi
-PACKAGE_RC_DIR="/etc/packman/packman-packages-meta/$PACKMAN_SPACE/${PACKAGE_NAME}"
+PACKAGE_BRANCH="${PACKAGE_NAME}-${PACKAGE_VERSION}"
+PACKAGE_CHECKOUT_DIR="/etc/packman/packman-packages-meta/$PACKMAN_SPACE-$PACKAGE_BRANCH"
+PACKAGE_RC_DIR="$PACKAGE_CHECKOUT_DIR/${PACKAGE_NAME}"
 PACKAGE_RC_FILE="$PACKAGE_RC_DIR/${PACKAGE_NAME}.rc"
 if [ -s $PACKAGE_RC_FILE ];then
 	printf "${BRIGHT_RED}$PACKAGE_RC_FILE already exists.
-If you wish to regerate it, first remove this copy.
+If you wish to regenerate it, first remove this copy.
 ${NORMAL}"
 	exit 2
 fi
@@ -84,24 +86,22 @@ ${CYAN}Which user should run the $PACKAGE_NAME daemon?${NORMAL}
 	read -e DAEMON_USER
 fi
 
-if [ ! -d /etc/packman/packman-packages-meta/$PACKMAN_SPACE/.git ];then
+if [ ! -d $PACKAGE_CHECKOUT_DIR/.git ];then
 	add_github_com_to_known_hosts
 	cd /etc/packman/packman-packages-meta
-	git clone $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE
+	git clone $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE $PACKMAN_SPACE-$PACKAGE_BRANCH
 fi
-PACKAGE_BRANCH="${PACKAGE_NAME}-${PACKAGE_VERSION}"
-cd /etc/packman/packman-packages-meta/$PACKMAN_SPACE
+cd $PACKAGE_CHECKOUT_DIR
 git fetch --all
 set +e
 if ! git branch |grep -q $PACKAGE_BRANCH;then
 	git checkout -b $PACKAGE_BRANCH
 else
 	git checkout $PACKAGE_BRANCH
+	git pull origin $PACKAGE_BRANCH
 fi
-git pull origin $PACKAGE_BRANCH
 set -e
 cd -
-
 PACKAGE_DESC_FILE="$PACKAGE_RC_DIR/DESCRIPTION"
 #mkdir -p $DIRNAME/$PACKMAN_SPACE/packman-packages-meta/${PACKAGE_NAME}
 mkdir -p $PACKAGE_RC_DIR
@@ -199,8 +199,8 @@ fi
 read
 $EDITOR $PACKAGE_DESC_FILE
 
-cd /etc/packman/packman-packages-meta/$PACKMAN_SPACE
-git add ${PACKAGE_NAME} && git commit -m "$PACKAGE_NAME $PACKAGE_VERSION - auto committed by $0" -a && git push origin $PACKAGE_BRANCH
+cd $PACKAGE_CHECKOUT_DIR
+git add ${PACKAGE_NAME} && git commit -m "$PACKAGE_NAME $PACKAGE_VERSION - auto committed by `basename $0`" -a && git push origin $PACKAGE_BRANCH
 cd - 
 new_package_api $PACKAGE_RC_FILE
 

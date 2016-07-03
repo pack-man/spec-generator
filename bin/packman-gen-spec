@@ -96,7 +96,7 @@ elif [ $PACKAGE_FORMAT -eq $DEB ];then
 fi
 
 BRANCH=$PACKAGE_NAME-$PACKAGE_VERSION 
-cd /etc/packman/packman-packages-meta/$PACKMAN_SPACE
+cd /etc/packman/packman-packages-meta/$PACKMAN_SPACE-$BRANCH
 git pull origin ${BRANCH}
 git checkout ${BRANCH}
 if [ $PACKAGE_FORMAT = $RPM ];then
