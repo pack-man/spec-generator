@@ -149,5 +149,5 @@ API:
 - don't package /etc/packman/packman-packages-meta/packman
 - 
 
-- OpenStack on AWS
 - build RPM debug packages
+- how to do an auto git pull without having to confirm it
