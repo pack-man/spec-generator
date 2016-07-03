@@ -20,7 +20,7 @@ DIRNAME=`dirname $0`
 NEEDED_FILES="$DIRNAME/packman-functions.rc"
 for NEEDED_FILE in $NEEDED_FILES;do
         if [ ! -r $NEEDED_FILE ];then
-                echo "Missing $NEEDED_FILE. Something is wrong with your ENV. Exiting."
+                printf "Missing $NEEDED_FILE. Something is wrong with your ENV. Exiting."
                 exit 2
         fi
         . $NEEDED_FILE
@@ -51,7 +51,7 @@ rm -rf $TMP_BUILDDIR
 mkdir $TMP_BUILDDIR
 cd $TMP_BUILDDIR
 wget $SOURCE_URL
-ARCHIVE_NAME=`echo $SOURCE_URL|awk -F "/" '{print $NF}'`
+ARCHIVE_NAME=`printf $SOURCE_URL|awk -F "/" '{print $NF}'`
 if file $ARCHIVE_NAME|grep -w -i zip ;then
         EXTRACT_COMMAND="unzip"
 else
@@ -106,9 +106,9 @@ env_packaging_format
 PACKAGE_FORMAT=$?
 if [ $PACKAGE_FORMAT -eq $RPM ];then
 
-        echo -e "${CYAN}Locating packages $PACKAGE_NAME's build depends on... this may take a while..${NORMAL}" 
+        printf "${CYAN}Locating packages $PACKAGE_NAME's build depends on... this may take a while..${NORMAL}" 
         for i in `cat /tmp/$PACKAGE_NAME.includes`;do
-		FILE=`echo $i|awk -F "/" '{print $NF}'`
+		FILE=`printf $i|awk -F "/" '{print $NF}'`
 		# do not look for packages including headers that are part of the source to package
                 if [ ! -r "`find . -name $FILE`" ];then
                         sudo yum whatprovides "*/include*/$i" 2> /dev/null|grep -m1 -- "^.*-.*`uname -m`"|awk -F": " '{print $1}' | sed 's#^[0-9]*:##g' ;
@@ -118,10 +118,10 @@ if [ $PACKAGE_FORMAT -eq $RPM ];then
         sudo yum install `perl -pe 's@([a-zA-Z0-9-_+]+).*@\1@g' /tmp/$PACKAGE_NAME.buildreq_packages |perl -pe 's@-[0-9]*$@@g'` -y
 
 elif [ $PACKAGE_FORMAT -eq $DEB ];then
-        echo -e "${CYAN}Locating packages $PACKAGE_NAME's build depends on... this may take a while..${NORMAL}" 
+        printf "${CYAN}Locating packages $PACKAGE_NAME's build depends on... this may take a while..${NORMAL}" 
         for $i in `cat /tmp/$PACKAGE_NAME.includes`;do
 		# do not look for packages including headers that are part of the source to package
-		FILE=`echo $i|awk -F "/" '{print $NF}'`
+		FILE=`printf $i|awk -F "/" '{print $NF}'`
                 if [ ! -r "`find . -name $FILE`" ];then
 			apt-file search -x "$i$"|awk -F: '{print $1}'
                 fi

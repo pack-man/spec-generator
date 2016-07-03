@@ -15,7 +15,7 @@
 	- set priority so they are the lowest one and the official repo is highest
 
  deb package:
- - depend on build-essential debhelper apt-file dh-make vim-nox wget unzip git lsb-release apt-transport-https ca-certificates lxc-docker yasm
+ - depend on build-essential debhelper apt-file dh-make vim-nox wget unzip git lsb-release apt-transport-https ca-certificates lxc-docker yasm devscripts
  - enable extra repos
    deb https://get.docker.com/ubuntu docker main
 
@@ -56,6 +56,7 @@ Things to think of:
       - description
       - source URL
       - license - try to auto detect looking for files named license/i or copyright/i
+	https://fedoraproject.org/wiki/Licensing:Main?rd=Licensing
       - arch - try to auto detect whether noarch/indep according to source type. For example, if the source is PHP||Perl||Python||many others only, then it is indep.
       - changelog
 	- for deb we have debchange and dh-make already takes care of the initial import
@@ -72,6 +73,9 @@ Things to think of:
 	- PHP web apps
 		- need an Apache config, potentially other common webservers
 	- PHP extensions
+	- Java Maven template
+	- Java Ant template
+	- Ruby project template
 	- is this package a daemon?
 		- need an init template or systemd config
 		- create user for daemon
@@ -85,7 +89,6 @@ Things to think of:
 			    /sbin/service %{name} stop >/dev/null 2>&1
 			    /sbin/chkconfig --del %{name}
 			fi
-
 
 
 - source prep:
@@ -141,14 +144,13 @@ API:
 	- Drupal
 	- Wordpress
 - add logging
-- create DB schema - IN PROGRESS
-	- tables
-		- jobs
-			- id
-			- package name
-			- package version
-			- packman space
-			- status
-			- log path
+- create DB schema - IN PROGRESS [spec-generator/schema.sql]
 - go over all packman package lint issues
+<<<<<<< HEAD
 - don't package /etc/packman/packman-packages-meta/packman
+=======
+- 
+
+- OpenStack on AWS
+
+>>>>>>> b92d1e09db6a288d48c7a5c1a07e2c23169798aa
