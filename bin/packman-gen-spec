@@ -68,7 +68,7 @@ if [ $PACKAGE_FORMAT -eq $RPM ];then
         FILES=`rpm -ql $PACKAGE_NAME|grep "/bin\|/sbin\|/lib.*\.a\|/lib.*\.so*"|xargs`
         for FILE in $FILES;do
                 for i in `ldd $FILE 2>/dev/null|awk -F " " '{print $3}'`;do
-                        rpm -qf $i --queryformat %{name}"\n" 2>/dev/null >> /tmp/$PACKAGE_NAME.depends
+                        rpm -qf $i --queryformat %{name}"\n" 2>/dev/null >> /tmp/$PACKAGE_NAME.dep_packages
                 done
         done
         sort -u /tmp/$PACKAGE_NAME.dep_packages > /tmp/$PACKAGE_NAME.dep_packages.1
