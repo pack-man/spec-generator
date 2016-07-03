@@ -1,5 +1,5 @@
 if [ ! -r /etc/packman/packman.rc ];then
-        echo "Missing /etc/packman/packman.rc. Something is wrong with your ENV. Exiting."
+        printf "Missing /etc/packman/packman.rc. Something is wrong with your ENV. Exiting."
         exit 1
 fi
 . /etc/packman/packman.rc

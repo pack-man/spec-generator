@@ -73,6 +73,9 @@ Things to think of:
 	- PHP web apps
 		- need an Apache config, potentially other common webservers
 	- PHP extensions
+	- Java Maven template
+	- Java Ant template
+	- Ruby project template
 	- is this package a daemon?
 		- need an init template or systemd config
 		- create user for daemon
@@ -86,7 +89,6 @@ Things to think of:
 			    /sbin/service %{name} stop >/dev/null 2>&1
 			    /sbin/chkconfig --del %{name}
 			fi
-
 
 
 - source prep:
@@ -142,13 +144,9 @@ API:
 	- Drupal
 	- Wordpress
 - add logging
-- create DB schema - IN PROGRESS
-	- tables
-		- jobs
-			- id
-			- package name
-			- package version
-			- packman space
-			- status
-			- log path
+- create DB schema - IN PROGRESS [spec-generator/schema.sql]
 - go over all packman package lint issues
+- 
+
+- OpenStack on AWS
+

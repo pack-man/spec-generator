@@ -3,6 +3,7 @@ AVAILABLE_ENVS="debian:8,centos:7,centos:6"
 COMMON_LICENSES="apache,artistic,bsd,gpl,gpl2,gpl3,lgpl,lgpl2,lgpl3,mit,agpl3"
 PACKMAN_BASE_GIT_REPO="git@github.com:pack-man"
 PACKMAN_HOME=/home/packman
+PACKMAN_API="https://api.packman.io/main.php"
 DEB=1
 RPM=2
 . /usr/bin/colors.rc

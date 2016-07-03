@@ -22,13 +22,13 @@ DIRNAME=`dirname $0`
 NEEDED_FILES="$DIRNAME/packman-functions.rc"
 for NEEDED_FILE in $NEEDED_FILES;do
         if [ ! -r $NEEDED_FILE ];then
-                echo "Missing $NEEDED_FILE. Something is wrong with your ENV. Exiting."
+                printf "Missing $NEEDED_FILE. Something is wrong with your ENV. Exiting."
                 exit 2
         fi
         . $NEEDED_FILE
 done
 
-echo -en "${CYAN}Welcome to $PRODUCT_NAME new package generator!
+printf "${CYAN}Welcome to $PRODUCT_NAME new package generator!
 
 This wizard will guide you through creating a new package.
 
@@ -40,29 +40,29 @@ Package Name:${NORMAL}
 "
 read PACKAGE_NAME
 
-echo -en "
+printf "
 ${YELLOW}STEP: Package Version
 
 ${CYAN}$PACKAGE_NAME version:${NORMAL}
 "
 read -e PACKAGE_VERSION
 
-echo -en "
+printf "
 ${CYAN}Does $PACKAGE_NAME include a daemon [Y/N]?${NORMAL}
 "
 read -e IS_DAEMON
-echo "IS_DAEMON=$IS_DAEMON" >> $PACKAGE_RC_FILE
+printf "IS_DAEMON=$IS_DAEMON" >> $PACKAGE_RC_FILE
 
 if [ "$IS_DAEMON" = 'Y' -o "$IS_DAEMON" = 'y' ];then
-	echo -en "
+	printf "
 ${CYAN}Which user should run the $PACKAGE_NAME daemon?${NORMAL}
 "
 	read -e DAEMON_USER
-	echo "DAEMON_USER=$DAEMON_USER" >> $PACKAGE_RC_FILE
+	printf "DAEMON_USER=$DAEMON_USER" >> $PACKAGE_RC_FILE
 fi
 
 if [ -z "$PACKMAN_SPACE" ];then
-	echo -en "
+	printf "
 ${YELLOW}STEP: Creating $PRODUCT_NAME $PACKAGE_NAME configuration structure
 
 ${CYAN}Your Packman username:
@@ -71,7 +71,7 @@ ${NORMAL}
 	read -e PACKMAN_SPACE
 fi
 if [ -z "$PACKMAN_PRIVATE_KEY" ];then
-	echo -en "
+	printf "
 ${CYAN}Your Packman repo private SSH key:
 ${NORMAL}
 " 
@@ -80,7 +80,7 @@ fi
 PACKAGE_RC_DIR="/etc/packman/packman-packages-meta/$PACKMAN_SPACE/${PACKAGE_NAME}"
 PACKAGE_RC_FILE="$PACKAGE_RC_DIR/${PACKAGE_NAME}.rc"
 if [ -s $PACKAGE_RC_FILE ];then
-	echo -en "${BRIGHT_RED}$PACKAGE_RC_FILE already exists.
+	printf "${BRIGHT_RED}$PACKAGE_RC_FILE already exists.
 If you wish to regerate it, first remove this copy.
 ${NORMAL}"
 	exit 2
@@ -113,7 +113,7 @@ sed -i "s^@@PACKAGE_NAME@@^$PACKAGE_NAME^g" $PACKAGE_RC_FILE
 sed -i "s^@@PACKAGE_VERSION@@^$PACKAGE_VERSION^g" $PACKAGE_RC_FILE
 
 
-echo -en "
+printf "
 ${YELLOW}STEP: Package Source URL
 
 ${CYAN}URL to download $PACKAGE_NAME source from:${NORMAL}
@@ -122,13 +122,13 @@ read SOURCE_URL
 sed -i "s^@@SOURCE_URL@@^$SOURCE_URL^g" $PACKAGE_RC_FILE
 
 while ! validate_url $SOURCE_URL;do
-	echo -en "${BRIGHT_RED}Could not access $SOURCE_URL. 
+	printf "${BRIGHT_RED}Could not access $SOURCE_URL. 
 
 ${CYAN}URL to download $PACKAGE_NAME source from:${NORMAL}"
 	read -e SOURCE_URL
 done
 
-echo -en "
+printf "
 ${YELLOW}STEP: Project URL
 
 ${CYAN}
@@ -140,14 +140,14 @@ read PROJECT_URL
 sed -i "s^@@PROJECT_URL@@^$PROJECT_URL^g" $PACKAGE_RC_FILE
 
 while ! validate_url $SOURCE_URL;do
-	echo -en "${BRIGHT_RED}Could not access $SOURCE_URL. 
+	printf "${BRIGHT_RED}Could not access $SOURCE_URL. 
 
 ${CYAN}URL to download $PACKAGE_NAME source from:${NORMAL}"
 	read -e SOURCE_URL
 done
 
 
-echo -en "
+printf "
 ${YELLOW}STEP: Package Maintainer
 
 ${CYAN}$PACKAGE_NAME Package Maintainer Name:${NORMAL}
@@ -155,13 +155,13 @@ ${CYAN}$PACKAGE_NAME Package Maintainer Name:${NORMAL}
 read -e MAINTAINER_NAME
 sed -i "s^@@MAINTAINER_NAME@@^$MAINTAINER_NAME^g" $PACKAGE_RC_FILE
 
-echo -en "
+printf "
 ${CYAN}$PACKAGE_NAME Package Maintainer's Email:${NORMAL}
 "
 read -e MAINTAINER_EMAIL
 sed -i "s^@@MAINTAINER_EMAIL@@^$MAINTAINER_EMAIL^g" $PACKAGE_RC_FILE
 
-echo -en "
+printf "
 ${YELLOW}STEP: Build ENVs for $PACKAGE_NAME${NORMAL}
 
 ${CYAN}Supported ENVs are: ${GREEN}$AVAILABLE_ENVS${CYAN}
@@ -172,7 +172,7 @@ ${NORMAL}
 
 read -e SUPPORTED_ENVS
 while ! validate_target_envs $SUPPORTED_ENVS;do
-	echo -en "${BRIGHT_RED}The following ENVs are not supported: $UNSUPPORTED_ENVS
+	printf "${BRIGHT_RED}The following ENVs are not supported: $UNSUPPORTED_ENVS
 ${CYAN}Supported ENVs are: ${GREEN}$AVAILABLE_ENVS${CYAN}
 
 Provide a comma separated list of the ENVs you want to package $PACKAGE_NAME for:
@@ -183,7 +183,7 @@ ${NORMAL}
 done
 sed -i "s^@@SUPPORTED_ENVS@@^$SUPPORTED_ENVS^g" $PACKAGE_RC_FILE
 
-echo -en "
+printf "
 ${YELLOW}STEP: Describe $PACKAGE_NAME
 
 ${CYAN}This will be part of your package metadata and will appear when users search for it.

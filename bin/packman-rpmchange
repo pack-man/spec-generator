@@ -14,18 +14,18 @@
 #===============================================================================
 DIRNAME=`dirname $0`
 if [ ! -r "$DIRNAME/packman-functions.rc" ];then
-	echo "Missing $DIRNAME/packman-functions.rc. Something is wrong with your ENV. Exiting."
+	printf "Missing $DIRNAME/packman-functions.rc. Something is wrong with your ENV. Exiting."
 	exit 1
 fi
 . $DIRNAME/packman-functions.rc
 if [ ! -r "/etc/packman/package.rc" ];then
-	echo "Missing /etc/packman/package.rc. Something is wrong with your ENV. Exiting."
+	printf "Missing /etc/packman/package.rc. Something is wrong with your ENV. Exiting."
 	exit 2
 fi
 . /etc/packman/package.rc
 
 if [ $# -lt 2 ];then
-        echo "Usage $0 <path/to/spec> <new ver> [new rev] [msg]"
+        printf "Usage $0 <path/to/spec> <new ver> [new rev] [msg]"
         exit 1
 fi
 SPEC_FILE=$1
@@ -42,7 +42,7 @@ else
         if [ -z "$EDITOR" ];then
                 EDITOR=vi
         fi
-        echo "Hit Enter to input your changelog message"
+        printf "Hit Enter to input your changelog message"
         read
         $EDITOR /tmp/MSG
         MSG=`cat /tmp/MSG|sed ':a;N;$!ba;s/\n/\\\\\n/g'`

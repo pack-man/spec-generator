@@ -19,14 +19,14 @@ DIRNAME=`dirname $0`
 NEEDED_FILES="$DIRNAME/packman-functions.rc"
 for NEEDED_FILE in $NEEDED_FILES;do
         if [ ! -r $NEEDED_FILE ];then
-                echo "Missing $NEEDED_FILE. Something is wrong with your ENV. Exiting."
+                printf "Missing $NEEDED_FILE. Something is wrong with your ENV. Exiting."
                 exit 2
         fi
         . $NEEDED_FILE
 done
 
 if [ ! -r "$1" ];then
-	echo "Did not get an RC file as first arg. Exiting."
+	printf "Did not get an RC file as first arg. Exiting."
 	exit 1
 fi
 PACKAGE_RC=$1
