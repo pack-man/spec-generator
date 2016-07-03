@@ -115,7 +115,32 @@ add_github_com_to_known_hosts()
 	ssh-keyscan github.com >> ~/.ssh/known_hosts
 }
 
+log()
+{
+	printf $1 
+}
 
+new_package_api()
+{
+	RC_FILE=$1
+	. $RC_FILE
+	curl -v -i -X POST -H 'privateKey: $PRIVATE_KEY' -H 'route: packages/add' -H 'Content-Type: application/json' "Accept: application/json" -d '{"id":"1","packman_space": "'"$PACKMAN_SPACE"'", "name": "'"$PACKAGE_NAME"'", "version": "'"$PACKAGE_VERSION"'", "supported_envs": "'"$SUPPORTED_ENVS"'", "source_url": "'"$SOURCE_URL"'", "project_url": "'"$PROJECT_URL"'", "description": "'"`cat $PACKAGE_DESCRIPTION`"'", "maintainer_name": "'"$MAINTAINER_NAME"'","maintainer_email":"'"$MAINTAINER_EMAIL"'","repo_id": "73"}' $PACKMAN_API_ENDPOINT
+}
+
+new_event_api()
+{
+	EVENT_TYPE=$1
+	JOB_ID=$2
+	CONTENT=$3
+}
+
+new_job_api()
+{
+	PACKAGE_NAME=$1
+	PACKAGE_VERSION=$2
+	PACKMAN_SPACE=$3
+	ENV=$4
+}
 
 # validate PACKAGE_NAME
 # validate PACKAGE_VERSION

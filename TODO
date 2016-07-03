@@ -151,3 +151,4 @@ API:
 			- status
 			- log path
 - go over all packman package lint issues
+- don't package /etc/packman/packman-packages-meta/packman
