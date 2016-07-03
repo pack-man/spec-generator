@@ -4,6 +4,8 @@ COMMON_LICENSES="apache,artistic,bsd,gpl,gpl2,gpl3,lgpl,lgpl2,lgpl3,mit,agpl3"
 PACKMAN_BASE_GIT_REPO="git@github.com:pack-man"
 PACKMAN_HOME=/home/packman
 PACKMAN_API_ENDPOINT="https://api.packman.io/mainController.php"
+PACKMAN_API_ID=""
+PACKMAN_API_KEY=""
 DEB=1
 RPM=2
 . /usr/bin/colors.rc

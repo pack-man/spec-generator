@@ -146,11 +146,8 @@ API:
 - add logging
 - create DB schema - IN PROGRESS [spec-generator/schema.sql]
 - go over all packman package lint issues
-<<<<<<< HEAD
 - don't package /etc/packman/packman-packages-meta/packman
-=======
 - 
 
 - OpenStack on AWS
-
->>>>>>> b92d1e09db6a288d48c7a5c1a07e2c23169798aa
+- build RPM debug packages
