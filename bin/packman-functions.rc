@@ -124,7 +124,7 @@ new_package_api()
 {
 	RC_FILE=$1
 	. $RC_FILE
-	curl -i -X POST -H 'id: '$PACKMAN_API_ID'' -H 'privateKey: '$PACKMAN_API_KEY'' -H 'route: packages/add' -H 'Content-Type: application/json' "Accept: application/json" -d '{"id":"1","packman_space": "'"$PACKMAN_SPACE"'", "name": "'"$PACKAGE_NAME"'", "version": "'"$PACKAGE_VERSION"'", "supported_envs": "'"$SUPPORTED_ENVS"'", "source_url": "'"$SOURCE_URL"'", "project_url": "'"$PROJECT_URL"'", "description": "'"`cat $PACKAGE_DESCRIPTION`"'", "maintainer_name": "'"$MAINTAINER_NAME"'","maintainer_email":"'"$MAINTAINER_EMAIL"'","repo_id": "73"}' $PACKMAN_API_ENDPOINT
+	curl -i -X POST -H 'id: '$PACKMAN_API_ID'' -H 'privateKey: '$PACKMAN_API_KEY'' -H 'route: packages/add' -H 'Content-Type: application/json' "Accept: application/json" -d '{"packman_space": "'"$PACKMAN_SPACE"'", "name": "'"$PACKAGE_NAME"'", "version": "'"$PACKAGE_VERSION"'", "supported_envs": "'"$SUPPORTED_ENVS"'", "source_url": "'"$SOURCE_URL"'", "project_url": "'"$PROJECT_URL"'", "description": "'"`cat $PACKAGE_DESCRIPTION`"'", "maintainer_name": "'"$MAINTAINER_NAME"'","maintainer_email":"'"$MAINTAINER_EMAIL"'","repo_id": "73"}' $PACKMAN_API_ENDPOINT
 }
 
 new_event_api()
