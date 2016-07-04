@@ -199,10 +199,15 @@ fi
 read
 $EDITOR $PACKAGE_DESC_FILE
 
+if ! new_package_api $PACKAGE_RC_FILE;then
+	echo "Failed to add package $PACKAGE_NAME. Halting."
+	exit 4
+fi
+
 cd $PACKAGE_CHECKOUT_DIR
 git add ${PACKAGE_NAME} && git commit -m "$PACKAGE_NAME $PACKAGE_VERSION - auto committed by `basename $0`" -a && git push origin $PACKAGE_BRANCH
 cd - 
-#new_package_api $PACKAGE_RC_FILE
+
 
 $DIRNAME/packman-start-dockers $PACKAGE_RC_FILE
 
