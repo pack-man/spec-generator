@@ -45,6 +45,8 @@ else
 	git pull origin ${BRANCH}
 fi
 set -e
+echo "####DESCRIPTION FILE####"
+ls -al /etc/packman/packman-packages-meta/$PACKMAN_SPACE-$BRANCH/$PACKAGE_NAME/DESCRIPTION
 git config --global user.email $MAINTAINER_EMAIL 
 git config --global user.name $MAINTAINER_NAME
 TMP_BUILDDIR=~/tmp/build/$PACKAGE_NAME
