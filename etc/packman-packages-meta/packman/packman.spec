@@ -15,7 +15,7 @@ Source0: %{name}-%{version}.tar.gz
 BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 #BuildRequires: @@BUILD_REQUIRES@@
-Requires: rpm-build, rpmlint, vim-enhanced, man, wget, unzip, git, sudo, redhat-lsb-core, libtool, yasm, gcc, gcc-c++, dos2unix, man
+Requires: rpm-build, rpmlint, vim-enhanced, man, wget, unzip, git, sudo, redhat-lsb-core, libtool, yasm, gcc, gcc-c++, dos2unix, man, jq
 
 %description
 An End-to-End Software Packaging Platform.
