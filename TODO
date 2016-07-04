@@ -117,12 +117,14 @@ API:
 			curl -s -I -f https://github.com/pack-man/$PACKMAN_SPACE
 			if [ $? -ne 0 ];then
 				curl -X POST --data '{"name":"$PACKMAN_SPACE","has_issues":"true","has_downloads":"true"}' https://api.github.com/orgs/pack-man/repos
+				curl -X POST  -H "Authorization: token $TOKEN_ID" --data '{ "name":"MSPACE","has_issues":"true","has_downloads":"true"}' https://api.github.com/orgs/pack-man/repos
+
 			fi
 			set -e
 		- ssh-keygen -t rsa -N "" -f ~/.ssh/$PACKMAN_SPACE
 		- add key to github
 			https://developer.github.com/v3/repos/keys/
-			- curl -X POST --data '{"title":"test-key","key":""}' https://api.github.com/repos/pack-man/play-ground/keys
+			- curl -X POST  -H "Authorization: token $TOKEN_ID" --data '{"title":"test-key","key":""}' https://api.github.com/repos/pack-man/$PACKMAN_SPACE/keys
 		- generate the RC file
 		- commit and push to repo
 		- need to implement a job queue that makes sure no more than say 4 jobs run in parallel since our demo box does not have many resources
