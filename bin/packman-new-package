@@ -94,7 +94,7 @@ fi
 cd $PACKAGE_CHECKOUT_DIR
 git fetch --all
 set +e
-if ! git branch |grep -q $PACKAGE_BRANCH;then
+if ! git remote show origin |grep -q ${BRANCH};then
 	git checkout -b $PACKAGE_BRANCH
 else
 	git checkout $PACKAGE_BRANCH

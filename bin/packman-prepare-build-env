@@ -38,7 +38,7 @@ git clone $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE $PACKMAN_SPACE-$BRANCH
 cd $PACKMAN_SPACE-$BRANCH
 #git fetch --all
 set +e
-if ! git branch |grep -q ${BRANCH};then
+if ! git remote show origin |grep -q ${BRANCH};then
         git checkout -b ${BRANCH}
 else
         git checkout ${BRANCH}
