@@ -87,14 +87,9 @@ get_container_id()
 
 replace_rpm_spec_tokens()
 {
-	echo "IN replace_rpm_spec_tokens"
-	set -x
         PACKAGE_RC=$1
         SPEC_FILE=$2
         . $PACKAGE_RC
-	echo "#####PACKAGE_DESCRIPTION#####"
-	ls -al $PACKAGE_DESCRIPTION
-	ls -al /etc/packman/packman-packages-meta/ 
 	PACKAGE_SUMMARY=`head -1 $PACKAGE_DESCRIPTION`
         sed "s#@@PACKAGE_SUMMARY@@#$PACKAGE_SUMMARY#g" -i $SPEC_FILE
         DESCRIPTION=`cat $PACKAGE_DESCRIPTION|sed ':a;N;$!ba;s/\n/\\\\\n/g'`
@@ -102,7 +97,6 @@ replace_rpm_spec_tokens()
         for VAR in `grep -v "^#" $PACKAGE_RC |awk -F "="  '{print $1}' |xargs`;do
                 sed "s#@@$VAR@@#${!VAR}#g" -i $SPEC_FILE
         done
-	set +x
 	
 }
 
