@@ -126,13 +126,33 @@ new_package_api()
 	RC_FILE=$1
 	. $RC_FILE
 	PACK_DESCRIPTION=`cat $PACKAGE_DESCRIPTION`
-	OUT=`curl -X POST -H 'id: '$PACKMAN_API_ID'' -H 'privateKey: '$PACKMAN_API_KEY'' -H 'route: packages/add' -H 'Content-Type: application/json'  -d '{"packman_space": "'"$PACKMAN_SPACE"'", "name": "'"$PACKAGE_NAME"'", "version": "'"$PACKAGE_VERSION"'", "supported_envs": "'"$SUPPORTED_ENVS"'", "source_url": "'"$SOURCE_URL"'", "project_url": "'"$PROJECT_URL"'", "description": "'"$PACK_DESCRIPTION"'", "maintainer_name": "'"$MAINTAINER_NAME"'","maintainer_email":"'"$MAINTAINER_EMAIL"'","repo_id": "73"}' $PACKMAN_API_ENDPOINT`
+	OUT=`curl -X POST -sS -H 'id: '$PACKMAN_API_ID'' -H 'privateKey: '$PACKMAN_API_KEY'' -H 'route: packages/add' -H 'Content-Type: application/json'  -d '{"packman_space": "'"$PACKMAN_SPACE"'", "name": "'"$PACKAGE_NAME"'", "version": "'"$PACKAGE_VERSION"'", "supported_envs": "'"$SUPPORTED_ENVS"'", "source_url": "'"$SOURCE_URL"'", "project_url": "'"$PROJECT_URL"'", "description": "'"$PACK_DESCRIPTION"'", "maintainer_name": "'"$MAINTAINER_NAME"'","maintainer_email":"'"$MAINTAINER_EMAIL"'","repo_id": "'"$REPO_ID"'"}' $PACKMAN_API_ENDPOINT`
 	STATUS=`echo $OUT|jq .status --raw-output` 
 	if [ "$STATUS" = 'ERROR' ];then
 		echo $OUT|jq '.message' --raw-output
 		return 1
 	fi
-#set +x
+}
+
+repo_registered()
+{
+	REPO_NAME=$1
+	curl -X POST -sS -H 'id: '$PACKMAN_API_ID'' -H 'privateKey: '$PACKMAN_API_KEY'' -H 'route: repos/list' -H 'Content-Type: application/json' $PACKMAN_API_ENDPOINT | jq '.[] | .uri' --raw-output|grep -q "^$REPO_NAME$" 
+
+}
+
+register_new_repo()
+{
+	REPO_NAME=$1
+	REPO_URI=$2
+	OUT=`curl -X POST -sS -H 'id: '$PACKMAN_API_ID'' -H 'privateKey: '$PACKMAN_API_KEY'' -H 'route: repos/add' -H 'Content-Type: application/json' -d '{"name": "'"$REPO_NAME"'", "uri":"'"$REPO_URI"'"}' $PACKMAN_API_ENDPOINT` 
+	STATUS=`echo $OUT|jq .status --raw-output` 
+	if [ "$STATUS" = 'ERROR' ];then
+		echo $OUT|jq '.message' --raw-output
+		return 1
+	elif [ "$STATUS" = 'SUCCESS' ];then
+		echo $OUT|jq '.id' --raw-output
+	fi
 }
 
 new_event_api()
