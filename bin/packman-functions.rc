@@ -45,7 +45,6 @@ launch_containers_for_target_envs()
 
 start_docker_container()
 {
-set -x
 	DOCKER_DIR=$1
 	PACKAGE_RC=$2
 	. $PACKAGE_RC
@@ -69,7 +68,6 @@ set -x
 	sudo docker run -t $IMAGE_NAME-$PACKAGE_NAME su - packman -c "packman-prepare-build-env && packman-gen-spec /etc/packman/package.rc"
 	CONTAINER_ID=`get_container_id $IMAGE_NAME-$PACKAGE_NAME`
 	sudo docker commit $CONTAINER_ID $IMAGE_NAME-$PACKAGE_NAME-postrun
-set +x
 }
 
 destroy_docker_container()
@@ -169,6 +167,36 @@ new_job_api()
 	PACKMAN_SPACE=$3
 	ENV=$4
 }
+
+
+create_ssh_key()
+{
+	KEY_PATH=$1
+	ssh-keygen -t rsa -N "" -f $KEY_PATH
+}
+
+github_repo_exists()
+{
+
+}
+
+create_github_repo()
+{
+	GITHUB_ORG=$1
+	REPO_NAME=$2
+	curl -X POST -H "Authorization: token $GITHUB_TOKEN"  --data '{"name":"'"$REPO_NAME"'","has_issues":"true","has_downloads":"true"}' https://api.github.com/orgs/$GITHUB_ORG/repos
+}
+
+add_github_repo_key()
+{
+	KEY_NAME=$1
+	KEY_PATH=$2
+	KEY=`cat $KEY_PATH`
+	GITHUB_ORG=$3
+	REPO_NAME=$4
+	curl -X POST -H "Authorization: token $GITHUB_TOKEN" --data '{"title":"'"$KEY_NAME"'","key":"'"$KEY"'"}' https://api.github.com/repos/$GITHUB_ORG/$REPO_NAME/keys
+}
+
 
 # validate PACKAGE_NAME
 # validate PACKAGE_VERSION
