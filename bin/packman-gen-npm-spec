@@ -1,0 +1,54 @@
+#!/bin/bash - 
+#===============================================================================
+#          FILE: packman-gen-npm-spec
+#         USAGE: ./packman-gen-npm-spec 
+#   DESCRIPTION: generate NPM spec files based on user input as saved to $PACKAGE_RC,
+#		 then build the package and commit the spec
+#       OPTIONS: /path/to/package.rc as arg 1
+#  REQUIREMENTS: ---
+#          BUGS: ---
+#         NOTES: ---
+#        AUTHOR: Jess Portnoy (), <jess@packman.io>
+#  ORGANIZATION: Packman.
+#       CREATED: 07/09/2016 10:18:56 PM GMT
+#      REVISION:  ---
+#===============================================================================
+
+#set -o nounset                              # Treat unset variables as an error
+DIRNAME=`dirname $0`
+NEEDED_FILES="$DIRNAME/packman-functions.rc"
+for NEEDED_FILE in $NEEDED_FILES;do
+        if [ ! -r $NEEDED_FILE ];then
+                printf "Missing $NEEDED_FILE. Something is wrong with your ENV. Exiting."
+                exit 2
+        fi
+        . $NEEDED_FILE
+done
+
+if [ ! -r "$1" ];then
+        printf "Usage: $0 </path/to/package.rc>"
+        exit 1
+fi
+PACKAGE_RC=$1
+. $PACKAGE_RC
+
+
+	# find . -iname "*.js" -! -path "./*/node_modules/*" -! -path "./node_modules/*" -! -path "*/.git/*" -exec grep -ho "require[[:blank:]]*([[:blank:]]*[\'\"\./[:alnum:]_\\-]\\+[[:blank:]]*)" {} +|sort -u|grep -v "/\|kaltura" |sed "s#.*require('\(.*\)'.*#\"\1\":\"*\",#"
+
+
+BRANCH=$PACKAGE_NAME-$PACKAGE_VERSION 
+cd /etc/packman/packman-packages-meta/$PACKMAN_SPACE-$BRANCH
+git pull origin ${BRANCH}
+git checkout ${BRANCH}
+# git add will go here
+git commit -a -m "Commited by `basename $0`"
+git push origin $BRANCH
+# need to copy the package to the repo, sign it and update metadata
+#npm set registry $PACKMAN_NPM_REPO
+
+# need to check if a user exists for this packman_space, if not, create it:
+#npm adduser --registry $PACKMAN_NPM_REPO
+
+# build and push with
+# npm publish
+

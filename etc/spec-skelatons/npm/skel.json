@@ -1,0 +1,25 @@
+{
+  "name": "@@PACKAGE_NAME@@",
+  "version": "@@PACKAGE_VERSION@@",
+  "description": "@@PACKAGE_SUMMARY@@",
+  "main": "@@MAIN_FILE@@",
+  "scripts": {
+    "test": "@@TEST_COMMAND@@",
+    "postinstall": "@@POSTINST_COMMAND@"
+  },
+  "repository": {
+    "type": "git",
+    "url": "@@GITHUB_REPO@@"
+  },
+  "keywords": [
+	"@@KEYWORDS@@"
+  ],
+  "author": "@@MAINTAINER_NAME@@ <@@MAINTAINER_EMAIL@@>",
+  "license": "@@PACKAGE_LICENSE@@",
+  "bugs": {
+    "url": "@@GITHUB_REPO@@/issues"
+  },
+  "dependencies": {
+	@@DEPENDENCIES@@
+  }
+}

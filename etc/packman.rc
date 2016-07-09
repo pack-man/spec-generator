@@ -8,5 +8,6 @@ PACKMAN_API_ID=""
 PACKMAN_API_KEY=""
 DEB=1
 RPM=2
+NPM=3
 . /usr/bin/colors.rc
 

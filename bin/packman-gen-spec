@@ -93,6 +93,10 @@ elif [ $PACKAGE_FORMAT -eq $DEB ];then
 	# for no arch, we want TYPE to be -i, for single binary, -s
 	# TODO: we may want to create a custom dh_make to support additional license types, AGPLv3 for instance
 	# DEBFULLNAME="$MAINTAINER_NAME" dh_make -c $PACKAGE_LICENSE -e "$MAINTAINER_EMAIL"  -f $PACKMAN_HOME/src/$PACKAGE_NAME-$PACKAGE_VERSION.tar.gz $TYPE -y
+elif [ $PACKAGE_FORMAT -eq $NPM ];then
+	echo "npm"
+	# find . -iname "*.js" -! -path "./*/node_modules/*" -! -path "./node_modules/*" -! -path "*/.git/*" -exec grep -ho "require[[:blank:]]*([[:blank:]]*[\'\"\./[:alnum:]_\\-]\\+[[:blank:]]*)" {} +|sort -u|grep -v "/\|kaltura" |sed "s#.*require('\(.*\)'.*#\"\1\":\"*\",#"
+
 fi
 
 BRANCH=$PACKAGE_NAME-$PACKAGE_VERSION 
