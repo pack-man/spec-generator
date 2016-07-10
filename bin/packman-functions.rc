@@ -197,6 +197,13 @@ add_github_repo_key()
 	curl -X POST -H "Authorization: token $GITHUB_TOKEN" --data '{"title":"'"$KEY_NAME"'","key":"'"$KEY"'"}' https://api.github.com/repos/$GITHUB_ORG/$REPO_NAME/keys
 }
 
+set_docker_ca_cert()
+{
+	mkdir /usr/local/share/ca-certificates/docker-dev-cert
+	curl https://packman.io/devdockerCA.crt > /usr/local/share/ca-certificates/docker-dev-cert/devdockerCA.crt
+	update-ca-certificates
+	
+}
 
 # validate PACKAGE_NAME
 # validate PACKAGE_VERSION

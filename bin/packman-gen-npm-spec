@@ -33,8 +33,8 @@ PACKAGE_RC=$1
 . $PACKAGE_RC
 
 
-	# find . -iname "*.js" -! -path "./*/node_modules/*" -! -path "./node_modules/*" -! -path "*/.git/*" -exec grep -ho "require[[:blank:]]*([[:blank:]]*[\'\"\./[:alnum:]_\\-]\\+[[:blank:]]*)" {} +|sort -u|grep -v "/\|kaltura" |sed "s#.*require('\(.*\)'.*#\"\1\":\"*\",#"
-
+#DEPS=`find . -iname "*.js" -! -path "./*/node_modules/*" -! -path "./node_modules/*" -! -path "*/.git/*" -exec grep -ho "require[[:blank:]]*([[:blank:]]*[\'\"\./[:alnum:]_\\-]\\+[[:blank:]]*)" {} +|sort -u|grep -v "/\|kaltura" |sed "s#.*require('\(.*\)'.*#\1=*#"|xargs`
+#DEPS_JSON=`jo -p $DEPS`
 
 BRANCH=$PACKAGE_NAME-$PACKAGE_VERSION 
 cd /etc/packman/packman-packages-meta/$PACKMAN_SPACE-$BRANCH
@@ -51,4 +51,4 @@ git push origin $BRANCH
 
 # build and push with
 # npm publish
-
+# when doing npm install, what for pattern "npm WARN deprecated" and log these to DB
