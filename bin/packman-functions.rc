@@ -177,7 +177,7 @@ create_ssh_key()
 
 github_repo_exists()
 {
-
+	echo stub
 }
 
 create_github_repo()
