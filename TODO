@@ -151,3 +151,5 @@ API:
 
 - build RPM debug packages
 - how to do an auto git pull without having to confirm it
+- add jo RPM to packman repo
+- make repo.packman.io listen on 80 and change docker files accordingly
