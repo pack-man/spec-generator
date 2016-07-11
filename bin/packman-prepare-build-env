@@ -101,6 +101,7 @@ find . -type f -name "*.h" -exec grep "#include\s*<.*\.h" {} \;|sed 's@.*<\(.*\)
 find . -type f -name "*.c" -exec grep "#include\s*<.*\.h" {} \;|sed 's@.*<\(.*\)>.*@\1@g'|sort -u>> /tmp/$PACKAGE_NAME.includes
 set +e
 
+### TODO - somewhere in here, we need to see if we're doing NodeJS and if so, call install_nodejs()
 ### TODO - this if can be refactored to save some duplicate code
 
 env_packaging_format

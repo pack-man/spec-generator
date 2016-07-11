@@ -68,6 +68,7 @@ start_docker_container()
 	sudo docker run -t $IMAGE_NAME-$PACKAGE_NAME su - packman -c "packman-prepare-build-env && packman-gen-spec /etc/packman/package.rc"
 	CONTAINER_ID=`get_container_id $IMAGE_NAME-$PACKAGE_NAME`
 	sudo docker commit $CONTAINER_ID $IMAGE_NAME-$PACKAGE_NAME-postrun
+	# here we need to push the new container to docker.packman.io
 }
 
 destroy_docker_container()
@@ -130,6 +131,7 @@ new_package_api()
 		echo $OUT|jq '.message' --raw-output
 		return 1
 	fi
+#set +x
 }
 
 repo_registered()
@@ -203,6 +205,17 @@ set_docker_ca_cert()
 	curl https://packman.io/devdockerCA.crt > /usr/local/share/ca-certificates/docker-dev-cert/devdockerCA.crt
 	update-ca-certificates
 	
+}
+
+install_nodejs()
+{
+	env_packaging_format
+	PACKAGE_FORMAT=$?
+	if [ $PACKAGE_FORMAT -eq $RPM ];then
+		RUN curl --silent --location https://rpm.nodesource.com/setup_4.x | bash - && yum -y install nodejs
+	elif [ $PACKAGE_FORMAT -eq $DEB ];then
+		RUN curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash - && aptitude install -y nodejs
+	fi
 }
 
 # validate PACKAGE_NAME
