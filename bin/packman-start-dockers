@@ -25,11 +25,14 @@ for NEEDED_FILE in $NEEDED_FILES;do
         . $NEEDED_FILE
 done
 
-if [ ! -r "$1" ];then
-	printf "Did not get an RC file as first arg. Exiting."
-	exit 1
+if [ $# -lt 3 -o ! -r "$1" ];then
+        printf "Usage: $0 </path/to/package.rc> <api id> <api key>"
+        exit 1
 fi
 PACKAGE_RC=$1
 . $PACKAGE_RC
+PACKMAN_API_ID=$2
+PACKMAN_API_KEY=$3
+export PACKMAN_API_ID PACKMAN_API_KEY
 launch_containers_for_target_envs $SUPPORTED_ENVS $PACKAGE_RC
 

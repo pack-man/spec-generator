@@ -28,6 +28,13 @@ done
 
 
 . /etc/packman/package.rc
+if [ $# -lt 2 ];then
+        printf "Usage: $0 <api id> <api key>"
+        exit 1
+fi
+PACKMAN_API_ID=$1
+PACKMAN_API_KEY=$2
+export PACKMAN_API_ID PACKMAN_API_KEY
 
 #cd $PACKMAN_HOME/tmp/build/
 cd /etc/packman/packman-packages-meta

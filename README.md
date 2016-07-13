@@ -61,13 +61,13 @@ It consists of the following main stages:
 ## Setup instructions
 ### Installing the Packman RPM:
 ```
-# rpm -ihv http://repo.packman.io:8080/rpm/noarch/packman-release.rpm
+# rpm -ihv http://repo.packdaddy.io/rpm/noarch/packman-release.rpm
 # yum install packman
 ```
 ### Installing the Packman deb:
 ```
-# echo "deb http://repo.packman.io:8080/apt/debian packman main" >> /etc/apt/sources.list.d/packman.list
-# wget -O - http://repo.packman.io:8080/apt/packman.gpg.key|apt-key add -
+# echo "deb http://repo.packdaddy.io/apt/debian packman main" >> /etc/apt/sources.list.d/packman.list
+# wget -O - http://repo.packdaddy.io/apt/packman.gpg.key|apt-key add -
 # apt-get update && apt-get install packman
 or, more recommended:
 # aptitude update && aptitude install packman

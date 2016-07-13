@@ -25,12 +25,15 @@ for NEEDED_FILE in $NEEDED_FILES;do
         . $NEEDED_FILE
 done
 
-if [ ! -r "$1" ];then
-        printf "Usage: $0 </path/to/package.rc>"
+if [ $# -lt 3 -o ! -r "$1" ];then
+        printf "Usage: $0 </path/to/package.rc> <api id> <api key>"
         exit 1
 fi
 PACKAGE_RC=$1
 . $PACKAGE_RC
+PACKMAN_API_ID=$2
+PACKMAN_API_KEY=$3
+export PACKMAN_API_ID PACKMAN_API_KEY
 
         cp /etc/packman/spec-skelatons/rpm/skel.spec ~/rpmbuild/SPECS/$PACKAGE_NAME.spec
         replace_rpm_spec_tokens $PACKAGE_RC ~/rpmbuild/SPECS/$PACKAGE_NAME.spec

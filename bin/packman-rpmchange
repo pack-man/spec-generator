@@ -12,6 +12,7 @@
 #       CREATED: 02/26/2016 03:27:57 PM GMT
 #      REVISION:  ---
 #===============================================================================
+# TODO: add api id and key args
 DIRNAME=`dirname $0`
 if [ ! -r "$DIRNAME/packman-functions.rc" ];then
 	printf "Missing $DIRNAME/packman-functions.rc. Something is wrong with your ENV. Exiting."

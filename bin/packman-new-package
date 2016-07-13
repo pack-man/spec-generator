@@ -27,6 +27,13 @@ for NEEDED_FILE in $NEEDED_FILES;do
         fi
         . $NEEDED_FILE
 done
+if [ $# -lt 2 ];then
+        printf "Usage: $0 <api id> <api key>"
+        exit 1
+fi
+PACKMAN_API_ID=$1
+PACKMAN_API_KEY=$2
+export PACKMAN_API_ID PACKMAN_API_KEY
 
 printf "${CYAN}Welcome to $PRODUCT_NAME new package generator!
 

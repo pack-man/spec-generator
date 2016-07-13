@@ -68,7 +68,7 @@ start_docker_container()
 	sudo docker run -t $IMAGE_NAME-$PACKAGE_NAME su - packman -c "packman-prepare-build-env && packman-gen-spec /etc/packman/package.rc"
 	CONTAINER_ID=`get_container_id $IMAGE_NAME-$PACKAGE_NAME`
 	sudo docker commit $CONTAINER_ID $IMAGE_NAME-$PACKAGE_NAME-postrun
-	# here we need to push the new container to docker.packman.io
+	# here we need to push the new container to docker.packdaddy.io
 }
 
 destroy_docker_container()
@@ -202,7 +202,7 @@ add_github_repo_key()
 set_docker_ca_cert()
 {
 	mkdir /usr/local/share/ca-certificates/docker-dev-cert
-	curl https://packman.io/devdockerCA.crt > /usr/local/share/ca-certificates/docker-dev-cert/devdockerCA.crt
+	curl https://packdaddy.io/devdockerCA.crt > /usr/local/share/ca-certificates/docker-dev-cert/devdockerCA.crt
 	update-ca-certificates
 	
 }
