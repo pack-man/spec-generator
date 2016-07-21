@@ -125,7 +125,7 @@ new_package_api()
 	RC_FILE=$1
 	. $RC_FILE
 	PACK_DESCRIPTION=`cat $PACKAGE_DESCRIPTION`
-	OUT=`curl -X POST -sS -H 'id: '$PACKMAN_API_ID'' -H 'privateKey: '$PACKMAN_API_KEY'' -H 'route: packages/add' -H 'Content-Type: application/json'  -d '{"packman_space": "'"$PACKMAN_SPACE"'", "name": "'"$PACKAGE_NAME"'", "version": "'"$PACKAGE_VERSION"'", "supported_envs": "'"$SUPPORTED_ENVS"'", "source_url": "'"$SOURCE_URL"'", "project_url": "'"$PROJECT_URL"'", "description": "'"$PACK_DESCRIPTION"'", "maintainer_name": "'"$MAINTAINER_NAME"'","maintainer_email":"'"$MAINTAINER_EMAIL"'","repo_id": "'"$REPO_ID"'"}' $PACKMAN_API_ENDPOINT`
+	OUT=`curl -X POST -sS -H 'id: '$PACKMAN_API_ID'' -H 'privateKey: '$PACKMAN_API_KEY'' -H 'route: packages/add' -H 'Content-Type: application/json'  -d '{"packman_space": "'"$PACKMAN_SPACE"'", "name": "'"$PACKAGE_NAME"'", "version": "'"$PACKAGE_VERSION"'", "source_url": "'"$SOURCE_URL"'", "project_url": "'"$PROJECT_URL"'", "description": "'"$PACK_DESCRIPTION"'", "maintainer_name": "'"$MAINTAINER_NAME"'","maintainer_email":"'"$MAINTAINER_EMAIL"'","repo_id": "'"$REPO_ID"'"}' $PACKMAN_API_ENDPOINT`
 	STATUS=`echo $OUT|jq .status --raw-output` 
 	if [ "$STATUS" = 'ERROR' ];then
 		echo $OUT|jq '.message' --raw-output
@@ -187,6 +187,17 @@ create_github_repo()
 	GITHUB_ORG=$1
 	REPO_NAME=$2
 	curl -X POST -H "Authorization: token $GITHUB_TOKEN"  --data '{"name":"'"$REPO_NAME"'","has_issues":"true","has_downloads":"true"}' https://api.github.com/orgs/$GITHUB_ORG/repos
+}
+
+update_job_status()
+{
+	set -x
+	#API_ID=$1
+	#API_KEY=$2
+	JOB_ID=$1
+	JOB_STATUS=$2
+	curl -X POST  -H "id: $PACKMAN_API_ID" -H "privateKey: $PACKMAN_API_KEY" -H "route: jobs/update/$JOB_ID" -H 'Content-Type: application/json' -d '{"status":"'"$JOB_STATUS"'"}' $PACKMAN_API_ENDPOINT
+	set +x
 }
 
 add_github_repo_key()
