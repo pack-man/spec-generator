@@ -1,9 +1,11 @@
+set -o errtrace 
 if [ ! -r /etc/packman/packman.rc ];then
         echo "Missing /etc/packman/packman.rc. Something is wrong with your ENV. Exiting."
         exit 1
 fi
 . /etc/packman/packman.rc
 # required functions
+
 validate_target_envs()
 {
 	SUPPORTED_ENVS="$1"
@@ -155,59 +157,11 @@ register_new_repo()
 	fi
 }
 
-new_event_api()
-{
-	EVENT_TYPE=$1
-	JOB_ID=$2
-	CONTENT=$3
-}
-
-new_job_api()
-{
-	PACKAGE_NAME=$1
-	PACKAGE_VERSION=$2
-	PACKMAN_SPACE=$3
-	ENV=$4
-}
-
 
 create_ssh_key()
 {
 	KEY_PATH=$1
 	ssh-keygen -t rsa -N "" -f $KEY_PATH
-}
-
-github_repo_exists()
-{
-	echo stub
-}
-
-create_github_repo()
-{
-	GITHUB_ORG=$1
-	REPO_NAME=$2
-	curl -X POST -H "Authorization: token $GITHUB_TOKEN"  --data '{"name":"'"$REPO_NAME"'","has_issues":"true","has_downloads":"true"}' https://api.github.com/orgs/$GITHUB_ORG/repos
-}
-
-update_job_status()
-{
-	set -x
-	#API_ID=$1
-	#API_KEY=$2
-	JOB_ID=$1
-	JOB_STATUS=$2
-	curl -X POST  -H "id: $PACKMAN_API_ID" -H "privateKey: $PACKMAN_API_KEY" -H "route: jobs/update/$JOB_ID" -H 'Content-Type: application/json' -d '{"status":"'"$JOB_STATUS"'"}' $PACKMAN_API_ENDPOINT
-	set +x
-}
-
-add_github_repo_key()
-{
-	KEY_NAME=$1
-	KEY_PATH=$2
-	KEY=`cat $KEY_PATH`
-	GITHUB_ORG=$3
-	REPO_NAME=$4
-	curl -X POST -H "Authorization: token $GITHUB_TOKEN" --data '{"title":"'"$KEY_NAME"'","key":"'"$KEY"'"}' https://api.github.com/repos/$GITHUB_ORG/$REPO_NAME/keys
 }
 
 set_docker_ca_cert()
@@ -228,6 +182,111 @@ install_nodejs()
 		RUN curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash - && aptitude install -y nodejs
 	fi
 }
+
+# GitHub API
+github_repo_exists()
+{
+	echo stub
+}
+
+create_github_repo()
+{
+	GITHUB_ORG=$1
+	REPO_NAME=$2
+	curl -X POST -H "Authorization: token $GITHUB_TOKEN"  --data '{"name":"'"$REPO_NAME"'","has_issues":"true","has_downloads":"true"}' https://api.github.com/orgs/$GITHUB_ORG/repos
+}
+
+add_github_repo_key()
+{
+	KEY_NAME=$1
+	KEY_PATH=$2
+	KEY=`cat $KEY_PATH`
+	GITHUB_ORG=$3
+	REPO_NAME=$4
+	curl -X POST -H "Authorization: token $GITHUB_TOKEN" --data '{"title":"'"$KEY_NAME"'","key":"'"$KEY"'"}' https://api.github.com/repos/$GITHUB_ORG/$REPO_NAME/keys
+}
+
+github_repo_exists()
+{
+	echo stub
+}
+
+create_github_repo()
+{
+	GITHUB_ORG=$1
+	REPO_NAME=$2
+	curl -X POST -H "Authorization: token $GITHUB_TOKEN"  --data '{"name":"'"$REPO_NAME"'","has_issues":"true","has_downloads":"true"}' https://api.github.com/orgs/$GITHUB_ORG/repos
+}
+
+add_github_repo_key()
+{
+	KEY_NAME=$1
+	KEY_PATH=$2
+	KEY=`cat $KEY_PATH`
+	GITHUB_ORG=$3
+	REPO_NAME=$4
+	curl -X POST -H "Authorization: token $GITHUB_TOKEN" --data '{"title":"'"$KEY_NAME"'","key":"'"$KEY"'"}' https://api.github.com/repos/$GITHUB_ORG/$REPO_NAME/keys
+}
+
+
+# packdaddy API
+new_job_api()
+{
+	PACKAGE_NAME=$1
+	PACKAGE_VERSION=$2
+	PACKMAN_SPACE=$3
+	ENV=$4
+}
+
+update_job_api()
+{
+	JOB_ID=$1
+	JOB_STATUS=$2
+	curl -X POST  -H "id: $PACKMAN_API_ID" -H "privateKey: $PACKMAN_API_KEY" -H "route: jobs/update/$JOB_ID" -H 'Content-Type: application/json' -d '{"status":"'"$JOB_STATUS"'"}' $PACKMAN_API_ENDPOINT
+}
+
+new_event_api()
+{
+	EVENT_TYPE=$1
+	JOB_ID=$2
+	CONTENT=$3
+	curl -X POST  -H "id: $PACKMAN_API_ID" -H "privateKey: $PACKMAN_API_KEY" -H "route: events/add" -H 'Content-Type: application/json' -d '{"event_type":"'"$EVENT_TYPE"'","job_id":"'"$JOB_ID"'","content":"'"$CONTENT"'"}' $PACKMAN_API_ENDPOINT
+}
+
+new_job_api()
+{
+	PACKAGE_NAME=$1
+	PACKAGE_VERSION=$2
+	PACKMAN_SPACE=$3
+	ENV=$4
+}
+
+update_job_api()
+{
+	JOB_ID=$1
+	JOB_STATUS=$2
+	curl -X POST  -H "id: $PACKMAN_API_ID" -H "privateKey: $PACKMAN_API_KEY" -H "route: jobs/update/$JOB_ID" -H 'Content-Type: application/json' -d '{"status":"'"$JOB_STATUS"'"}' $PACKMAN_API_ENDPOINT
+}
+
+new_event_api()
+{
+	EVENT_TYPE=$1
+	JOB_ID=$2
+	CONTENT=$3
+	curl -X POST  -H "id: $PACKMAN_API_ID" -H "privateKey: $PACKMAN_API_KEY" -H "route: events/add" -H 'Content-Type: application/json' -d '{"event_type":"'"$EVENT_TYPE"'","job_id":"'"$JOB_ID"'","content":"'"$CONTENT"'"}' $PACKMAN_API_ENDPOINT
+}
+
+
+trap_handler()
+{
+        MYSELF=`basename "$0"`               # equals to my script name
+        LASTLINE="$1"            # argument 1: last line of error occurence
+        LASTERR="$2"             # argument 2: error code of last command
+		
+	new_event_api $EVENT_FATAL $JOB_ID "Returned with $LASTERR on $MYSELF:$LASTLINE"
+	update_job_api $JOB_ID $JOB_FATAL
+}
+
 
 # validate PACKAGE_NAME
 # validate PACKAGE_VERSION
