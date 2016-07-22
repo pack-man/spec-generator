@@ -15,7 +15,7 @@ Source0: %{name}-%{version}.tar.gz
 BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 #BuildRequires: @@BUILD_REQUIRES@@
-Requires: rpm-build, rpmlint, vim-enhanced, man, wget, unzip, git, sudo, redhat-lsb-core, libtool, yasm, gcc, gcc-c++, dos2unix, man, jq
+Requires: rpm-build, rpmlint, vim-enhanced, man, wget, unzip, git, sudo, redhat-lsb-core, libtool, yasm, gcc, gcc-c++, dos2unix, man, jq, libxml2, nodejs, ruby, php-cli
 
 %description
 An End-to-End Software Packaging Platform.
@@ -68,6 +68,8 @@ if [ "$1" = 1 ];then
         rm /tmp/sudoers.new
 fi
 ln -sf %{packman_home}/src  %{packman_home}/rpmbuild/SOURCES
+# TODO: add more needed npm modules
+npm install jsonlint -g
 
 %files
 %defattr(-,packman,packman,-)

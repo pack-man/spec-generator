@@ -13,4 +13,6 @@ if [ "$1" = "configure" ];then
             cp /tmp/sudoers.new /etc/sudoers
         fi
         rm /tmp/sudoers.new
+	# TODO: other nodejs things go here
+	npm install -g jsonlint
 fi
