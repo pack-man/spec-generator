@@ -25,13 +25,12 @@ for NEEDED_FILE in $NEEDED_FILES;do
         fi
         . $NEEDED_FILE
 done
-if [ $# -lt 4 ];then
-        printf "Usage: $0 <path/to/package.rc> <api id> <api key> <job id>\n"
+if [ $# -lt 5 ];then
+        printf "Usage: $0 <path/to/package.rc> <api id> <api key> <job id> <package id>\n"
         exit 1
 fi
 
-# TODO: add trapping and if caught, register the job as failing.
-
+trap 'trap_handler ${LINENO} $?' ERR
 PACKAGE_RC=$1
 if [ ! -r "$PACKAGE_RC" ];then
 	printf "Could not read $PACKAGE_RC. Exiting."
@@ -42,15 +41,21 @@ fi
 PACKMAN_API_ID=$2
 PACKMAN_API_KEY=$3
 JOB_ID=$4
-export PACKMAN_API_ID PACKMAN_API_KEY
+PACKAGE_ID=$5
+export PACKMAN_API_ID PACKMAN_API_KEY JOB_ID PACKAGE_ID
 
+update_job_api $JOB_ID $JOB_IN_PROGRESS
+update_package_status_api $PACKAGE_ID $PACKAGE_BUILD_IN_PROroject
 #cd $PACKMAN_HOME/tmp/build/
 cd /etc/packman/packman-packages-meta/$PACKMAN_SPACE
 BRANCH=$PACKAGE_NAME-$PACKAGE_VERSION
 add_github_com_to_known_hosts
 rm -rf $BRANCH/checkout
+GIT_SSH_COMMAND="ssh -i $PACKMAN_PRIVATE_KEY -F /dev/null"
+export GIT_SSH_COMMAND
+new_event_api $EVENT_INFO $JOB_ID "Cloning $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE.."
 git clone $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE $BRANCH/checkout
-cd $BRANCH
+cd $BRANCH/checkout
 #git fetch --all
 set +e
 if ! git remote show origin |grep -q ${BRANCH};then
@@ -60,21 +65,36 @@ else
 	git pull origin ${BRANCH}
 fi
 set -e
-git config --global user.email $MAINTAINER_EMAIL 
-git config --global user.name $MAINTAINER_NAME
+new_event_api $EVENT_INFO $JOB_ID "Checked out branch ${BRANCH}.."
+git config user.email "$MAINTAINER_EMAIL" 
+git config user.name "$MAINTAINER_NAME"
 TMP_BUILDDIR=$PACKMAN_TMP_DIR/build/$PACKMAN_SPACE/$BRANCH
 rm -rf $TMP_BUILDDIR
 mkdir -p $TMP_BUILDDIR
 cd $TMP_BUILDDIR
-wget $SOURCE_URL
-ARCHIVE_NAME=`printf $SOURCE_URL|awk -F "/" '{print $NF}'`
+
+if [ ! -r $SOURCE_URL ];then
+	new_event_api $EVENT_INFO $JOB_ID "Downloading package from $SOURCE_URL.."
+	wget $SOURCE_URL
+	ARCHIVE_NAME=`printf $SOURCE_URL|awk -F "/" '{print $NF}'`
+else
+	ARCHIVE_NAME=$SOURCE_URL
+fi
+
 if file $ARCHIVE_NAME|grep -w -i zip ;then
         EXTRACT_COMMAND="unzip"
 else
         EXTRACT_COMMAND="tar xf"
 fi
+
+new_event_api $EVENT_INFO $JOB_ID "Extracting archive $ARCHIVE_NAME"
 $EXTRACT_COMMAND $ARCHIVE_NAME
-rm $ARCHIVE_NAME
+
+# protect against deleting if it's a local archive
+if [ "$ARCHIVE_NAME" != $SOURCE_URL ];then
+	rm $ARCHIVE_NAME
+fi
+
 ORIG_DIR=`ls -d *`
 if [ "$ORIG_DIR" != "$PACKAGE_NAME-$PACKAGE_VERSION" ];then
         mv $ORIG_DIR $PACKAGE_NAME-$PACKAGE_VERSION
@@ -83,76 +103,123 @@ cd $PACKAGE_NAME-$PACKAGE_VERSION
 TO_REMOVE=`find . -name ".git" -o -name ".svn" -o -name ".csv" -o -name ".gitignore"`
 if [ -n "$TO_REMOVE" ];then
         rm $TO_REMOVE
+	new_event_api $EVENT_AUTO_FIX $JOB_ID "Removed $TO_REMOVE from package source"
 fi
 
-
-FILES=`find . -type f`
 # if the first line of the file is "^#!" - we need to set exec bit on
 # if the file is an ELF executable binary, we also want the exec bit on, otherwise, set to off
+# support auto correction for warnings
+# check for php files and php -l them
+# check for ruby, python
+
+trap - ERR
+set +e
+# let's see what sort of package we're dealing with
+# NodeJS
+grep '#!.*node\|module.exports' *  -r -q
+RC=$?
+if [ $RC -eq 0 -o -r "package.json" -o -r "server.js" ];then
+	PACKAGE_TYPE=$NPM
+	new_event_api $EVENT_INFO $JOB_ID "This is a NodeJS project, $PRODUCT_NAME will build an NPM package."
+fi
+
+
+# add to package_specs
+new_package_spec_api $PACKAGE_ID $PACKAGE_TYPE ""
+
+FILES=`find . -type f`
+
+
+
 for FILE in $FILES;do
-        if head -1 $FILE | grep -q "^#!" ;then
-                chmod +x $FILE
+	FILE_EXT=`echo $FILE|awk -F "." '{print $NF}'`
+	FILE_PERM=`stat -c "%a" $FILE`
+	if [ "$FILE_PERM" -eq 777 ];then
+		new_event_api $EVENT_WARNING $JOB_ID "$FILE is executable by all. This is a bad practice as far as security goes."
+	fi 
+
+	SHABANG=`head -1 $FILE | grep "^#!"`
+        if [ -n "$SHABANG" -a ! -x $FILE ] ;then
+                	chmod +x $FILE
+			new_event_api $EVENT_AUTO_FIX $JOB_ID "Setting $FILE exec bit to on."
         elif file $FILE | grep -q "\s*ELF.*executable" ;then
-                chmod +x $FILE
-        else 
+		if [ ! -x $FILE ];then
+                	chmod +x $FILE
+			new_event_api $EVENT_AUTO_FIX $JOB_ID "Setting $FILE exec bit to on."
+		fi
+        elif [ "$FILE_EXT" != 'sh' -a -z "$SHABANG" -a -x "$FILE" ];then 
                 chmod -x $FILE
+		new_event_api $EVENT_AUTO_FIX $JOB_ID "Removed $FILE exec bit."
         fi
+
+
+	# lint json, XML
+	if [ "$FILE_EXT" = 'json' ];then
+		if ! OUT=`jsonlint $FILE  2>&1` ;then 
+		# clean the double quotes because otherwise passing it to the API will fail.
+			OUT=`echo $OUT|sed 's@"@@g'`
+			#new_event_api $EVENT_FATAL $JOB_ID "$FILE: $OUT"
+			#update_package_status_api $PACKAGE_ID $PACKAGE_FAILED
+			fatal_event_api $PACKAGE_ID $JOB_ID "$FILE: $OUT"
+			PACKAGE_FATAL=1
+		fi
+	fi
+
+	if [ "$FILE_EXT" = 'xml' ];then
+		if ! OUT=`xmllint $FILE  2>&1` ;then 
+		# clean the double quotes because otherwise passing it to the API will fail.
+			OUT=`echo $OUT|sed 's@"@@g'`
+			fatal_event_api $PACKAGE_ID $JOB_ID "$OUT"
+			PACKAGE_FATAL=1
+		fi
+
+	fi
+
+	if [ "$FILE_EXT" = 'sh' -o "$FILE_EXT" = 'bash' ];then
+		if [ ! -x $FILE ];then
+			new_event_api $EVENT_AUTO_FIX $JOB_ID "Setting $FILE exec bit to on."
+			chmod +x $FILE
+		fi
+
+		if [ -z "$SHABANG" ];then
+			sed -i "1i#!/bin/$FILE_EXT" $FILE
+			new_event_api $EVENT_AUTO_FIX $JOB_ID "Added shabang [#!/bin/$FILE_EXT] to $FILE"
+		elif ! echo "$SHABANG" |grep -q $FILE_EXT;then
+			new_event_api $EVENT_WARNING $JOB_ID "$FILE has $SHABANG but should be run with $FILE_EXT instead. Keep in mind for some Linux distros, such as Debian and Ubuntu /bin/sh points to DASH, which is not compatible with BASH."
+		fi
+
+		if ! OUT=`$FILE_EXT -n $FILE 2>&1` ;then 
+			#new_event_api $EVENT_FATAL $JOB_ID "$OUT"
+			fatal_event_api $PACKAGE_ID $JOB_ID "$OUT"
+			PACKAGE_FATAL=1
+		fi
+	fi
 	dos2unix -q $FILE
 done
-cd -
-tar zcf $PACKMAN_HOME/src/$PACKAGE_NAME-$PACKAGE_VERSION.tar.gz $PACKAGE_NAME-$PACKAGE_VERSION 
-# curl -X POST  -H 'id: batch@packdaddy.io' -H 'privateKey: a6d145bf78249872467b73083dbeb814aed3e3c1dbd94fb65920b4beb8b53021' -H 'route: jobs/update/' -H 'Content-Type: application/json' -d '{"status":0}' https://api.packdaddy.io/mainController.php
-# TODO: register the job as done
-update_job_status $JOB_ID 3
-exit;
 
-# TODO: detect files in various interpreter langs [perl, php, ruby, python, etc], install the interpreter packages as deps and run lint on the files to make sure they're parse-able, omit warnings if not.
 
-if [ -r configure.ac -a ! -x configure ];then
-        libtoolize --force
-        aclocal
-        #autoheader 
-        automake --force-missing --add-missing
-        autoconf
-fi
 
 cd -
-tar zcf $PACKMAN_HOME/src/$PACKAGE_NAME-$PACKAGE_VERSION.tar.gz $PACKAGE_NAME-$PACKAGE_VERSION 
-
-find . -type f -name "*.h" -exec grep "#include\s*<.*\.h" {} \;|sed 's@.*<\(.*\)>.*@\1@g'|sort -u> /tmp/$PACKAGE_NAME.includes
-find . -type f -name "*.c" -exec grep "#include\s*<.*\.h" {} \;|sed 's@.*<\(.*\)>.*@\1@g'|sort -u>> /tmp/$PACKAGE_NAME.includes
-set +e
-
-### TODO - somewhere in here, we need to see if we're doing NodeJS and if so, call install_nodejs()
-### TODO - this if can be refactored to save some duplicate code
-
-env_packaging_format
-PACKAGE_FORMAT=$?
-if [ $PACKAGE_FORMAT -eq $RPM ];then
-
-        printf "${CYAN}Locating packages $PACKAGE_NAME's build depends on... this may take a while..${NORMAL}" 
-        for i in `cat /tmp/$PACKAGE_NAME.includes`;do
-		FILE=`printf $i|awk -F "/" '{print $NF}'`
-		# do not look for packages including headers that are part of the source to package
-                if [ ! -r "`find . -name $FILE`" ];then
-                        sudo yum whatprovides "*/include*/$i" 2> /dev/null|grep -m1 -- "^.*-.*`uname -m`"|awk -F": " '{print $1}' | sed 's#^[0-9]*:##g' ;
-                fi
-        done > /tmp/$PACKAGE_NAME.dep_packages
-        sort -u /tmp/$PACKAGE_NAME.dep_packages > /tmp/$PACKAGE_NAME.buildreq_packages
-        sudo yum install `perl -pe 's@([a-zA-Z0-9-_+]+).*@\1@g' /tmp/$PACKAGE_NAME.buildreq_packages |perl -pe 's@-[0-9]*$@@g'` -y
-
-elif [ $PACKAGE_FORMAT -eq $DEB ];then
-        printf "${CYAN}Locating packages $PACKAGE_NAME's build depends on... this may take a while..${NORMAL}" 
-        for $i in `cat /tmp/$PACKAGE_NAME.includes`;do
-		# do not look for packages including headers that are part of the source to package
-		FILE=`printf $i|awk -F "/" '{print $NF}'`
-                if [ ! -r "`find . -name $FILE`" ];then
-			apt-file search -x "$i$"|awk -F: '{print $1}'
-                fi
-        done > /tmp/$PACKAGE_NAME.dep_packages
-	sudo aptitude install `cat /tmp/$PACKAGE_NAME.dep_packages`	
-fi
+trap 'trap_handler "${LINENO}" $?' ERR
 set -e
-# try to detect the license and prompt if no LICENSE file exists, then download and add a LICENSE file accordingly to user selection
+tar zcf $PACKMAN_HOME/src/$PACKAGE_NAME-$PACKAGE_VERSION.tar.gz $PACKAGE_NAME-$PACKAGE_VERSION 
+cp -r $PACKAGE_NAME-$PACKAGE_VERSION /etc/packman/packman-packages-meta/$PACKMAN_SPACE/$BRANCH/checkout/
+cd /etc/packman/packman-packages-meta/$PACKMAN_SPACE/$BRANCH/checkout/
+ 
+new_event_api $EVENT_INFO $JOB_ID "Committing changes to $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE (branch $BRANCH).."
 
+git add $PACKAGE_NAME-$PACKAGE_VERSION && git commit -m "Post `basename $0` corrections" && git push origin $BRANCH
+sleep 2;
+update_job_api $JOB_ID $JOB_SUCCESS
+if [ -z "$PACKAGE_FATAL" ];then
+	update_package_status_api $PACKAGE_ID $PACKAGE_SUCCESS
+fi
+exit 0;
+
+## TODO: if we're NodeJS:
+# - Ask for creds to publish to npmjs
+# - Check if node_modules is part of our source, not goood
+# - parse package.json and make sure main file and script files exist
+# - try to run the tests
+# - check if a newer version for a dep exists, if so, create an event
 

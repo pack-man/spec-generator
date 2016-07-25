@@ -121,25 +121,10 @@ log()
 	printf $1 
 }
 
-new_package_api()
-{
-#set -x
-	RC_FILE=$1
-	. $RC_FILE
-	PACK_DESCRIPTION=`cat $PACKAGE_DESCRIPTION`
-	OUT=`curl -X POST -sS -H 'id: '$PACKMAN_API_ID'' -H 'privateKey: '$PACKMAN_API_KEY'' -H 'route: packages/add' -H 'Content-Type: application/json'  -d '{"packman_space": "'"$PACKMAN_SPACE"'", "name": "'"$PACKAGE_NAME"'", "version": "'"$PACKAGE_VERSION"'", "source_url": "'"$SOURCE_URL"'", "project_url": "'"$PROJECT_URL"'", "description": "'"$PACK_DESCRIPTION"'", "maintainer_name": "'"$MAINTAINER_NAME"'","maintainer_email":"'"$MAINTAINER_EMAIL"'","repo_id": "'"$REPO_ID"'"}' $PACKMAN_API_ENDPOINT`
-	STATUS=`echo $OUT|jq .status --raw-output` 
-	if [ "$STATUS" = 'ERROR' ];then
-		echo $OUT|jq '.message' --raw-output
-		return 1
-	fi
-#set +x
-}
-
 repo_registered()
 {
 	REPO_NAME=$1
-	curl -X POST -sS -H 'id: '$PACKMAN_API_ID'' -H 'privateKey: '$PACKMAN_API_KEY'' -H 'route: repos/list' -H 'Content-Type: application/json' $PACKMAN_API_ENDPOINT | jq '.[] | .uri' --raw-output|grep -q "^$REPO_NAME$" 
+	curl -X POST -sS -H 'X-API-ID: '$PACKMAN_API_ID'' -H 'X-API-PRIVATE-KEY: '$PACKMAN_API_KEY'' -H 'X-API-ROUTE: repos/list' -H 'Content-Type: application/json' $PACKMAN_API_ENDPOINT | jq '.[] | .uri' --raw-output|grep -q "^$REPO_NAME$" 
 
 }
 
@@ -147,8 +132,8 @@ register_new_repo()
 {
 	REPO_NAME=$1
 	REPO_URI=$2
-	OUT=`curl -X POST -sS -H 'id: '$PACKMAN_API_ID'' -H 'privateKey: '$PACKMAN_API_KEY'' -H 'route: repos/add' -H 'Content-Type: application/json' -d '{"name": "'"$REPO_NAME"'", "uri":"'"$REPO_URI"'"}' $PACKMAN_API_ENDPOINT` 
-	STATUS=`echo $OUT|jq .status --raw-output` 
+	OUT=`curl -X POST -sS -H 'X-API-ID: '$PACKMAN_API_ID'' -H 'X-API-PRIVATE-KEY: '$PACKMAN_API_KEY'' -H 'X-API-ROUTE: repos/add' -H 'Content-Type: application/json' -d '{"name": "'"$REPO_NAME"'", "uri":"'"$REPO_URI"'"}' $PACKMAN_API_ENDPOINT` 
+	STATUS=`echo $OUT|jq .request_status --raw-output` 
 	if [ "$STATUS" = 'ERROR' ];then
 		echo $OUT|jq '.message' --raw-output
 		return 1
@@ -203,7 +188,7 @@ add_github_repo_key()
 	KEY=`cat $KEY_PATH`
 	GITHUB_ORG=$3
 	REPO_NAME=$4
-	curl -X POST -H "Authorization: token $GITHUB_TOKEN" --data '{"title":"'"$KEY_NAME"'","key":"'"$KEY"'"}' https://api.github.com/repos/$GITHUB_ORG/$REPO_NAME/keys
+	curl -X POST -sS  -H "Authorization: token $GITHUB_TOKEN" --data '{"title":"'"$KEY_NAME"'","key":"'"$KEY"'"}' https://api.github.com/repos/$GITHUB_ORG/$REPO_NAME/keys
 }
 
 github_repo_exists()
@@ -215,7 +200,7 @@ create_github_repo()
 {
 	GITHUB_ORG=$1
 	REPO_NAME=$2
-	curl -X POST -H "Authorization: token $GITHUB_TOKEN"  --data '{"name":"'"$REPO_NAME"'","has_issues":"true","has_downloads":"true"}' https://api.github.com/orgs/$GITHUB_ORG/repos
+	curl -X POST -sS -H "Authorization: token $GITHUB_TOKEN"  --data '{"name":"'"$REPO_NAME"'","has_issues":"true","has_downloads":"true"}' https://api.github.com/orgs/$GITHUB_ORG/repos
 }
 
 add_github_repo_key()
@@ -225,32 +210,23 @@ add_github_repo_key()
 	KEY=`cat $KEY_PATH`
 	GITHUB_ORG=$3
 	REPO_NAME=$4
-	curl -X POST -H "Authorization: token $GITHUB_TOKEN" --data '{"title":"'"$KEY_NAME"'","key":"'"$KEY"'"}' https://api.github.com/repos/$GITHUB_ORG/$REPO_NAME/keys
+	curl -X POST -sS -H "Authorization: token $GITHUB_TOKEN" --data '{"title":"'"$KEY_NAME"'","key":"'"$KEY"'"}' https://api.github.com/repos/$GITHUB_ORG/$REPO_NAME/keys
 }
 
 
 # packdaddy API
-new_job_api()
-{
-	PACKAGE_NAME=$1
-	PACKAGE_VERSION=$2
-	PACKMAN_SPACE=$3
-	ENV=$4
-}
 
-update_job_api()
+new_package_api()
 {
-	JOB_ID=$1
-	JOB_STATUS=$2
-	curl -X POST  -H "id: $PACKMAN_API_ID" -H "privateKey: $PACKMAN_API_KEY" -H "route: jobs/update/$JOB_ID" -H 'Content-Type: application/json' -d '{"status":"'"$JOB_STATUS"'"}' $PACKMAN_API_ENDPOINT
-}
-
-new_event_api()
-{
-	EVENT_TYPE=$1
-	JOB_ID=$2
-	CONTENT=$3
-	curl -X POST  -H "id: $PACKMAN_API_ID" -H "privateKey: $PACKMAN_API_KEY" -H "route: events/add" -H 'Content-Type: application/json' -d '{"event_type":"'"$EVENT_TYPE"'","job_id":"'"$JOB_ID"'","content":"'"$CONTENT"'"}' $PACKMAN_API_ENDPOINT
+	RC_FILE=$1
+	. $RC_FILE
+	PACK_DESCRIPTION=`cat $PACKAGE_DESCRIPTION`
+	OUT=`curl -X POST -sS -H 'X-API-ID: '$PACKMAN_API_ID'' -H 'X-API-PRIVATE-KEY: '$PACKMAN_API_KEY'' -H 'X-API-ROUTE: packages/add' -H 'Content-Type: application/json'  -d '{"packman_space": "'"$PACKMAN_SPACE"'", "name": "'"$PACKAGE_NAME"'", "version": "'"$PACKAGE_VERSION"'", "source_url": "'"$SOURCE_URL"'", "project_url": "'"$PROJECT_URL"'", "description": "'"$PACK_DESCRIPTION"'", "maintainer_name": "'"$MAINTAINER_NAME"'","maintainer_email":"'"$MAINTAINER_EMAIL"'","repo_id": "'"$REPO_ID"'"}' $PACKMAN_API_ENDPOINT`
+	STATUS=`echo $OUT|jq .request_status --raw-output` 
+	if [ "$STATUS" = 'ERROR' ];then
+		echo $OUT|jq '.message' --raw-output
+		return 1
+	fi
 }
 
 new_job_api()
@@ -265,7 +241,11 @@ update_job_api()
 {
 	JOB_ID=$1
 	JOB_STATUS=$2
-	curl -X POST  -H "id: $PACKMAN_API_ID" -H "privateKey: $PACKMAN_API_KEY" -H "route: jobs/update/$JOB_ID" -H 'Content-Type: application/json' -d '{"status":"'"$JOB_STATUS"'"}' $PACKMAN_API_ENDPOINT
+	OUT=`curl -X POST -sS -H "X-API-ID: $PACKMAN_API_ID" -H "X-API-PRIVATE-KEY: $PACKMAN_API_KEY" -H "X-API-ROUTE: jobs/update/$JOB_ID" -H 'Content-Type: application/json' -d '{"status":"'"$JOB_STATUS"'"}' $PACKMAN_API_ENDPOINT`
+	STATUS=`echo $OUT|jq .request_status --raw-output` 
+	if [ "$STATUS" = 'ERROR' ];then
+		echo $OUT|jq '.message' --raw-output
+	fi
 }
 
 new_event_api()
@@ -273,7 +253,108 @@ new_event_api()
 	EVENT_TYPE=$1
 	JOB_ID=$2
 	CONTENT=$3
-	curl -X POST  -H "id: $PACKMAN_API_ID" -H "privateKey: $PACKMAN_API_KEY" -H "route: events/add" -H 'Content-Type: application/json' -d '{"event_type":"'"$EVENT_TYPE"'","job_id":"'"$JOB_ID"'","content":"'"$CONTENT"'"}' $PACKMAN_API_ENDPOINT
+	OUT=`curl -X POST -sS  -H "X-API-ID: $PACKMAN_API_ID" -H "X-API-PRIVATE-KEY: $PACKMAN_API_KEY" -H "X-API-ROUTE: events/add" -H 'Content-Type: application/json' -d '{"event_type":"'"$EVENT_TYPE"'","job_id":"'"$JOB_ID"'","content":"'"$CONTENT"'"}' $PACKMAN_API_ENDPOINT`
+	if [ "$STATUS" = 'ERROR' ];then
+		echo $OUT|jq '.message' --raw-output
+	fi
+}
+
+new_job_api()
+{
+	PACKAGE_NAME=$1
+	PACKAGE_VERSION=$2
+	PACKMAN_SPACE=$3
+	ENV=$4
+}
+
+update_job_api()
+{
+	JOB_ID=$1
+	JOB_STATUS=$2
+	OUT=`curl -X POST -sS  -H "X-API-ID: $PACKMAN_API_ID" -H "X-API-PRIVATE-KEY: $PACKMAN_API_KEY" -H "X-API-ROUTE: jobs/update/$JOB_ID" -H 'Content-Type: application/json' -d '{"status":"'"$JOB_STATUS"'"}' $PACKMAN_API_ENDPOINT`
+	if [ "$STATUS" = 'ERROR' ];then
+		echo $OUT|jq '.message' --raw-output
+	fi
+}
+
+new_event_api()
+{
+	EVENT_TYPE=$1
+	JOB_ID=$2
+	CONTENT=$3
+	OUT=`curl -X POST -sS  -H "X-API-ID: $PACKMAN_API_ID" -H "X-API-PRIVATE-KEY: $PACKMAN_API_KEY" -H "X-API-ROUTE: events/add" -H 'Content-Type: application/json' -d '{"event_type":"'"$EVENT_TYPE"'","job_id":"'"$JOB_ID"'","content":"'"$CONTENT"'"}' $PACKMAN_API_ENDPOINT`
+	if [ "$STATUS" = 'ERROR' ];then
+		echo $OUT|jq '.message' --raw-output
+	fi
+}
+
+new_package_spec_api()
+{
+	PACKAGE_ID=$1
+	PACKAGE_TYPE=$2
+	SPEC_PATH=$3
+	OUT=`curl -X POST -sS -H "X-API-ID: $PACKMAN_API_ID" -H "X-API-PRIVATE-KEY: $PACKMAN_API_KEY" -H 'X-API-ROUTE: packagespecs/add' -H 'Content-Type: application/json' -d '{"package_id": "'"$PACKAGE_ID"'","package_type":"'"$PACKAGE_TYPE"'", "spec_path":"'"$SPEC_PATH"'"}' $PACKMAN_API_ENDPOINT`
+	if [ "$STATUS" = 'ERROR' ];then
+		echo $OUT|jq '.message' --raw-output
+	fi
+}
+
+update_package_status_api()
+{
+	PACKAGE_ID=$1
+	PACKAGE_STATUS=$2
+	OUT=`curl -X POST -sS  -H "X-API-ID: $PACKMAN_API_ID" -H "X-API-PRIVATE-KEY: $PACKMAN_API_KEY" -H "X-API-ROUTE: packages/update/$PACKAGE_ID" -H 'Content-Type: application/json' -d '{"status": "'"$PACKAGE_STATUS"'"}' $PACKMAN_API_ENDPOINT`
+	if [ "$STATUS" = 'ERROR' ];then
+		echo $OUT|jq '.message' --raw-output
+	fi
+}
+
+fatal_event_api()
+{
+	PACKAGE_ID=$1
+	JOB_ID=$2
+	MESSAGE=$3
+	new_event_api $EVENT_FATAL $JOB_ID "$MESSAGE"
+	update_package_status_api $PACKAGE_ID $PACKAGE_FAILED
+}
+
+get_package_type_build_env_api()
+{
+	PACKAGE_TYPE=$1
+	OUT=`curl -X POST -sS  -H "X-API-ID: $PACKMAN_API_ID" -H "X-API-PRIVATE-KEY: $PACKMAN_API_KEY" -H "X-API-ROUTE: packagebuildenv/list" -H 'Content-Type: application/json' -d '{"package_type": "'"$PACKAGE_TYPE"'"}' $PACKMAN_API_ENDPOINT`
+	if [ "$STATUS" = 'ERROR' ];then
+		echo $OUT|jq '.message' --raw-output
+	else
+		echo $OUT| jq '.[] | .build_env' --raw-output 
+	fi
+}
+
+get_package_type_api()
+{
+	PACKAGE_ID=$1
+	OUT=`curl -X POST -sS  -H "X-API-ID: $PACKMAN_API_ID" -H "X-API-PRIVATE-KEY: $PACKMAN_API_KEY" -H "X-API-ROUTE: packagespecs/list" -H 'Content-Type: application/json' -d '{"package_id": "'"$PACKAGE_ID"'"}' $PACKMAN_API_ENDPOINT`
+	if [ "$STATUS" = 'ERROR' ];then
+		echo $OUT|jq '.message' --raw-output
+	else
+		echo $OUT| jq '.[] | .package_type' --raw-output 
+	fi
+}
+
+get_package_description_api()
+{
+	PACKAGE_ID=$1
+	curl -X POST -sS  -H "X-API-ID: $PACKMAN_API_ID" -H "X-API-PRIVATE-KEY: $PACKMAN_API_KEY" -H "X-API-ROUTE: packages/get/$PACKAGE_ID" -H 'Content-Type: application/json' -d '{}' $PACKMAN_API_ENDPOINT | jq  '.data[] | .description' --raw-output
+}
+
+package_type_build_env_api()
+{
+	PACKAGE_TYPE=$1
+	OUT=`curl -X POST -sS  -H "X-API-ID: $PACKMAN_API_ID" -H "X-API-PRIVATE-KEY: $PACKMAN_API_KEY" -H "X-API-ROUTE: packagebuildenv/list" -H 'Content-Type: application/json' -d '{"package_type": "'"$PACKAGE_TYPE"'"}' $PACKMAN_API_ENDPOINT`
+	if [ "$STATUS" = 'ERROR' ];then
+		echo $OUT|jq '.message' --raw-output
+	else
+		echo $OUT| jq '.[] | .build_env' --raw-output 
+	fi
 }
 
 

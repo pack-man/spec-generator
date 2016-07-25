@@ -1,0 +1,27 @@
+{
+  "name": "@@PACKAGE_NAME@@",
+  "version": "@@PACKAGE_NAME@@",
+  "description": "@@PACKAGE_DESCRIPTION@@",
+  "main": "@@MAIN_SCRIPT@@",
+  "scripts": {
+    "test": "@@TEST_SCRIPT@@",
+    "postinstall": "@@POST_INST_SCRIPT@@"
+  },
+  "repository": {
+    "type": "git",
+    "url": "@@PACKMAN_REPO@@"
+  },
+  "author": "@@MAINTAINER_NAME@@ @@MAINTAINER_EMAIL@@ ",
+  "bugs": {
+    "url": "@@PACKMAN_REPO@@/issues"
+  },
+  "homepage": "@@PROJECT_URL@@",
+  "dependencies": {
+        "@@DEPS@@" : ""
+  },
+  "devDependencies": {
+        "@@DEV_DEPS@@" : ""
+  }
+
+}
+

@@ -1,4 +1,4 @@
-PRODUCT_NAME="Packman"
+PRODUCT_NAME="Packdaddy"
 AVAILABLE_ENVS="debian:8,centos:7,centos:6"
 COMMON_LICENSES="apache,artistic,bsd,gpl,gpl2,gpl3,lgpl,lgpl2,lgpl3,mit,agpl3"
 PACKMAN_BASE_GIT_REPO="git@github.com:packdaddy"
@@ -6,8 +6,12 @@ PACKMAN_HOME=/home/packman
 PACKMAN_API_ENDPOINT="https://api.packdaddy.io/mainController.php"
 PACKMAN_LOG_DIR=/var/log/packman
 PACKMAN_TMP_DIR=/var/tmp/packman
-PACKMAN_API_ID=""
-PACKMAN_API_KEY=""
+PACKMAN_KEY_DIR=/etc/packman/keys
+DOCKER_SERVER="https://docker.packman.io"
+DOCKER_USER=packman
+DOCKER_PASSWD="MJbp01!"
+
+# package types
 DEB=1
 RPM=2
 NPM=3
@@ -21,9 +25,17 @@ JOB_FAILED=4;
 JOB_ABORTED=5;
 JOB_FATAL=6;
 
+# package statuses
+PACKAGE_BUILD_IN_PROGRESS=2;
+PACKAGE_SUCCESS=3;
+PACKAGE_FAILED=4;
+
 # event types
 EVENT_FATAL=0;
 EVENT_AUTO_FIX=1;
 EVENT_WARNING=2;
+EVENT_INFO=3;
+
+
 . /usr/bin/colors.rc
 

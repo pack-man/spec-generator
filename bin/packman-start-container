@@ -1,0 +1,87 @@
+#!/bin/bash -e 
+#===============================================================================
+#          FILE: packman-start-dockers
+#         USAGE: ./packman-start-dockers 
+#   DESCRIPTION: 
+#       OPTIONS: ---
+#  REQUIREMENTS: ---
+#          BUGS: ---
+#         NOTES: ---
+#        AUTHOR: Jess Portnoy (), <jess@packman.io>
+#  ORGANIZATION: Packman.
+#       CREATED: 03/09/2016 04:30:21 PM GMT
+#      REVISION:  ---
+#===============================================================================
+
+#set -o nounset                              # Treat unset variables as an error
+
+DIRNAME=`dirname $0`
+NEEDED_FILES="$DIRNAME/packman-functions.rc"
+for NEEDED_FILE in $NEEDED_FILES;do
+        if [ ! -r $NEEDED_FILE ];then
+                printf "Missing $NEEDED_FILE. Something is wrong with your ENV. Exiting."
+                exit 2
+        fi
+        . $NEEDED_FILE
+done
+
+if [ $# -lt 5 ];then
+        printf "Usage: $0 <path/to/package.rc> <api id> <api key> <job id> <package id>\n"
+        exit 1
+fi
+
+trap 'trap_handler ${LINENO} $?' ERR
+PACKAGE_RC=$1
+if [ ! -r "$PACKAGE_RC" ];then
+	printf "Could not read $PACKAGE_RC. Exiting."
+	exit 3
+fi
+. $PACKAGE_RC
+
+PACKMAN_API_ID=$2
+PACKMAN_API_KEY=$3
+JOB_ID=$4
+PACKAGE_ID=$5
+export PACKMAN_API_ID PACKMAN_API_KEY JOB_ID PACKAGE_ID
+
+update_job_api $JOB_ID $JOB_IN_PROGRESS
+PACKAGE_TYPE=`get_package_type_api $PACKAGE_ID`
+ENV_NAME=`get_package_type_build_env_api $PACKAGE_TYPE`
+
+# start needed container and throw all the needed crap into it.
+
+# NOTE: every such user will need permissions to get the container
+# also, check about access control/spaces/blah blah
+
+new_event_api $EVENT_INFO $JOB_ID "Logging in to $DOCKER_SERVER"
+echo "$MAINTAINER_EMAIL"| sudo docker login --username $DOCKER_USER --password $DOCKER_PASSWD $DOCKER_SERVER
+new_event_api $EVENT_INFO $JOB_ID "Pulling $ENV_NAME"
+sudo docker pull $ENV_NAME
+SHORT_ENV_NAME=`echo $ENV_NAME|awk -F "/" '{print $2}'`
+NEW_CONTAINER_TAG="$SHORT_ENV_NAME-$PACKAGE_NAME-$PACKAGE_VERSION"
+new_event_api $EVENT_INFO $JOB_ID "Tagging $NEW_CONTAINER_TAG"
+sudo docker tag $ENV_NAME $NEW_CONTAINER_TAG 
+new_event_api $EVENT_INFO $JOB_ID "Copying files.."
+sudo docker run -t $NEW_CONTAINER_TAG mkdir -p /etc/packman 
+CONTAINER_ID=`get_container_id $NEW_CONTAINER_TAG`
+sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG
+sudo docker run -t $NEW_CONTAINER_TAG  mkdir -p $PACKMAN_HOME/.ssh
+CONTAINER_ID=`get_container_id $NEW_CONTAINER_TAG`
+sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG
+sudo docker cp $PACKMAN_PRIVATE_KEY  $CONTAINER_ID:$PACKMAN_HOME/.ssh/id_rsa
+sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG
+sudo docker cp $PACKAGE_RC $CONTAINER_ID:/etc/packman/package.rc
+sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG
+
+sudo docker run -t $NEW_CONTAINER_TAG chown -R packman.packman $PACKMAN_HOME
+CONTAINER_ID=`get_container_id $NEW_CONTAINER_TAG`
+sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG
+
+#sudo docker run -t $NEW_CONTAINER_TAG su - packman -c "packman-prepare-build-env && packman-gen-spec /etc/packman/package.rc"
+new_event_api $EVENT_INFO $JOB_ID "Running the build.."
+sudo docker run -t $NEW_CONTAINER_TAG su - packman -c "touch /tmp/here"
+CONTAINER_ID=`get_container_id $NEW_CONTAINER_TAG`
+new_event_api $EVENT_INFO $JOB_ID "Creating $NEW_CONTAINER_TAG-postrun"
+sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG-postrun
+# here we need to push the new container to docker.packdaddy.io
+

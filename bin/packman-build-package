@@ -1,0 +1,82 @@
+#!/bin/bash -e 
+#===============================================================================
+#          FILE: packman-build-package
+#         USAGE: ./packman-build-package
+#   DESCRIPTION: checkout the metadata configuration for the package from the repo
+#                and prepare the git ENV 
+#       OPTIONS: ---
+#  REQUIREMENTS: ---
+#          BUGS: ---
+#         NOTES: ---
+#        AUTHOR: Jess Portnoy (), <jess@packman.io>
+#  ORGANIZATION: Packman.
+#       CREATED: 03/11/2016 12:47:11 PM GMT
+#      REVISION:  ---
+#===============================================================================
+
+#set -o nounset                              # Treat unset variables as an error
+
+DIRNAME=`dirname $0`
+NEEDED_FILES="$DIRNAME/packman-functions.rc"
+for NEEDED_FILE in $NEEDED_FILES;do
+        if [ ! -r $NEEDED_FILE ];then
+                printf "Missing $NEEDED_FILE. Something is wrong with your ENV. Exiting."
+                exit 2
+        fi
+        . $NEEDED_FILE
+done
+if [ $# -lt 5 ];then
+        printf "Usage: $0 <path/to/package.rc> <api id> <api key> <job id> <package id>\n"
+        exit 1
+fi
+
+trap 'trap_handler ${LINENO} $?' ERR
+PACKAGE_RC=$1
+if [ ! -r "$PACKAGE_RC" ];then
+	printf "Could not read $PACKAGE_RC. Exiting."
+	exit 3
+fi
+. $PACKAGE_RC
+PACKMAN_API_ID=$2
+PACKMAN_API_KEY=$3
+JOB_ID=$4
+PACKAGE_ID=$5
+export PACKMAN_API_ID PACKMAN_API_KEY JOB_ID PACKAGE_ID
+
+update_job_api $JOB_ID $JOB_IN_PROGRESS
+update_package_status_api $PACKAGE_ID $PACKAGE_BUILD_IN_PROGRESS
+#cd $PACKMAN_HOME/tmp/build/
+rm -rf /etc/packman/packman-packages-meta/$PACKMAN_SPACE
+mkdir -p /etc/packman/packman-packages-meta/$PACKMAN_SPACE
+cd /etc/packman/packman-packages-meta/
+BRANCH=$PACKAGE_NAME-$PACKAGE_VERSION
+add_github_com_to_known_hosts
+new_event_api $EVENT_INFO $JOB_ID "Cloning $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE.."
+set -x
+git clone $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE 
+cd $PACKMAN_SPACE
+set +x
+#git fetch --all
+set +e
+if ! git remote show origin |grep -q ${BRANCH};then
+        git checkout -b ${BRANCH}
+else
+        git checkout ${BRANCH}
+	git pull origin ${BRANCH}
+fi
+set -e
+cd ${BRANCH}
+new_event_api $EVENT_INFO $JOB_ID "Checked out branch ${BRANCH}.."
+git config user.email "$MAINTAINER_EMAIL" 
+git config user.name "$MAINTAINER_NAME"
+PACKAGE_TYPE=`get_package_type_api $PACKAGE_ID`
+if [ "$PACKAGE_TYPE" -eq 3 ];then
+	bash -x /usr/bin/packman-build-npm $PACKAGE_RC $PACKMAN_API_ID $PACKMAN_API_KEY $JOB_ID $PACKAGE_ID
+fi
+## TODO: if we're NodeJS:
+# - Ask for creds to publish to npmjs
+# - Check if node_modules is part of our source, not goood
+# - parse package.json and make sure main file and script files exist
+# - try to run the tests
+# - check if a newer version for a dep exists, if so, create an event
+
