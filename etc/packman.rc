@@ -8,8 +8,8 @@ PACKMAN_LOG_DIR=/var/log/packman
 PACKMAN_TMP_DIR=/var/tmp/packman
 PACKMAN_KEY_DIR=/etc/packman/keys
 DOCKER_SERVER="https://docker.packman.io"
-DOCKER_USER=packman
-DOCKER_PASSWD="MJbp01!"
+DOCKER_USER=""
+DOCKER_PASSWD=""
 
 # package types
 DEB=1
