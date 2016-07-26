@@ -153,3 +153,12 @@ API:
 - how to do an auto git pull without having to confirm it
 - add jo RPM to packman repo
 - make repo.packman.io listen on 80 and change docker files accordingly
+
+- run sinopia on npm.packdaddy.io
+- create user and pass on npm.packdaddy.io npm adduser --registry http://localhost:4873 [https://www.npmjs.com/package/sinopia] 
+- publish to npm.packdaddy.io
+- create user and passwd on docker.packman.io and also show instructions for cert
+
+- prompt for npmjs user and passwd and publish 
+
+- start a stronger machine for packdaddy.io

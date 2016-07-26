@@ -48,18 +48,51 @@ update_package_status_api $PACKAGE_ID $PACKAGE_BUILD_IN_PROGRESS
 BRANCH=$PACKAGE_NAME-$PACKAGE_VERSION
 cd /etc/packman/packman-packages-meta/$PACKMAN_SPACE/$BRANCH
 if [ -r package.json ];then
-        mv package.json package.json.orig
+        cp package.json package.json.orig
+else
+	# we need to generate one
+	sed "s#@@PACKAGE_NAME@@#$PACKAGE_NAME#g" /etc/packman/packman-packages-meta/spec_skels/npm.skel > package.json
+	sed -i "s#@@PACKAGE_VERSION@@#$PACKAGE_VERSION#g"  package.json
+	DESCRIPTION=`get_package_description_api $PACKAGE_ID|sed "s^\"^'^g"`
+	sed -i "s^@@PACKAGE_DESCRIPTION@@^$DESCRIPTION^g"  package.json
+	sed -i "s^@@PACKMAN_REPO@@^https://github.com/packdaddy/$PACKMAN_SPACE^g"  package.json
+	sed -i "s^@@PROJECT_URL@@^$PROJECT_URL^g"  package.json
+	sed -i "s^@@MAINTAINER_NAME@@^$MAINTAINER_NAME^g"  package.json
+	sed -i "s^@@MAINTAINER_EMAIL@@^$MAINTAINER_EMAIL^g"  package.json
+
+	if [ -r "${PACKAGE_NAME}.js" ];then
+		MAIN_SCRIPT="${PACKAGE_NAME}.js"
+	elif [ -r "lib/${PACKAGE_NAME}.js" ];then
+		MAIN_SCRIPT="lib/${PACKAGE_NAME}.js"
+	elif [ -r "server.js" ];then
+		MAIN_SCRIPT=server.js
+	elif [ -r "index.js" ];then
+		MAIN_SCRIPT=index.js
+	elif [ -r "lib/index.js" ];then
+		MAIN_SCRIPT=index.js
+	else
+		new_event_api $EVENT_FATAL $JOB_ID "Couldn't detect the main script to run. package.json saved to https://github.com/packdaddy/$PACKMAN_SPACE on branch $BRANCH. Replace @@MAIN_SCRIPT@@ with an actual script."
+	fi
+	sed -i "s^@@MAIN_SCRIPT@@^$MAIN_SCRIPT^g"  package.json
+	NEW_SPEC_GENERATED=1
+	
 fi
-# we need to generate one
-sed "s#@@PACKAGE_NAME@@#$PACKAGE_NAME#g" /etc/packman/packman-packages-meta/spec_skels/npm.skel > package.json
-sed -i "s#@@PACKAGE_VERSION@@#$PACKAGE_VERSION#g"  package.json
-DESCRIPTION=`get_package_description_api $PACKAGE_ID|sed "s^\"^'^g"`
-sed -i "s^@@PACKAGE_DESCRIPTION@@^$DESCRIPTION^g"  package.json
-sed -i "s^@@PACKMAN_REPO@@^https://github.com/packdaddy/$PACKMAN_SPACE^g"  package.json
-sed -i "s^@@PROJECT_URL@@^$PROJECT_URL^g"  package.json
+DEPS_FILE=/tmp/${PACKAGE_NAME}_${PACKAGE_VERSION}.deps
+find . -type f -name "*.js"  ! -name "*.ejs.js" -exec dependency-check . --entry {} 2>&1 \; |grep "Fail! Dependencies not listed in package.json: "|sed 's@Fail! Dependencies not listed in package.json:@@g'|tr "," "\n" >${DEPS_FILE}.tmp
+sort -u ${DEPS_FILE}.tmp > ${DEPS_FILE}
 
-#for @@TEST_SCRIPT@@ @@POST_INST_SCRIPT@@ @@MAIN_SCRIPT@@
-# see if we already have them in the original package.json and if they exist, if so, use them, if not
-# main is server.js if exists or index.js if exists, if neither exist, FATAL.
-
-#if [ -r ]
+if [ -n "$NEW_SPEC_GENERATED" ];then
+	export PACKMAN_API_ID PACKMAN_API_KEY PACKMAN_API_ENDPOINT PACKAGE_ID
+	/usr/bin/packman-gen-npm-deps.php package.json ${DEPS_FILE}
+else
+	# if the code uses bower in scripts, do not show it as unused.
+	if grep "bower \|#!.*bower" * -r -q ;then 
+		EXTRA_OPTS="--ignore-module bower"
+	else
+		EXTRA_OPTS=""
+	fi
+	UNUSED_MODULES=`dependency-check . --unused $EXTRA_OPTS 2>&1|sed 's@Fail! @@g'`
+	echo $UNUSED_MODULES|sed 's@Modules in package.json not used in code: @@g'|tr "," "\n" >/tmp/${PACKAGE_NAME}_${PACKAGE_VERSION}_unused.deps
+	new_event_api $EVENT_WARNING $JOB_ID "$UNUSED_MODULES" 
+	/usr/bin/packman-gen-npm-update.php package.json /tmp/${PACKAGE_NAME}_${PACKAGE_VERSION}_unused.deps
+fi

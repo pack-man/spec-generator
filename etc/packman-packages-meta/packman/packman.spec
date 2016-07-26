@@ -1,7 +1,7 @@
 %define packman_home /home/packman
 Name: packman
 Version: 1.0.0
-Release: 26
+Release: 27
 Summary: An End-to-End Software Packaging Platform
 BuildArch: noarch
 
@@ -68,8 +68,8 @@ if [ "$1" = 1 ];then
         rm /tmp/sudoers.new
 fi
 ln -sf %{packman_home}/src  %{packman_home}/rpmbuild/SOURCES
-# TODO: add more needed npm modules
-npm install jsonlint -g
+# TODO: ad more needed npm modules
+#npm install jsonlint -g
 
 %files
 %defattr(-,packman,packman,-)
@@ -88,6 +88,9 @@ npm install jsonlint -g
 %config(noreplace) %{packman_home}/.bash_profile
 
 %changelog
+* Tue Jul 26 2016 Jess Portnoy <jess@packman.io> - 1.0.0-27
+- Ton of changes, this is the first version ready for SaaS testing basically.
+
 * Sun Apr 17 2016 Jess Portnoy <jess@packman.io> - 1.0.0-20
 - New FS layout
 - Remove empty hooks

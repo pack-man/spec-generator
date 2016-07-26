@@ -345,7 +345,18 @@ get_package_description_api()
 	PACKAGE_ID=$1
 	curl -X POST -sS  -H "X-API-ID: $PACKMAN_API_ID" -H "X-API-PRIVATE-KEY: $PACKMAN_API_KEY" -H "X-API-ROUTE: packages/get/$PACKAGE_ID" -H 'Content-Type: application/json' -d '{}' $PACKMAN_API_ENDPOINT | jq  '.data[] | .description' --raw-output
 }
+add_package_dep_api()
+{
+	PACKAGE_ID=$1
+	PACKAGE_TYPE=$2
+	PACKAGE_ENV=$3
+	DEP_TYPE=$4
+	DEPENDS_ON_PACKAGE=$5
+	NEEDED_FILES=$6
+	
+	curl -X POST -sS  -H "X-API-ID: $PACKMAN_API_ID" -H "X-API-PRIVATE-KEY: $PACKMAN_API_KEY" -H "X-API-ROUTE: /packagedeps/add" -H 'Content-Type: application/json' -d '{"package_id":"'"$PACKAGE_ID"'", "package_type":"'"$PACKAGE_TYPE"'", "env":"'"$PACKAGE_ENV"'","dep_type":"'"$DEP_TYPE"'","depends_on_package":"'"$DEPENDS_ON_PACKAGE"'","needed_files":"'"$NEEDED_FILES"'"}' $PACKMAN_API_ENDPOINT
 
+}
 package_type_build_env_api()
 {
 	PACKAGE_TYPE=$1
