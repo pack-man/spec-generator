@@ -51,6 +51,7 @@ if [ -r package.json ];then
         cp package.json package.json.orig
 else
 	# we need to generate one
+	new_event_api $EVENT_INFO $JOB_ID "Generating package.json..."
 	sed "s#@@PACKAGE_NAME@@#$PACKAGE_NAME#g" /etc/packman/packman-packages-meta/spec_skels/npm.skel > package.json
 	sed -i "s#@@PACKAGE_VERSION@@#$PACKAGE_VERSION#g"  package.json
 	DESCRIPTION=`get_package_description_api $PACKAGE_ID|sed "s^\"^'^g"`
@@ -74,6 +75,7 @@ else
 		new_event_api $EVENT_FATAL $JOB_ID "Couldn't detect the main script to run. package.json saved to https://github.com/packdaddy/$PACKMAN_SPACE on branch $BRANCH. Replace @@MAIN_SCRIPT@@ with an actual script."
 	fi
 	sed -i "s^@@MAIN_SCRIPT@@^$MAIN_SCRIPT^g"  package.json
+	new_event_api $EVENT_INFO $JOB_ID "Detected $MAIN_SCRIPT as the main script to run..."
 	NEW_SPEC_GENERATED=1
 	
 fi
@@ -95,4 +97,12 @@ else
 	echo $UNUSED_MODULES|sed 's@Modules in package.json not used in code: @@g'|tr "," "\n" >/tmp/${PACKAGE_NAME}_${PACKAGE_VERSION}_unused.deps
 	new_event_api $EVENT_WARNING $JOB_ID "$UNUSED_MODULES" 
 	/usr/bin/packman-gen-npm-update.php package.json /tmp/${PACKAGE_NAME}_${PACKAGE_VERSION}_unused.deps
+	npm-check-updates  -u
+	git add package.json*
+	git commit package.json* -m "New package.json by `basename $0`" && git push origin $BRANCH
+
+
+	# ready to build
+	npm publish
+		
 fi

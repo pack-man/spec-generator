@@ -60,8 +60,8 @@ sudo docker pull $ENV_NAME
 SHORT_ENV_NAME=`echo $ENV_NAME|awk -F "/" '{print $2}'`
 NEW_CONTAINER_TAG="$SHORT_ENV_NAME-$PACKAGE_NAME-$PACKAGE_VERSION"
 new_event_api $EVENT_INFO $JOB_ID "Tagging $NEW_CONTAINER_TAG"
-sudo docker tag $ENV_NAME $NEW_CONTAINER_TAG 
-new_event_api $EVENT_INFO $JOB_ID "Copying files.."
+sudo docker tag -f $ENV_NAME $NEW_CONTAINER_TAG 
+new_event_api $EVENT_INFO $JOB_ID "Copying files into the container.."
 sudo docker run -t $NEW_CONTAINER_TAG mkdir -p /etc/packman 
 CONTAINER_ID=`get_container_id $NEW_CONTAINER_TAG`
 sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG
@@ -72,14 +72,35 @@ sudo docker cp $PACKMAN_PRIVATE_KEY  $CONTAINER_ID:$PACKMAN_HOME/.ssh/id_rsa
 sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG
 sudo docker cp $PACKAGE_RC $CONTAINER_ID:/etc/packman/package.rc
 sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG
+sudo docker cp ~/.npmrc $CONTAINER_ID:$PACKMAN_HOME/
+sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG
 
+new_event_api $EVENT_INFO $JOB_ID "Setting permissions on $PACKMAN_HOME"
 sudo docker run -t $NEW_CONTAINER_TAG chown -R packman.packman $PACKMAN_HOME
 CONTAINER_ID=`get_container_id $NEW_CONTAINER_TAG`
 sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG
 
+#sudo docker run -t $NEW_CONTAINER_TAG rpm -Uhv http://repo.packdaddy.io/rpm/noarch/packman-release.rpm
+#CONTAINER_ID=`get_container_id $NEW_CONTAINER_TAG`
+#sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG
+
+new_event_api $EVENT_INFO $JOB_ID "Updating to the latest $PRODUCT_NAME package.."
+sudo docker run -t $NEW_CONTAINER_TAG yum clean all 
+CONTAINER_ID=`get_container_id $NEW_CONTAINER_TAG`
+sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG
+
+sudo docker run -t $NEW_CONTAINER_TAG yum repolist all
+CONTAINER_ID=`get_container_id $NEW_CONTAINER_TAG`
+sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG
+
+sudo docker run -t $NEW_CONTAINER_TAG yum -y update packman
+CONTAINER_ID=`get_container_id $NEW_CONTAINER_TAG`
+sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG
+
+
 #sudo docker run -t $NEW_CONTAINER_TAG su - packman -c "packman-prepare-build-env && packman-gen-spec /etc/packman/package.rc"
 new_event_api $EVENT_INFO $JOB_ID "Running the build.."
-sudo docker run -t $NEW_CONTAINER_TAG su - packman -c "touch /tmp/here"
+sudo docker run -t $NEW_CONTAINER_TAG su - packman -c "/usr/bin/packman-build-package /etc/packman/package.rc $PACKMAN_API_ID $PACKMAN_API_KEY $JOB_ID $PACKAGE_ID"
 CONTAINER_ID=`get_container_id $NEW_CONTAINER_TAG`
 new_event_api $EVENT_INFO $JOB_ID "Creating $NEW_CONTAINER_TAG-postrun"
 sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG-postrun
