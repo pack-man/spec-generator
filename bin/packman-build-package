@@ -73,6 +73,8 @@ PACKAGE_TYPE=`get_package_type_api $PACKAGE_ID`
 if [ "$PACKAGE_TYPE" -eq 3 ];then
 	bash -x /usr/bin/packman-build-npm $PACKAGE_RC $PACKMAN_API_ID $PACKMAN_API_KEY $JOB_ID $PACKAGE_ID
 fi
+update_package_status_api $PACKAGE_ID $PACKAGE_SUCCESS
+update_job_api $JOB_ID $JOB_SUCCESS
 ## TODO: if we're NodeJS:
 # - Ask for creds to publish to npmjs
 # - Check if node_modules is part of our source, not goood
