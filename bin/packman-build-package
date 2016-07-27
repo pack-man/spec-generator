@@ -52,7 +52,6 @@ cd /etc/packman/packman-packages-meta/
 BRANCH=$PACKAGE_NAME-$PACKAGE_VERSION
 add_github_com_to_known_hosts
 new_event_api $EVENT_INFO $JOB_ID "Cloning $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE.."
-set -x
 git clone $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE 
 cd $PACKMAN_SPACE
 set +x
