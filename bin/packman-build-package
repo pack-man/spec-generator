@@ -54,7 +54,6 @@ add_github_com_to_known_hosts
 new_event_api $EVENT_INFO $JOB_ID "Cloning $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE.."
 git clone $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE 
 cd $PACKMAN_SPACE
-set +x
 #git fetch --all
 set +e
 if ! git remote show origin |grep -q ${BRANCH};then
@@ -70,8 +69,9 @@ git config user.email "$MAINTAINER_EMAIL"
 git config user.name "$MAINTAINER_NAME"
 PACKAGE_TYPE=`get_package_type_api $PACKAGE_ID`
 if [ "$PACKAGE_TYPE" -eq 3 ];then
-	bash -x /usr/bin/packman-build-npm $PACKAGE_RC $PACKMAN_API_ID $PACKMAN_API_KEY $JOB_ID $PACKAGE_ID
+	/usr/bin/packman-build-npm $PACKAGE_RC $PACKMAN_API_ID $PACKMAN_API_KEY $JOB_ID $PACKAGE_ID
 fi
+sleep 2;
 update_package_status_api $PACKAGE_ID $PACKAGE_SUCCESS
 update_job_api $JOB_ID $JOB_SUCCESS
 ## TODO: if we're NodeJS:
