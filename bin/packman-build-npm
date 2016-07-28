@@ -103,6 +103,7 @@ else
 
 
 	# ready to build
+	new_event_api $EVENT_INFO $JOB_ID "Building ${PACKAGE_NAME} version ${PACKAGE_VERSION}.. "
 	npm publish
 	if [ $? -eq 0 ];then
 		new_event_api $EVENT_INFO $JOB_ID "Successfully published ${PACKAGE_NAME} version ${PACKAGE_VERSION} to http://packdaddy.io:4873"
