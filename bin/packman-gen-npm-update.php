@@ -3,6 +3,7 @@
 if ($argc < 2 ){
 	die('Usage '.  __FILE__ . ' </path/to/orig/json> </path/to/unused/deps/file>'. "\n");
 }
+require_once(__DIR__.'/packmanApi.php');
 $orig_package_json=$argv[1];
 $deps_file=$argv[2];
 $unused_deps=file($deps_file, FILE_IGNORE_NEW_LINES );
