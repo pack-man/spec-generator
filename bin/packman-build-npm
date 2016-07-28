@@ -106,6 +106,7 @@ else
 set -x
 	new_event_api $EVENT_INFO $JOB_ID "Building ${PACKAGE_NAME} version ${PACKAGE_VERSION}. This may take a while..."
 	#printf "Building ${PACKAGE_NAME} version ${PACKAGE_VERSION}..\n"
+	set +e
 	npm publish
 	if [ $? -eq 0 ];then
 		new_event_api $EVENT_INFO $JOB_ID "Successfully published ${PACKAGE_NAME} version ${PACKAGE_VERSION} to http://packdaddy.io:4873"
@@ -113,6 +114,7 @@ set -x
 		new_event_api $EVENT_FATAL $JOB_ID "Failed to build ${PACKAGE_NAME} version ${PACKAGE_VERSION}"
 		
 	fi
+	set -e
 set +x
 		
 fi
