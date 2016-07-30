@@ -54,7 +54,7 @@ rm -rf $BRANCH/checkout
 GIT_SSH_COMMAND="ssh -i $PACKMAN_PRIVATE_KEY -F /dev/null"
 export GIT_SSH_COMMAND
 new_event_api $EVENT_INFO $JOB_ID "Cloning $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE.."
-git clone $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE $BRANCH/checkout
+git clone -q $PACKMAN_BASE_GIT_REPO/$PACKMAN_SPACE $BRANCH/checkout
 cd $BRANCH/checkout
 #git fetch --all
 set +e
