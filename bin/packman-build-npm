@@ -97,7 +97,7 @@ else
 	echo $UNUSED_MODULES|sed 's@Modules in package.json not used in code: @@g'|tr "," "\n" >/tmp/${PACKAGE_NAME}_${PACKAGE_VERSION}_unused.deps
 	new_event_api $EVENT_WARNING $JOB_ID "$UNUSED_MODULES" 
 set -x
-	/usr/bin/packman-gen-npm-update.php package.json /tmp/${PACKAGE_NAME}_${PACKAGE_VERSION}_unused.deps
+	/usr/bin/packman-gen-npm-update.php package.json /tmp/${PACKAGE_NAME}_${PACKAGE_VERSION}_unused.deps $PACKMAN_API_ID $PACKMAN_API_KEY $PACKMAN_API_ENDPOINT $PACKAGE_ID
 set +x
 	npm-check-updates  -u
 
@@ -110,11 +110,12 @@ git commit package.json* -m "New package.json by `basename $0`" && git push orig
 	#printf "Building ${PACKAGE_NAME} version ${PACKAGE_VERSION}..\n"
 	set +e
 	npm publish
-	if [ $? -eq 0 ];then
+	RC=$?
+	if [ $RC -eq 0 ];then
 		new_event_api $EVENT_INFO $JOB_ID "Successfully published ${PACKAGE_NAME} version ${PACKAGE_VERSION} to http://packdaddy.io:4873"
 	else
 		new_event_api $EVENT_FATAL $JOB_ID "Failed to build ${PACKAGE_NAME} version ${PACKAGE_VERSION}"
 		
 	fi
-	set -e
+	exit $RC
 		

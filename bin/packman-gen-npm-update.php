@@ -1,16 +1,16 @@
 #!/usr/bin/env php
 <?php
-if ($argc < 2 ){
-	die('Usage '.  __FILE__ . ' </path/to/orig/json> </path/to/unused/deps/file>'. "\n");
+if ($argc < 6 ){
+	die('Usage '.  __FILE__ . ' </path/to/orig/json> </path/to/unused/deps/file> <api id> <api key> <api endpoint> <package id>'. "\n");
 }
 require_once(__DIR__.'/packmanApi.php');
-$api_user=getenv('PACKMAN_API_ID');
-$api_key=getenv('PACKMAN_API_KEY');
-$endpoint=getenv('PACKMAN_API_ENDPOINT');
-$package_id=getenv('PACKAGE_ID');
 
 $orig_package_json=$argv[1];
 $deps_file=$argv[2];
+$api_user=$argv[3];
+$api_key=$argv[4];
+$endpoint=$argv[5];
+$package_id=$argv[6];
 $unused_deps=file($deps_file, FILE_IGNORE_NEW_LINES );
 $orig_json = file_get_contents($orig_package_json);
 $orig_json_a = json_decode($orig_json);
