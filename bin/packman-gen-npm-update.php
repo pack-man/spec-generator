@@ -27,7 +27,8 @@ foreach ($deps as $dep => $version){
 		'depends_on_package_version' => $version,
 		'needed_files' => '',
 	);
-	makeRequest('/packagedeps/add', $mydata, $api_user, $api_key, $endpoint);
+	echo "About to call makeRequest('/packagedeps/add', $mydata, $api_user, $api_key, $endpoint)\n";
+	var_dump(makeRequest('/packagedeps/add', $mydata, $api_user, $api_key, $endpoint));
 }
 //$myarr=$orig_json_a->dependencies;
 //var_dump($myarr);
