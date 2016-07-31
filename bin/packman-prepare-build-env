@@ -61,7 +61,7 @@ cd $TMP_BUILDDIR
 wget $SOURCE_URL
 ARCHIVE_NAME=`printf $SOURCE_URL|awk -F "/" '{print $NF}'`
 if file $ARCHIVE_NAME|grep -w -i zip ;then
-        EXTRACT_COMMAND="unzip"
+        EXTRACT_COMMAND="unzip -q -o"
 else
         EXTRACT_COMMAND="tar xf"
 fi
