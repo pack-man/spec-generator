@@ -107,6 +107,7 @@ git commit package.json* -m "New package.json by `basename $0`" && git push orig
 	new_event_api $EVENT_INFO $JOB_ID "Building ${PACKAGE_NAME} version ${PACKAGE_VERSION}. This may take a while..."
 	#printf "Building ${PACKAGE_NAME} version ${PACKAGE_VERSION}..\n"
 	set +e
+	npm install --dev
 	npm publish
 	RC=$?
 	if [ $RC -eq 0 ];then

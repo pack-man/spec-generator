@@ -27,5 +27,20 @@ foreach ($deps as $dep => $version){
 	);
 	makeRequest('/packagedeps/add', $mydata, $api_user, $api_key, $endpoint);
 }
+
+$dev_deps = json_decode(json_encode($orig_json_a->devDependencies), true);
+foreach ($dev_deps as $dep => $version){
+        $mydata=array(
+                'package_id'=> $package_id,
+                'package_type' => 3,
+                'env' => 'NodeJS',
+                'dep_type' => 2,
+                'depends_on_package' => $dep,
+                'depends_on_package_version' => $version,
+                'needed_files' => '',
+        );
+        makeRequest('/packagedeps/add', $mydata, $api_user, $api_key, $endpoint);
+}
+
 echo 'The following modules do not seem to be used in your code: ' . implode(', ',$unused_deps). "\n";
 ?>
