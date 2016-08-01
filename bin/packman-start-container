@@ -101,6 +101,16 @@ sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG
 #sudo docker run -t $NEW_CONTAINER_TAG su - packman -c "packman-prepare-build-env && packman-gen-spec /etc/packman/package.rc"
 new_event_api $EVENT_INFO $JOB_ID "Running the build.."
 sudo docker run -t $NEW_CONTAINER_TAG su - packman -c "/usr/bin/packman-build-package /etc/packman/package.rc $PACKMAN_API_ID $PACKMAN_API_KEY $JOB_ID $PACKAGE_ID"
+RC=$?
+sleep 2;
+if [ $RC -eq 0 ];then
+	update_package_status_api $PACKAGE_ID $PACKAGE_SUCCESS
+	update_job_api $JOB_ID $JOB_SUCCESS
+else
+	update_package_status_api $PACKAGE_ID $PACKAGE_FAILED
+	update_job_api $JOB_ID $JOB_FAILED
+fi
+
 CONTAINER_ID=`get_container_id $NEW_CONTAINER_TAG`
 new_event_api $EVENT_INFO $JOB_ID "Creating $NEW_CONTAINER_TAG-postrun"
 sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG-postrun
