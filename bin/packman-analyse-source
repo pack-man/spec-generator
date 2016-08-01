@@ -45,7 +45,7 @@ PACKAGE_ID=$5
 export PACKMAN_API_ID PACKMAN_API_KEY JOB_ID PACKAGE_ID
 
 update_job_api $JOB_ID $JOB_IN_PROGRESS
-update_package_status_api $PACKAGE_ID $PACKAGE_BUILD_IN_PROroject
+update_package_status_api $PACKAGE_ID $PACKAGE_BUILD_IN_PROGRESS
 #cd $PACKMAN_HOME/tmp/build/
 cd /etc/packman/packman-packages-meta/$PACKMAN_SPACE
 BRANCH=$PACKAGE_NAME-$PACKAGE_VERSION

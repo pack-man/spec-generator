@@ -331,7 +331,7 @@ get_package_type_build_env_api()
 	if [ "$STATUS" = 'ERROR' ];then
 		echo $OUT|jq '.message' --raw-output
 	else
-		echo $OUT| jq '.[] | .build_env' --raw-output 
+		echo $OUT| jq '.data[] | .build_env' --raw-output 
 	fi
 }
 
@@ -344,7 +344,7 @@ get_package_type_api()
 	if [ "$STATUS" = 'ERROR' ];then
 		echo $OUT|jq '.message' --raw-output
 	else
-		echo $OUT| jq '.[] | .package_type' --raw-output 
+		echo $OUT| jq '.data[] | .package_type' --raw-output 
 	fi
 }
 
