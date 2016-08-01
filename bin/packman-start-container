@@ -60,7 +60,7 @@ sudo docker pull $ENV_NAME
 SHORT_ENV_NAME=`echo $ENV_NAME|awk -F "/" '{print $2}'`
 NEW_CONTAINER_TAG="$SHORT_ENV_NAME-$PACKAGE_NAME-$PACKAGE_VERSION"
 new_event_api $EVENT_INFO $JOB_ID "Tagging $NEW_CONTAINER_TAG"
-sudo docker tag -f $ENV_NAME $NEW_CONTAINER_TAG 
+sudo docker tag $ENV_NAME $NEW_CONTAINER_TAG 
 new_event_api $EVENT_INFO $JOB_ID "Copying files into the container.."
 sudo docker run -t $NEW_CONTAINER_TAG mkdir -p /etc/packman 
 CONTAINER_ID=`get_container_id $NEW_CONTAINER_TAG`
