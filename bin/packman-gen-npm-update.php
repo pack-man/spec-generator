@@ -11,7 +11,7 @@ $api_user=$argv[3];
 $api_key=$argv[4];
 $endpoint=$argv[5];
 $package_id=$argv[6];
-$unused_deps=file($deps_file, FILE_IGNORE_NEW_LINES );
+//$unused_deps=file($deps_file, FILE_IGNORE_NEW_LINES );
 $orig_json = file_get_contents($orig_package_json);
 $orig_json_a = json_decode($orig_json);
 $deps = json_decode(json_encode($orig_json_a->dependencies), true);
@@ -49,5 +49,5 @@ foreach ($dev_deps as $dep => $version){
 	}
 }
 
-echo 'The following modules do not seem to be used in your code: ' . implode(', ',$unused_deps). "\n";
+//echo 'The following modules do not seem to be used in your code: ' . implode(', ',$unused_deps). "\n";
 ?>

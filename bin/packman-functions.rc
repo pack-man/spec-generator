@@ -258,6 +258,17 @@ new_event_api()
 	if [ "$STATUS" = 'ERROR' ];then
 		echo $OUT|jq '.message' --raw-output
 	fi
+
+	if [ "$EVENT_TYPE" -eq "$EVENT_FATAL" ];then
+		COLOUR=$BRIGHT_RED
+	elif [ "$EVENT_TYPE" -eq "$EVENT_WARNING" ];then
+		COLOUR=$YELLOW
+	elif [ "$EVENT_TYPE" -eq "$EVENT_AUTO_FIX" ];then
+		COLOUR=$GREEN
+	else
+		COLOUR=$CYAN
+	fi
+	printf "${COLOUR}$CONTENT${NORMAL}\n"
 }
 
 new_job_api()

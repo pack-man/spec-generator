@@ -79,11 +79,12 @@ else
 	NEW_SPEC_GENERATED=1
 	
 fi
-DEPS_FILE=/tmp/${PACKAGE_NAME}_${PACKAGE_VERSION}.deps
-find . -type f -name "*.js"  ! -name "*.ejs.js" -exec dependency-check . --entry {} 2>&1 \; |grep "Fail! Dependencies not listed in package.json: "|sed 's@Fail! Dependencies not listed in package.json:@@g'|tr "," "\n" >${DEPS_FILE}.tmp
-sort -u ${DEPS_FILE}.tmp > ${DEPS_FILE}
 
 if [ -n "$NEW_SPEC_GENERATED" ];then
+	printf "${CYAN}Detecting dependencies. This may take a while...${NORMAL}\n"
+	DEPS_FILE=/tmp/${PACKAGE_NAME}_${PACKAGE_VERSION}.deps
+	find . -type f -name "*.js"  ! -name "*.ejs.js" -exec dependency-check . --entry {} 2>&1 \; |grep "Fail! Dependencies not listed in package.json: "|sed 's@Fail! Dependencies not listed in package.json:@@g'|tr "," "\n" >${DEPS_FILE}.tmp
+	sort -u ${DEPS_FILE}.tmp > ${DEPS_FILE}
 	export PACKMAN_API_ID PACKMAN_API_KEY PACKMAN_API_ENDPOINT PACKAGE_ID
 	/usr/bin/packman-gen-npm-deps.php package.json ${DEPS_FILE}
 else
@@ -93,10 +94,12 @@ else
 	else
 		EXTRA_OPTS=""
 	fi
+	printf "${CYAN}Looking for unused modules included in package.json. This may take a while...${NORMAL}\n"
 	UNUSED_MODULES=`dependency-check . --unused $EXTRA_OPTS 2>&1|sed 's@Fail! @@g'`
 	echo $UNUSED_MODULES|sed 's@Modules in package.json not used in code: @@g'|tr "," "\n" >/tmp/${PACKAGE_NAME}_${PACKAGE_VERSION}_unused.deps
 	new_event_api $EVENT_WARNING $JOB_ID "$UNUSED_MODULES" 
 	/usr/bin/packman-gen-npm-update.php package.json /tmp/${PACKAGE_NAME}_${PACKAGE_VERSION}_unused.deps $PACKMAN_API_ID $PACKMAN_API_KEY $PACKMAN_API_ENDPOINT $PACKAGE_ID
+	new_event_api $EVENT_INFO $JOB_ID "Checking for newer versions of dependencies.." 
 	npm-check-updates  -u
 
 fi
