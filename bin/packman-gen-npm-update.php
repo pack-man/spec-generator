@@ -40,6 +40,13 @@ foreach ($dev_deps as $dep => $version){
                 'needed_files' => '',
         );
         makeRequest('/packagedeps/add', $mydata, $api_user, $api_key, $endpoint);
+
+        echo "\nINFO: Installing NPM module $dep to satisfy dev dependecies...\n";
+        exec ("sudo npm install $dep", $out, $rc);
+        echo (implode("\n",$out));
+	if ($rc != 0){
+        	echo "ERROR: Exited with $rc\n";
+	}
 }
 
 echo 'The following modules do not seem to be used in your code: ' . implode(', ',$unused_deps). "\n";
