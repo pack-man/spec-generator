@@ -46,7 +46,7 @@ export PACKMAN_API_ID PACKMAN_API_KEY JOB_ID PACKAGE_ID
 
 update_job_api $JOB_ID $JOB_IN_PROGRESS
 update_package_status_api $PACKAGE_ID $PACKAGE_BUILD_IN_PROGRESS
-/usr/bin/packman-analyse-source.new $PACKAGE_RC $PACKMAN_API_ID $PACKMAN_API_KEY $JOB_ID $PACKAGE_ID
+/usr/bin/packman-analyse-source $PACKAGE_RC $PACKMAN_API_ID $PACKMAN_API_KEY $JOB_ID $PACKAGE_ID
 if [ $? -ne 0 ];then
 	update_package_status_api $PACKAGE_ID $PACKAGE_FAILED
 	update_job_api $JOB_ID $JOB_FAILED
