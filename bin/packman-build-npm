@@ -113,7 +113,7 @@ set +e
 npm publish
 RC=$?
 if [ $RC -eq 0 ];then
-	new_event_api $EVENT_INFO $JOB_ID "Successfully published ${PACKAGE_NAME} version ${PACKAGE_VERSION} to http://packdaddy.io:4873"
+	new_event_api $EVENT_INFO $JOB_ID "Successfully published ${PACKAGE_NAME} version ${PACKAGE_VERSION} to $NPM_SERVER"
 else
 	new_event_api $EVENT_FATAL $JOB_ID "Failed to build ${PACKAGE_NAME} version ${PACKAGE_VERSION}"
 	

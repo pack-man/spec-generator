@@ -60,8 +60,8 @@ ENV_NAME=`get_package_type_build_env_api $PACKAGE_TYPE`
 # NOTE: every such user will need permissions to get the container
 # also, check about access control/spaces/blah blah
 
-new_event_api $EVENT_INFO $JOB_ID "Logging in to $DOCKER_SERVER"
-echo "$MAINTAINER_EMAIL"| sudo docker login --username $DOCKER_USER --password $DOCKER_PASSWD $DOCKER_SERVER
+new_event_api $EVENT_INFO $JOB_ID "Logging in to $DOCKER_URL"
+echo "$MAINTAINER_EMAIL"| sudo docker login --username $DOCKER_USER --password $DOCKER_PASSWD $DOCKER_URL
 new_event_api $EVENT_INFO $JOB_ID "Pulling $ENV_NAME"
 sudo docker pull $ENV_NAME
 SHORT_ENV_NAME=`echo $ENV_NAME|awk -F "/" '{print $2}'`
@@ -119,6 +119,8 @@ RC=$?
 CONTAINER_ID=`get_container_id $NEW_CONTAINER_TAG`
 new_event_api $EVENT_INFO $JOB_ID "Creating $NEW_CONTAINER_TAG-postrun"
 sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG-postrun
+sudo docker tag $NEW_CONTAINER_TAG-postrun $DOCKER_SERVER/$NEW_CONTAINER_TAG-postrun
+sudo docker push $DOCKER_SERVER/$NEW_CONTAINER_TAG-postrun
 sudo docker rm $CONTAINER_ID
 sleep 2;
 if [ $RC -eq 0 ];then
