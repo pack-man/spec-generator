@@ -396,7 +396,7 @@ trap_handler()
         LASTERR="$2"             # argument 2: error code of last command
 		
 	new_event_api $EVENT_FATAL $JOB_ID "Returned with $LASTERR on $MYSELF:$LASTLINE"
-	update_job_api $JOB_ID $JOB_FATAL
+	#update_job_api $JOB_ID $JOB_FATAL
 }
 
 

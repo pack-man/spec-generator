@@ -69,6 +69,7 @@ git config user.email "$MAINTAINER_EMAIL"
 git config user.name "$MAINTAINER_NAME"
 PACKAGE_TYPE=`get_package_type_api $PACKAGE_ID`
 if [ "$PACKAGE_TYPE" -eq 3 ];then
+	trap - ERR
 	set +e
 	/usr/bin/packman-build-npm $PACKAGE_RC $PACKMAN_API_ID $PACKMAN_API_KEY $JOB_ID $PACKAGE_ID
 	RC=$?

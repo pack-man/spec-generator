@@ -113,6 +113,7 @@ sudo docker rm $CONTAINER_ID
 
 #sudo docker run -t $NEW_CONTAINER_TAG su - packman -c "packman-prepare-build-env && packman-gen-spec /etc/packman/package.rc"
 new_event_api $EVENT_INFO $JOB_ID "Running the build.."
+trap - ERR
 set +e
 sudo docker run -t $NEW_CONTAINER_TAG su - packman -c "/usr/bin/packman-build-package /etc/packman/package.rc $PACKMAN_API_ID $PACKMAN_API_KEY $JOB_ID $PACKAGE_ID"
 RC=$?
@@ -121,6 +122,7 @@ new_event_api $EVENT_INFO $JOB_ID "Creating $NEW_CONTAINER_TAG-postrun"
 sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG-postrun
 sudo docker tag $NEW_CONTAINER_TAG-postrun $DOCKER_SERVER/$NEW_CONTAINER_TAG-postrun
 sudo docker push $DOCKER_SERVER/$NEW_CONTAINER_TAG-postrun
+new_event_api $EVENT_INFO $JOB_ID "Pushed container to $DOCKER_SERVER/$NEW_CONTAINER_TAG-postrun"
 sudo docker rm $CONTAINER_ID
 sleep 2;
 if [ $RC -eq 0 ];then

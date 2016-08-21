@@ -109,6 +109,7 @@ git commit package.json* -m "New package.json by `basename $0`" && git push orig
 # ready to build
 new_event_api $EVENT_INFO $JOB_ID "Building ${PACKAGE_NAME} version ${PACKAGE_VERSION}. This may take a while..."
 #printf "Building ${PACKAGE_NAME} version ${PACKAGE_VERSION}..\n"
+trap - ERR
 set +e
 npm publish
 RC=$?
