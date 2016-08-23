@@ -314,6 +314,18 @@ new_package_spec_api()
 	fi
 }
 
+new_docker_container_api()
+{
+	TAG=$1
+	PACKAGE_ID=$2
+	DISTRO=$3
+	OUT=`curl -X POST -sS -H "X-API-ID: $PACKMAN_API_ID" -H "X-API-PRIVATE-KEY: $PACKMAN_API_KEY" -H 'X-API-ROUTE: dockercontainers/add' -H 'Content-Type: application/json' -d '{"tag": "'"$TAG"'","package_id": "'"$PACKAGE_ID"'","distro":"'"$DISTRO"'"}' $PACKMAN_API_ENDPOINT`
+	STATUS=`echo $OUT|jq .request_status --raw-output` 
+	if [ "$STATUS" = 'ERROR' ];then
+		echo $OUT|jq '.message' --raw-output
+	fi
+}
+
 update_package_status_api()
 {
 	PACKAGE_ID=$1
@@ -396,7 +408,8 @@ trap_handler()
         LASTERR="$2"             # argument 2: error code of last command
 		
 	new_event_api $EVENT_FATAL $JOB_ID "Returned with $LASTERR on $MYSELF:$LASTLINE"
-	#update_job_api $JOB_ID $JOB_FATAL
+	update_job_api $JOB_ID $JOB_FATAL
+	exit $JOB_FATAL
 }
 
 
