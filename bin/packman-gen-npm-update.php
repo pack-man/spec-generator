@@ -40,7 +40,7 @@ foreach ($dev_deps as $dep => $version){
         );
         makeRequest('/packagedeps/add', $mydata, $api_user, $api_key, $endpoint);
 
-        echo "\nINFO: Installing NPM module $dep to satisfy dev dependecies...\n";
+        echo "\n\033[0;36mINFO: Installing NPM module $dep to satisfy dev dependecies...\033[m\n";
         exec ("sudo npm install $dep", $out, $rc);
         echo (implode("\n",$out));
 	if ($rc != 0){

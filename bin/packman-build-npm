@@ -88,6 +88,23 @@ if [ -n "$NEW_SPEC_GENERATED" ];then
 	export PACKMAN_API_ID PACKMAN_API_KEY PACKMAN_API_ENDPOINT PACKAGE_ID
 	/usr/bin/packman-gen-npm-deps.php package.json ${DEPS_FILE}
 else
+	CURRENT_VERSION=`npm show $PACKAGE_NAME version`
+	if [ "$CURRENT_VERSION" = ${PACKAGE_VERSION} ];then
+		NEW_PACKAGE_VERSION=`npm version patch |sed 's@^v@@g'`
+		cd /etc/packman/packman-packages-meta/$PACKMAN_SPACE/
+		BRANCH=$PACKAGE_NAME-$NEW_PACKAGE_VERSION
+		git checkout -b $BRANCH
+		mv $PACKAGE_NAME-$PACKAGE_VERSION $BRANCH
+		git add $BRANCH
+		git commit $BRANCH -m "Updated version to $NEW_PACKAGE_VERSION"
+		cd $BRANCH
+		update_package_version_api $PACKAGE_ID $NEW_PACKAGE_VERSION
+		new_event_api $EVENT_INFO $JOB_ID "${PACKAGE_NAME} version ${PACKAGE_VERSION} already exists in the NPM registry, updated version to $NEW_PACKAGE_VERSION"
+		PACKAGE_VERSION=$NEW_PACKAGE_VERSION
+	else
+		# because stupidly, npm version fails it asked to set the same version as what already exists
+		npm version ${PACKAGE_VERSION} 2>/dev/null||true
+	fi
 	# if the code uses bower in scripts, do not show it as unused.
 	if grep "bower \|#!.*bower" * -r -q ;then 
 		EXTRA_OPTS="--ignore-module bower"
@@ -108,18 +125,6 @@ else
 	new_event_api $EVENT_INFO $JOB_ID "Checking for newer versions of dependencies.." 
 	npm-check-updates  -u
 
-fi
-CURRENT_VERSION=`npm show $PACKAGE_NAME version`
-if [ "$CURRENT_VERSION" = ${PACKAGE_VERSION} ];then
-	NEW_PACKAGE_VERSION=`npm version patch |sed 's@^v@@g'`
-	BRANCH=$PACKAGE_NAME-$NEW_PACKAGE_VERSION
-	git checkout -b $BRANCH
-	NEW_PACKAGE_VERSION=`npm version patch |sed 's@^v@@g'`
-	BRANCH=$PACKAGE_NAME-$NEW_PACKAGE_VERSION
-	update_package_version_api $PACKAGE_ID $NEW_PACKAGE_VERSION
-	new_event_api $EVENT_INFO $JOB_ID "${PACKAGE_NAME} version ${PACKAGE_VERSION} already exists in the NPM registry, updated version to $NEW_PACKAGE_VERSION"
-else
-	npm version ${PACKAGE_VERSION}
 fi
 git add package.json*
 git commit package.json* -m "New package.json by `basename $0`" && git push origin $BRANCH
