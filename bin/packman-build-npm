@@ -95,8 +95,9 @@ else
 		BRANCH=$PACKAGE_NAME-$NEW_PACKAGE_VERSION
 		git checkout -b $BRANCH
 		mv $PACKAGE_NAME-$PACKAGE_VERSION $BRANCH
+		#rm -rf $PACKAGE_NAME-$PACKAGE_VERSION
 		git add $BRANCH
-		git commit $BRANCH -m "Updated version to $NEW_PACKAGE_VERSION"
+		git commit -a -m "Updated version to $NEW_PACKAGE_VERSION"
 		cd $BRANCH
 		update_package_version_api $PACKAGE_ID $NEW_PACKAGE_VERSION
 		new_event_api $EVENT_INFO $JOB_ID "${PACKAGE_NAME} version ${PACKAGE_VERSION} already exists in the NPM registry, updated version to $NEW_PACKAGE_VERSION"
