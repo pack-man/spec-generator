@@ -107,7 +107,9 @@ CURRENT_VERSION=`npm show $PACKAGE_NAME version`
 if [ "$CURRENT_VERSION" = ${PACKAGE_VERSION} ];then
 	NEW_PACKAGE_VERSION=`npm version patch |sed 's@^v@@g'`
 	BRANCH=$PACKAGE_NAME-$NEW_PACKAGE_VERSION
-	git checkout -b BRANCH
+	git checkout -b $BRANCH
+	NEW_PACKAGE_VERSION=`npm version patch |sed 's@^v@@g'`
+	BRANCH=$PACKAGE_NAME-$NEW_PACKAGE_VERSION
 	update_package_version_api $PACKAGE_ID $NEW_PACKAGE_VERSION
 	new_event_api $EVENT_INFO $JOB_ID "${PACKAGE_NAME} version ${PACKAGE_VERSION} already exists in the NPM registry, updated version to $NEW_PACKAGE_VERSION"
 else
