@@ -89,6 +89,7 @@ if [ -n "$NEW_SPEC_GENERATED" ];then
 	/usr/bin/packman-gen-npm-deps.php package.json ${DEPS_FILE}
 else
 	CURRENT_VERSION=`npm show $PACKAGE_NAME version`
+set -x
 	if [ "$CURRENT_VERSION" = ${PACKAGE_VERSION} ];then
 		NEW_PACKAGE_VERSION=`npm version patch |sed 's@^v@@g'`
 		cd /etc/packman/packman-packages-meta/$PACKMAN_SPACE/
@@ -102,6 +103,7 @@ else
 		update_package_version_api $PACKAGE_ID $NEW_PACKAGE_VERSION
 		new_event_api $EVENT_INFO $JOB_ID "${PACKAGE_NAME} version ${PACKAGE_VERSION} already exists in the NPM registry, updated version to $NEW_PACKAGE_VERSION"
 		PACKAGE_VERSION=$NEW_PACKAGE_VERSION
+set +x
 	else
 		# because stupidly, npm version fails it asked to set the same version as what already exists
 		npm version ${PACKAGE_VERSION} 2>/dev/null||true
