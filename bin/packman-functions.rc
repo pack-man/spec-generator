@@ -337,6 +337,17 @@ update_package_status_api()
 	fi
 }
 
+update_package_version_api()
+{
+	PACKAGE_ID=$1
+	PACKAGE_VERSION=$2
+	OUT=`curl -X POST -sS  -H "X-API-ID: $PACKMAN_API_ID" -H "X-API-PRIVATE-KEY: $PACKMAN_API_KEY" -H "X-API-ROUTE: packages/update/$PACKAGE_ID" -H 'Content-Type: application/json' -d '{"version": "'"$PACKAGE_VERSION"'"}' $PACKMAN_API_ENDPOINT`
+	STATUS=`echo $OUT|jq .request_status --raw-output` 
+	if [ "$STATUS" = 'ERROR' ];then
+		echo $OUT|jq '.message' --raw-output
+	fi
+}
+
 fatal_event_api()
 {
 	PACKAGE_ID=$1

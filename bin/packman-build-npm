@@ -103,7 +103,14 @@ else
 	npm-check-updates  -u
 
 fi
-npm version ${PACKAGE_VERSION}
+CURRENT_VERSION=`npm show $PACKAGE_NAME version`
+if [ "$CURRENT_VERSION" = ${PACKAGE_VERSION} ];then
+	NEW_PACKAGE_VERSION=`npm version patch |sed 's@^v@@g'`
+	update_package_version_api $PACKAGE_ID $NEW_PACKAGE_VERSION
+	new_event_api $EVENT_INFO $JOB_ID "${PACKAGE_NAME} version ${PACKAGE_VERSION} already exists in the NPM registry, updated version to $NEW_PACKAGE_VERSION"
+else
+	npm version ${PACKAGE_VERSION}
+fi
 git add package.json*
 git commit package.json* -m "New package.json by `basename $0`" && git push origin $BRANCH
 # ready to build
