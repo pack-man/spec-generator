@@ -95,10 +95,16 @@ else
 		EXTRA_OPTS=""
 	fi
 	printf "${CYAN}Looking for unused modules included in package.json. This may take a while...${NORMAL}\n"
-	UNUSED_MODULES=`dependency-check . --unused $EXTRA_OPTS --no-dev 2>&1|sed 's@Fail! @@g'`
-	echo $UNUSED_MODULES|sed 's@Modules in package.json not used in code: @@g'|tr "," "\n" >/tmp/${PACKAGE_NAME}_${PACKAGE_VERSION}_unused.deps
-	new_event_api $EVENT_WARNING $JOB_ID "$UNUSED_MODULES" 
-	/usr/bin/packman-gen-npm-update.php package.json /tmp/${PACKAGE_NAME}_${PACKAGE_VERSION}_unused.deps $PACKMAN_API_ID $PACKMAN_API_KEY $PACKMAN_API_ENDPOINT $PACKAGE_ID
+	trap - ERR
+	set +e	
+	UNUSED_MODULES=`dependency-check . --unused $EXTRA_OPTS --no-dev 2>&1`
+	if [ $? -ne 0 ];then
+		new_event_api $EVENT_WARNING $JOB_ID "$UNUSED_MODULES" 
+		echo $UNUSED_MODULES|sed 's@Fail! Modules in package.json not used in code: @@g'|tr "," "\n" >/tmp/${PACKAGE_NAME}_${PACKAGE_VERSION}_unused.deps
+	fi
+	trap 'trap_handler ${LINENO} $?' ERR
+	set -e
+	/usr/bin/packman-gen-npm-update.php package.json $PACKMAN_API_ID $PACKMAN_API_KEY $PACKMAN_API_ENDPOINT $PACKAGE_ID
 	new_event_api $EVENT_INFO $JOB_ID "Checking for newer versions of dependencies.." 
 	npm-check-updates  -u
 
