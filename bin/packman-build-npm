@@ -88,7 +88,7 @@ if [ -n "$NEW_SPEC_GENERATED" ];then
 	export PACKMAN_API_ID PACKMAN_API_KEY PACKMAN_API_ENDPOINT PACKAGE_ID
 	/usr/bin/packman-gen-npm-deps.php package.json ${DEPS_FILE}
 else
-	CURRENT_VERSION=`npm show $PACKAGE_NAME version`
+	CURRENT_VERSION=`npm show $PACKAGE_NAME version 2>/dev/null||true`
 	# because stupidly, npm version fails it asked to set the same version as what already exists
 	npm version ${PACKAGE_VERSION} 2>/dev/null||true
 set -x

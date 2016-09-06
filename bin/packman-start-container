@@ -65,7 +65,7 @@ echo "$MAINTAINER_EMAIL"| sudo docker login --username $DOCKER_USER --password $
 new_event_api $EVENT_INFO $JOB_ID "Pulling $ENV_NAME"
 sudo docker pull $ENV_NAME
 SHORT_ENV_NAME=`echo $ENV_NAME|awk -F "/" '{print $2}'`
-NEW_CONTAINER_TAG="$SHORT_ENV_NAME-$PACKAGE_ID-$PACKAGE_NAME-$PACKAGE_VERSION"
+NEW_CONTAINER_TAG="$SHORT_ENV_NAME-$PACKAGE_ID-$PACKAGE_NAME"
 new_event_api $EVENT_INFO $JOB_ID "Tagging $NEW_CONTAINER_TAG"
 sudo docker tag $ENV_NAME $NEW_CONTAINER_TAG 
 new_event_api $EVENT_INFO $JOB_ID "Copying files into the container.."
@@ -85,7 +85,7 @@ sudo docker cp ~/.npmrc $CONTAINER_ID:$PACKMAN_HOME/
 sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG
 
 new_event_api $EVENT_INFO $JOB_ID "Setting permissions on $PACKMAN_HOME"
-sudo docker run -t $NEW_CONTAINER_TAG chown -R packman.packman $PACKMAN_HOME
+sudo docker run -t $NEW_CONTAINER_TAG chown -R packman.packman $PACKMAN_HOME /etc/packman/package.rc
 CONTAINER_ID=`get_container_id $NEW_CONTAINER_TAG`
 sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG
 
@@ -120,12 +120,12 @@ RC=$?
 trap 'trap_handler ${LINENO} $?' ERR
 set -e
 CONTAINER_ID=`get_container_id $NEW_CONTAINER_TAG`
-new_event_api $EVENT_INFO $JOB_ID "Creating $NEW_CONTAINER_TAG-postrun"
-sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG-postrun
-sudo docker tag $NEW_CONTAINER_TAG-postrun $DOCKER_SERVER/$NEW_CONTAINER_TAG-postrun
-sudo docker push $DOCKER_SERVER/$NEW_CONTAINER_TAG-postrun > /dev/null
-new_docker_container_api $NEW_CONTAINER_TAG-postrun $PACKAGE_ID $SHORT_ENV_NAME 
-new_event_api $EVENT_INFO $JOB_ID "Pushed container to $DOCKER_SERVER/$NEW_CONTAINER_TAG-postrun"
+new_event_api $EVENT_INFO $JOB_ID "Creating docker image: $NEW_CONTAINER_TAG-postbuild"
+sudo docker commit $CONTAINER_ID $NEW_CONTAINER_TAG-postbuild
+sudo docker tag $NEW_CONTAINER_TAG-postbuild $DOCKER_SERVER/$NEW_CONTAINER_TAG-postbuild
+sudo docker push $DOCKER_SERVER/$NEW_CONTAINER_TAG-postbuild > /dev/null
+new_docker_container_api $NEW_CONTAINER_TAG-postbuild $PACKAGE_ID $SHORT_ENV_NAME 
+new_event_api $EVENT_INFO $JOB_ID "Pushed docker container to $DOCKER_SERVER/$NEW_CONTAINER_TAG-postbuild"
 sudo docker rm $CONTAINER_ID
 sleep 2;
 if [ $RC -eq 0 ];then

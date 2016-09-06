@@ -271,36 +271,6 @@ new_event_api()
 	printf "${COLOUR}$CONTENT${NORMAL}\n"
 }
 
-new_job_api()
-{
-	PACKAGE_NAME=$1
-	PACKAGE_VERSION=$2
-	PACKMAN_SPACE=$3
-	ENV=$4
-}
-
-update_job_api()
-{
-	JOB_ID=$1
-	JOB_STATUS=$2
-	OUT=`curl -X POST -sS  -H "X-API-ID: $PACKMAN_API_ID" -H "X-API-PRIVATE-KEY: $PACKMAN_API_KEY" -H "X-API-ROUTE: jobs/update/$JOB_ID" -H 'Content-Type: application/json' -d '{"status":"'"$JOB_STATUS"'"}' $PACKMAN_API_ENDPOINT`
-	STATUS=`echo $OUT|jq .request_status --raw-output` 
-	if [ "$STATUS" = 'ERROR' ];then
-		echo $OUT|jq '.message' --raw-output
-	fi
-}
-
-new_event_api()
-{
-	EVENT_TYPE=$1
-	JOB_ID=$2
-	CONTENT=$3
-	OUT=`curl -X POST -sS  -H "X-API-ID: $PACKMAN_API_ID" -H "X-API-PRIVATE-KEY: $PACKMAN_API_KEY" -H "X-API-ROUTE: events/add" -H 'Content-Type: application/json' -d '{"event_type":"'"$EVENT_TYPE"'","job_id":"'"$JOB_ID"'","content":"'"$CONTENT"'"}' $PACKMAN_API_ENDPOINT`
-	STATUS=`echo $OUT|jq .request_status --raw-output` 
-	if [ "$STATUS" = 'ERROR' ];then
-		echo $OUT|jq '.message' --raw-output
-	fi
-}
 
 new_package_spec_api()
 {
