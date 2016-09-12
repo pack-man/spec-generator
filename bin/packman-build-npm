@@ -127,6 +127,7 @@ else
 	npm-check-updates  -u
 
 fi
+git pull origin $BRANCH
 git add package.json*
 git commit package.json* -m "New package.json by `basename $0`" && git push origin $BRANCH
 # ready to build
