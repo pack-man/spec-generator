@@ -128,7 +128,7 @@ else
 
 fi
 git add package.json*
-git commit package.json* -m "New package.json by `basename $0`" && git pull origin $BRANCH && git push origin $BRANCH
+git commit package.json* -m "New package.json by `basename $0`" && git pull --rebase origin $BRANCH && git push origin $BRANCH
 # ready to build
 new_event_api $EVENT_INFO $JOB_ID "Building ${PACKAGE_NAME} version ${PACKAGE_VERSION}. This may take a while..."
 #printf "Building ${PACKAGE_NAME} version ${PACKAGE_VERSION}..\n"
